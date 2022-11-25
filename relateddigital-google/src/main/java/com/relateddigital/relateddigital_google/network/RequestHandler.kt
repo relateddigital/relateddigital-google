@@ -622,7 +622,7 @@ object RequestHandler {
 
         val model = RelatedDigital.getRelatedDigitalModel(context)
 
-        if (model.getToken().isEmpty() || (model.getGoogleAppAlias().isEmpty() && model.getHuaweiAppAlias().isEmpty()) ) {
+        if (model.getToken().isEmpty() || (model.getGoogleAppAlias().isEmpty()) ) {
             Log.e(LOG_TAG, "token or appKey cannot be null!")
             return
         }
@@ -640,7 +640,7 @@ object RequestHandler {
             return
         }
 
-        if (registerEmailModel.getToken().isEmpty() || (registerEmailModel.getGoogleAppAlias().isEmpty() && registerEmailModel.getHuaweiAppAlias().isEmpty()) ) {
+        if (registerEmailModel.getToken().isEmpty() || (registerEmailModel.getGoogleAppAlias().isEmpty()) ) {
             Log.e(LOG_TAG, "token or appKey cannot be null!")
             return
         }
@@ -677,11 +677,7 @@ object RequestHandler {
 
             val retention = Retention()
 
-            if(GoogleUtils.checkPlayService(context)) {
-                retention.key = RelatedDigital.getRelatedDigitalModel(context).getGoogleAppAlias()
-            } else {
-                retention.key = RelatedDigital.getRelatedDigitalModel(context).getHuaweiAppAlias()
-            }
+            retention.key = RelatedDigital.getRelatedDigitalModel(context).getGoogleAppAlias()
 
             retention.pushId = pushId
 

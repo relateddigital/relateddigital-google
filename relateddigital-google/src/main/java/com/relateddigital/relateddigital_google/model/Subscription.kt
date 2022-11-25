@@ -52,11 +52,7 @@ class Subscription(context: Context, model: RelatedDigitalModel) : Serializable 
     init {
         token = model.getToken()
         appVersion = model.getAppVersion()
-        appAlias = if(GoogleUtils.checkPlayService(context)) {
-            model.getGoogleAppAlias()
-        } else {
-            model.getHuaweiAppAlias()
-        }
+        appAlias = model.getGoogleAppAlias()
         os = model.getOsType()
         osVersion = model.getOsVersion()
         deviceType = model.getDeviceType()

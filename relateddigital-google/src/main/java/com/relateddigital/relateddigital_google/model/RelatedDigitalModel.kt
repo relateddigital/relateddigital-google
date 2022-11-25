@@ -588,11 +588,7 @@ class RelatedDigitalModel(
     fun isValid(context: Context): Boolean {
         synchronized(this) {
             var appAlias = ""
-            appAlias = if (GoogleUtils.checkPlayService(context)) {
-                googleAppAlias
-            } else {
-                huaweiAppAlias
-            }
+            appAlias = googleAppAlias
             val res1 = !(TextUtils.isEmpty(getToken()) && TextUtils.isEmpty(appAlias))
             var res2 = true
             val dateFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")

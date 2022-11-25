@@ -111,7 +111,6 @@ object RelatedDigital {
         context: Context,
         isPushNotificationEnabled: Boolean,
         googleAppAlias: String,
-        huaweiAppAlias: String,
         token: String,
         notificationSmallIcon: Int = 0,
         notificationSmallIconDarkMode: Int = 0,
@@ -126,7 +125,7 @@ object RelatedDigital {
         if (model != null) {
             model!!.setIsPushNotificationEnabled(context, isPushNotificationEnabled)
             model!!.setGoogleAppAlias(context, googleAppAlias)
-            model!!.setHuaweiAppAlias(context, huaweiAppAlias)
+            model!!.setHuaweiAppAlias(context, "")
             model!!.setToken(context, token)
         } else {
             if (SharedPref.readString(context, Constants.RELATED_DIGITAL_MODEL_KEY).isNotEmpty()) {
@@ -138,12 +137,12 @@ object RelatedDigital {
                 )
                 model!!.setIsPushNotificationEnabled(context, isPushNotificationEnabled)
                 model!!.setGoogleAppAlias(context, googleAppAlias)
-                model!!.setHuaweiAppAlias(context, huaweiAppAlias)
+                model!!.setHuaweiAppAlias(context, "")
                 model!!.setToken(context, token)
             } else {
                 model = createInitialModel(context)
                 model!!.setGoogleAppAlias(context, googleAppAlias)
-                model!!.setHuaweiAppAlias(context, huaweiAppAlias)
+                model!!.setHuaweiAppAlias(context, "")
                 model!!.setToken(context, token)
             }
         }
@@ -335,22 +334,6 @@ object RelatedDigital {
     }
 
     @JvmStatic
-    fun setHuaweiAppAlias(context: Context, huaweiAppAlias: String) {
-        if (model != null) {
-            model!!.setHuaweiAppAlias(context, huaweiAppAlias)
-        } else {
-            if (SharedPref.readString(context, Constants.RELATED_DIGITAL_MODEL_KEY).isNotEmpty()) {
-                model = Gson().fromJson(SharedPref.readString(context,
-                        Constants.RELATED_DIGITAL_MODEL_KEY), RelatedDigitalModel::class.java)
-                model!!.setHuaweiAppAlias(context, huaweiAppAlias)
-            } else {
-                model = createInitialModel(context)
-                model!!.setHuaweiAppAlias(context, huaweiAppAlias)
-            }
-        }
-    }
-
-    @JvmStatic
     fun setOrganizationId(context: Context, organizationId: String) {
         if (model != null) {
             model!!.setOrganizationId(context, organizationId)
@@ -534,22 +517,6 @@ object RelatedDigital {
                 model!!.getGoogleAppAlias()
             } else {
                 Log.e(LOG_TAG, "googleAppAlias has never been set before!!")
-                ""
-            }
-        }
-    }
-
-    @JvmStatic
-    fun getHuaweiAppAlias(context: Context): String {
-        return if (model != null) {
-            model!!.getHuaweiAppAlias()
-        } else {
-            if (SharedPref.readString(context, Constants.RELATED_DIGITAL_MODEL_KEY).isNotEmpty()) {
-                model = Gson().fromJson(SharedPref.readString(context,
-                        Constants.RELATED_DIGITAL_MODEL_KEY), RelatedDigitalModel::class.java)
-                model!!.getHuaweiAppAlias()
-            } else {
-                Log.e(LOG_TAG, "huaweiAppAlias has never been set before!!")
                 ""
             }
         }

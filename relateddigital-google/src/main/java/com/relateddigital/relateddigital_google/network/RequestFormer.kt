@@ -235,17 +235,10 @@ object RequestFormer {
             }
             if (properties.containsKey(Constants.APP_ID_REQUEST_KEY)) {
                 if (properties[Constants.APP_ID_REQUEST_KEY] != null) {
-                    if (GoogleUtils.checkPlayService(context)) {
-                        model!!.setGoogleAppAlias(
-                            context,
-                            properties[Constants.APP_ID_REQUEST_KEY]!!
-                        )
-                    } else {
-                        model!!.setHuaweiAppAlias(
-                            context,
-                            properties[Constants.APP_ID_REQUEST_KEY]!!
-                        )
-                    }
+                    model!!.setGoogleAppAlias(
+                        context,
+                        properties[Constants.APP_ID_REQUEST_KEY]!!
+                    )
                 }
                 properties.remove(Constants.APP_ID_REQUEST_KEY)
             }
@@ -296,12 +289,8 @@ object RequestFormer {
             queryMap[Constants.TOKEN_ID_REQUEST_KEY] = model.getToken()
         }
 
-        if (model.getGoogleAppAlias().isNotEmpty() || model.getHuaweiAppAlias().isNotEmpty()) {
-            if (GoogleUtils.checkPlayService(context)) {
-                queryMap[Constants.APP_ID_REQUEST_KEY] = model.getGoogleAppAlias()
-            } else {
-                queryMap[Constants.APP_ID_REQUEST_KEY] = model.getHuaweiAppAlias()
-            }
+        if (model.getGoogleAppAlias().isNotEmpty()) {
+            queryMap[Constants.APP_ID_REQUEST_KEY] = model.getGoogleAppAlias()
         }
 
         if (model.getUserAgent().isNotEmpty()) {
@@ -382,14 +371,8 @@ object RequestFormer {
             queryMap[Constants.TOKEN_ID_REQUEST_KEY] = model.getToken()
         }
 
-        if (GoogleUtils.checkPlayService(context)) {
-            if(!model.getGoogleAppAlias().isNullOrEmpty()) {
-                queryMap[Constants.APP_ID_REQUEST_KEY] = model.getGoogleAppAlias()
-            }
-        } else {
-            if(!model.getHuaweiAppAlias().isNullOrEmpty()) {
-                queryMap[Constants.APP_ID_REQUEST_KEY] = model.getHuaweiAppAlias()
-            }
+        if(!model.getGoogleAppAlias().isNullOrEmpty()) {
+            queryMap[Constants.APP_ID_REQUEST_KEY] = model.getGoogleAppAlias()
         }
 
     }
@@ -420,14 +403,8 @@ object RequestFormer {
             queryMap[Constants.TOKEN_ID_REQUEST_KEY] = model.getToken()
         }
 
-        if (GoogleUtils.checkPlayService(context)) {
-            if(!model.getGoogleAppAlias().isNullOrEmpty()) {
-                queryMap[Constants.APP_ID_REQUEST_KEY] = model.getGoogleAppAlias()
-            }
-        } else {
-            if(!model.getHuaweiAppAlias().isNullOrEmpty()) {
-                queryMap[Constants.APP_ID_REQUEST_KEY] = model.getHuaweiAppAlias()
-            }
+        if(!model.getGoogleAppAlias().isNullOrEmpty()) {
+            queryMap[Constants.APP_ID_REQUEST_KEY] = model.getGoogleAppAlias()
         }
     }
 }

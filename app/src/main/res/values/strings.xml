@@ -53,7 +53,6 @@
 
     <string name="token">TOKEN</string>
     <string name="firebase_token">Firebase Token</string>
-    <string name="huawei_token">Huawei Token</string>
     <string name="get_payload">GET PAYLOADS</string>
     <string name="send_text_push">SEND TEXT PUSH</string>
     <string name="send_image_push">SEND IMAGE PUSH</string>

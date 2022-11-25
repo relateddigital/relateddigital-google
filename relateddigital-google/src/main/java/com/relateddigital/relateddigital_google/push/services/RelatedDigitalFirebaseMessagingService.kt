@@ -27,12 +27,10 @@ class RelatedDigitalFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         Log.i(LOG_TAG, "On new token : $token")
         val googleAppAlias: String = RelatedDigital.getGoogleAppAlias(this)
-        val huaweiAppAlias: String = RelatedDigital.getHuaweiAppAlias(this)
         RelatedDigital.setIsPushNotificationEnabled(
             this,
             true,
             googleAppAlias,
-            huaweiAppAlias,
             token
         )
     }

@@ -54,11 +54,7 @@ class PushNotificationActivity : AppCompatActivity() {
     }
 
     private fun showToken() {
-        if(GoogleUtils.checkPlayService(this)) {
-            binding.etToken.setText(RelatedDigital.getRelatedDigitalModel(this).getToken())
-        } else {
-            binding.etHuaweiToken.setText(RelatedDigital.getRelatedDigitalModel(this).getToken())
-        }
+        binding.etToken.setText(RelatedDigital.getRelatedDigitalModel(this).getToken())
     }
 
     private fun createSpinners() {
