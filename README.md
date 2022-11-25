@@ -1,14 +1,14 @@
 <p align="center">
-  <a target="_blank" rel="noopener noreferrer" href="https://github.com/relateddigital/relateddigital-android"><img src="https://github.com/relateddigital/relateddigital-android/blob/master/app/relateddigital.png" alt="Related Digital Android Library" width="500" style="max-width:100%;"></a>
+  <a target="_blank" rel="noopener noreferrer" href="https://github.com/relateddigital/relateddigital-google"><img src="https://github.com/relateddigital/relateddigital-google/blob/master/app/relateddigital.png" alt="Related Digital Google Library" width="500" style="max-width:100%;"></a>
 </p>
 
 # Latest Version 
 
-***November 18, 2022*** - [v1.0.5](https://github.com/relateddigital/relateddigital-android/releases)
+***November 25, 2022*** - [v1.0.5](https://github.com/relateddigital/relateddigital-google/releases)
 
 # About SDK
 
-This SDK has been developed to be the Android client for the Related Digital services.
+This SDK has been developed to be the Android/Google client for the Related Digital services.
 
 It is written in Kotlin.
 
@@ -33,10 +33,10 @@ allprojects {
 }
  ```
 
-Please, add the dependency of relateddigital-android library into your module-level build.gradle file as shown below:
+Please, add the dependency of relateddigital-google library into your module-level build.gradle file as shown below:
 
  ```java
-implementation 'com.github.relateddigital:relateddigital-android:1.0.5'
+implementation 'com.github.relateddigital:relateddigital-google:1.0.5'
  ```
 
 # Licences
