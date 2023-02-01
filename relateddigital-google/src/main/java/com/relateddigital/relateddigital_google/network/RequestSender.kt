@@ -16,6 +16,7 @@ import com.relateddigital.relateddigital_google.inapp.giftcatch.GiftCatchActivit
 import com.relateddigital.relateddigital_google.inapp.mailsubsform.MailSubscriptionFormHalfFragment
 import com.relateddigital.relateddigital_google.inapp.notification.InAppNotificationFragment
 import com.relateddigital.relateddigital_google.inapp.scratchtowin.ScratchToWinActivity
+import com.relateddigital.relateddigital_google.inapp.shaketowin.ShakeToWinActivity
 import com.relateddigital.relateddigital_google.inapp.socialproof.SocialProofFragment
 import com.relateddigital.relateddigital_google.inapp.spintowin.SpinToWinActivity
 import com.relateddigital.relateddigital_google.model.*
@@ -238,6 +239,21 @@ object RequestSender {
                                             intent.putExtra(
                                                     "scratch-to-win-data",
                                                     scratchToWinModel
+                                            )
+                                            currentRequest.parent!!.startActivity(intent)
+                                        }
+                                        !actionsResponse.mShakeToWinList.isNullOrEmpty() -> {
+                                            ActivityUtils.parentActivity = currentRequest.parent
+                                            val intent =
+                                                Intent(
+                                                    currentRequest.parent,
+                                                    ShakeToWinActivity::class.java
+                                                )
+                                            val shakeToWinModel: ShakeToWin =
+                                                actionsResponse.mShakeToWinList!![0]
+                                            intent.putExtra(
+                                                "shake-to-win-data",
+                                                shakeToWinModel
                                             )
                                             currentRequest.parent!!.startActivity(intent)
                                         }

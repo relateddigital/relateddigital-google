@@ -139,7 +139,7 @@ class FindToWinActivity : FragmentActivity(), FindToWinCompleteInterface,
                         val transaction: FragmentTransaction =
                             (ActivityUtils.parentActivity as FragmentActivity).supportFragmentManager.beginTransaction()
                         transaction.replace(android.R.id.content, findToWinCodeBannerFragment)
-                        transaction.commit()
+                        transaction.commitAllowingStateLoss()
                         ActivityUtils.parentActivity = null
                     }
                 }

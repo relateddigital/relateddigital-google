@@ -43,7 +43,10 @@ class InAppFullActivity : Activity(), IVisilabs {
             ?: intent.getIntExtra(INTENT_ID_KEY, Int.MAX_VALUE)
         mUpdateDisplayState = InAppUpdateDisplayState.claimDisplayState(mIntentId)
         if (mUpdateDisplayState == null) {
-            Log.e("Visilabs", "VisilabsNotificationActivity intent received, but nothing was found to show.")
+            Log.e(
+                "Visilabs",
+                "VisilabsNotificationActivity intent received, but nothing was found to show."
+            )
             InAppUpdateDisplayState.releaseDisplayState(mIntentId)
             finish()
             return
@@ -149,6 +152,21 @@ class InAppFullActivity : Activity(), IVisilabs {
             } else {
                 if (!mInApp!!.mActionData!!.mAndroidLnk.isNullOrEmpty()) {
                     try {
+                        if (!mInApp!!.mActionData!!.mPromotionCode.isNullOrEmpty()) {
+
+                            val clipboard =
+                                applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                            val clip = ClipData.newPlainText(
+                                getString(R.string.coupon_code),
+                                mInApp!!.mActionData!!.mPromotionCode
+                            )
+                            clipboard.setPrimaryClip(clip)
+                            Toast.makeText(
+                                applicationContext,
+                                getString(R.string.copied_to_clipboard),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                         val viewIntent = Intent(
                             Intent.ACTION_VIEW,
                             StringUtils.getURIfromUrlString(mInApp!!.mActionData!!.mAndroidLnk)

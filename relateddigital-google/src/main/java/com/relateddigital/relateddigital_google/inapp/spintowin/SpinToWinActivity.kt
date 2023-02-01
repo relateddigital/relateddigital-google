@@ -158,7 +158,7 @@ class SpinToWinActivity : FragmentActivity(), SpinToWinCompleteInterface,
                         val transaction: FragmentTransaction =
                             (ActivityUtils.parentActivity as FragmentActivity).supportFragmentManager.beginTransaction()
                         transaction.replace(android.R.id.content, spinToWinCodeBannerFragment)
-                        transaction.commit()
+                        transaction.commitAllowingStateLoss()
                         ActivityUtils.parentActivity = null
                     }
                 }
