@@ -10,6 +10,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -160,19 +161,28 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                 setTitle()
                 setBody()
                 setButton()
+                //TODO When data comes use setCouponCodeDesign() and delete visibilities
+                //setCouponCodeDesign()
+                binding.tvCouponCode.visibility = View.VISIBLE
+                binding.contentCopy.visibility = View.VISIBLE
+
+                binding.copyButton.visibility = View.GONE
+                binding.tvCouponCodeWithButton.visibility = View.GONE
+
                 if(!mInAppMessage!!.mActionData!!.mSecondButtonFunction.isNullOrEmpty()) {
                     setupSecondButton()
                 }
                 setPromotionCode()
                 binding.ratingBar.visibility = View.GONE
                 binding.smileRating.visibility = View.GONE
+
             }
             InAppNotificationType.FULL_IMAGE.toString() -> {
                 binding.tvBody.visibility = View.GONE
                 binding.tvTitle.visibility = View.GONE
                 binding.smileRating.visibility = View.GONE
                 binding.btnTemplate.visibility = View.GONE
-                binding.llButtonContainer.visibility = View.GONE
+
                 binding.ivTemplate.setOnClickListener {
                     RequestHandler.createInAppNotificationClickRequest(applicationContext, mInAppMessage, rateReport)
                     if (buttonCallback != null) {
@@ -327,8 +337,58 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             }
         }
     }
+    private fun setCouponCodeDesign() {
+        if(mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText!!.isNotEmpty()) {
+            binding.copyButton.visibility = View.VISIBLE
+            binding.tvCouponCodeWithButton.visibility = View.VISIBLE
+        }
+        else
+            binding.tvCouponCode.visibility = View.GONE
+        binding.contentCopy.visibility = View.GONE
+    }
+    private fun setCopyButton() {
+        binding.copyButton.text = mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText
+        if (!mInAppMessage!!.mActionData!!.mButtonTextColor.isNullOrEmpty()) {
+            try {
+                binding.copyButton.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonTextColor))
+            } catch (e: Exception) {
+                Log.w(
+                    LOG_TAG,
+                    "Could not parse the data given for button text color\nSetting the default value."
+                )
+                e.printStackTrace()
+                binding.copyButton.setTextColor(
+                    ContextCompat.getColor(
+                        applicationContext,
+                        R.color.black
+                    )
+                )
+            }
+        } else {
+            binding.copyButton.setTextColor(
+                ContextCompat.getColor(
+                    applicationContext,
+                    R.color.black
+                )
+            )
+        }
+        if (!mInAppMessage!!.mActionData!!.mPromocodeCopyButtonColor.isNullOrEmpty()) {
+            try {
+                val gdButton = binding.copyButton.background as GradientDrawable
+                gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromocodeCopyButtonColor))
+            } catch (e: Exception) {
+                Log.w(
+                    LOG_TAG,
+                    "Could not parse the data given for button color\nSetting the default value."
+                )
+                e.printStackTrace()
+            }
+        }
+    }
 
-    private fun setButton() {
+
+
+        private fun setButton() {
         if(mInAppMessage!!.mActionData!!.mBtnText.isNullOrEmpty()) {
             binding.btnTemplate.visibility = View.GONE
         } else {
@@ -836,6 +896,29 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             binding.llCouponContainer.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor))
             binding.tvCouponCode.text = mInAppMessage!!.mActionData!!.mPromotionCode
             binding.tvCouponCode.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeTextColor))
+            binding.tvCouponCodeWithButton.text = mInAppMessage!!.mActionData!!.mPromotionCode
+            binding.tvCouponCodeWithButton.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeTextColor))
+            //TODO When data comes use the codes below
+            //if(mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText!!.isNotEmpty()){
+            //   binding.copyButton.setOnClickListener {
+            //                val clipboard =
+            //                    applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            //                val clip = ClipData.newPlainText(
+            //                    getString(R.string.coupon_code),
+            //                    mInAppMessage!!.mActionData!!.mPromotionCode
+            //                )
+            //                clipboard.setPrimaryClip(clip)
+            //                Toast.makeText(
+            //                    applicationContext,
+            //                    getString(R.string.copied_to_clipboard),
+            //                    Toast.LENGTH_LONG
+            //                ).show()
+            //            }
+            //        } else {
+            //            binding.copyButton.visibility = View.GONE
+            //        }
+            //else {
+
             binding.llCouponContainer.setOnClickListener {
                 val clipboard = applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                 val clip = ClipData.newPlainText(getString(R.string.coupon_code), mInAppMessage!!.mActionData!!.mPromotionCode)
@@ -899,7 +982,9 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
 
     private fun showNps() {
         binding.ratingBar.visibility = View.VISIBLE
-        binding.ratingBar.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(applicationContext, R.color.yellow))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            binding.ratingBar.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(applicationContext, R.color.yellow))
+        }
     }
 
     private fun showSmileRating() {
