@@ -301,7 +301,10 @@ class CarouselAdapter(
             if (!mCarouselItems!![position].buttonColor.isNullOrEmpty()) {
                 val gdButton = holder.carouselButton.background as GradientDrawable
                 gdButton.setColor(Color.parseColor(mCarouselItems!![position].buttonColor))
-                // TODO : gdButton.cornerRadius = real data as float (e.g. 30f)
+                if (mCarouselItems!![position].mButtonBorderRadius != null) {
+                    gdButton.cornerRadius =
+                        mCarouselItems!![position].mButtonBorderRadius!!.toFloat()
+                }
             }
             holder.carouselButton.text = mCarouselItems!![position].buttonText
             if (!mCarouselItems!![position].buttonTextColor.isNullOrEmpty()) {
@@ -340,19 +343,15 @@ class CarouselAdapter(
                                 Toast.LENGTH_LONG
                             ).show()
                         }
-                    } else if(mCarouselItems!![position].buttonFunction == Constants.BUTTON_REDIRECT) {
+                    } else if (mCarouselItems!![position].buttonFunction == Constants.BUTTON_REDIRECT) {
                         AppUtils.goToNotificationSettings(mContext)
 
-                    }
-
-                    else {
+                    } else {
                         if (!mCarouselItems!![position].androidLnk.isNullOrEmpty()) {
                             carouselButtonInterface.onPress(mCarouselItems!![position].androidLnk)
-                        }
-                        else
+                        } else
                             AppUtils.goToNotificationSettings(mContext)
                     }
-
                 }
                 finishCallback.onFinish()
             }
@@ -432,4 +431,4 @@ class CarouselAdapter(
         val dotIndicator: LinearLayout = view.findViewById(R.id.dot_indicator)
         val closeButton: ImageButton = view.findViewById(R.id.carousel_close_button)
     }
-}
+}}

@@ -4,7 +4,7 @@
 
 # Latest Version 
 
-***December 30, 2022*** - [v1.0.7](https://github.com/relateddigital/relateddigital-google/releases)
+***February 11, 2022*** - [v1.0.8](https://github.com/relateddigital/relateddigital-google/releases)
 
 # About SDK
 
@@ -24,7 +24,8 @@ You can find the documents about how to use the SDK on the following links:
 Related Digital Android SDK requires minimum API level 21.
 
 Please, add Maven jitpack repository into your project-level build.gradle file as shown below:
- ```java
+ 
+```gradle
 allprojects {
 	repositories {
 		...
@@ -35,8 +36,8 @@ allprojects {
 
 Please, add the dependency of relateddigital-google library into your module-level build.gradle file as shown below:
 
- ```java
-implementation 'com.github.relateddigital:relateddigital-google:1.0.7'
+ ```gradle
+implementation 'com.github.relateddigital:relateddigital-google:1.0.8'
  ```
 
 # Licences

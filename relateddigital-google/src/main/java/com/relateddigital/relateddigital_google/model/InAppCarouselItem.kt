@@ -10,6 +10,7 @@ import com.relateddigital.relateddigital_google.inapp.FontFamily
 import com.relateddigital.relateddigital_google.util.AppUtils
 import java.util.*
 
+
 class InAppCarouselItem constructor(`in`: Parcel) : Parcelable {
     @SerializedName("image")
     var image: String?
@@ -103,6 +104,9 @@ class InAppCarouselItem constructor(`in`: Parcel) : Parcelable {
 
     @SerializedName("videourl")
     var videoUrl: String?
+
+    @SerializedName("button_border_radius")
+    var mButtonBorderRadius: Int? = null
 
     fun getTitleFontFamily(context: Context): Typeface? {
         if (titleFontFamily == null || titleFontFamily == "") {

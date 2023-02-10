@@ -64,11 +64,12 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
     private var player: ExoPlayer? = null
     private var player2: ExoPlayer? = null
     private var carouselAdapter: CarouselAdapter? = null
+
     @SuppressLint("ClickableViewAccessibility")
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mIntentId = savedInstanceState?.getInt(INTENT_ID_KEY, Int.MAX_VALUE)
-                ?: intent.getIntExtra(INTENT_ID_KEY, Int.MAX_VALUE)
+            ?: intent.getIntExtra(INTENT_ID_KEY, Int.MAX_VALUE)
         mInAppMessage = inAppMessage
         if (mInAppMessage == null) {
             Log.e(LOG_TAG, "InAppMessage is null! Could not get display state!")
@@ -113,7 +114,8 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             return if (mUpdateDisplayState == null || mUpdateDisplayState!!.getDisplayState() == null) {
                 null
             } else {
-                inAppNotificationState = mUpdateDisplayState!!.getDisplayState() as InAppNotificationState?
+                inAppNotificationState =
+                    mUpdateDisplayState!!.getDisplayState() as InAppNotificationState?
                 inAppNotificationState?.getInAppMessage()
             }
         }
@@ -122,7 +124,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         if (!mInAppMessage!!.mActionData!!.mImg.isNullOrEmpty()) {
             binding.ivTemplate.visibility = View.VISIBLE
             binding.videoView.visibility = View.GONE
-            if(AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mImg)) {
+            if (AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mImg)) {
                 Picasso.get().load(mInAppMessage!!.mActionData!!.mImg!!).into(binding.ivTemplate)
             } else {
                 Glide.with(this)
@@ -131,7 +133,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             }
         } else {
             binding.ivTemplate.visibility = View.GONE
-            if(!mInAppMessage!!.mActionData!!.mVideoUrl.isNullOrEmpty()) {
+            if (!mInAppMessage!!.mActionData!!.mVideoUrl.isNullOrEmpty()) {
                 binding.videoView.visibility = View.VISIBLE
                 startPlayer()
             } else {
@@ -151,7 +153,10 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             try {
                 binding.llBack.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
             } catch (e: Exception) {
-                Log.w(LOG_TAG, "Could not parse the data given for background color\nSetting the default value.")
+                Log.w(
+                    LOG_TAG,
+                    "Could not parse the data given for background color\nSetting the default value."
+                )
                 e.printStackTrace()
             }
         }
@@ -160,7 +165,16 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                 setTitle()
                 setBody()
                 setButton()
-                if(!mInAppMessage!!.mActionData!!.mSecondButtonFunction.isNullOrEmpty()) {
+
+                //TODO When data comes use setCouponCodeDesign() and delete visibilities
+                //setCouponCodeDesign()
+                binding.tvCouponCode.visibility = View.VISIBLE
+                binding.contentCopy.visibility = View.VISIBLE
+
+                binding.copyButton.visibility = View.GONE
+                binding.tvCouponCodeWithButton.visibility = View.GONE
+
+                if (!mInAppMessage!!.mActionData!!.mSecondButtonFunction.isNullOrEmpty()) {
                     setupSecondButton()
                 }
                 setPromotionCode()
@@ -174,17 +188,27 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                 binding.btnTemplate.visibility = View.GONE
                 binding.llButtonContainer.visibility = View.GONE
                 binding.ivTemplate.setOnClickListener {
-                    RequestHandler.createInAppNotificationClickRequest(applicationContext, mInAppMessage, rateReport)
+                    RequestHandler.createInAppNotificationClickRequest(
+                        applicationContext,
+                        mInAppMessage,
+                        rateReport
+                    )
                     if (buttonCallback != null) {
                         RelatedDigital.setInAppButtonInterface(null)
                         buttonCallback!!.onPress(mInAppMessage!!.mActionData!!.mAndroidLnk)
                     } else {
                         if (!mInAppMessage!!.mActionData!!.mAndroidLnk.isNullOrEmpty()) {
                             try {
-                                val viewIntent = Intent(Intent.ACTION_VIEW, StringUtils.getURIfromUrlString(mInAppMessage!!.mActionData!!.mAndroidLnk))
+                                val viewIntent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    StringUtils.getURIfromUrlString(mInAppMessage!!.mActionData!!.mAndroidLnk)
+                                )
                                 startActivity(viewIntent)
                             } catch (e: ActivityNotFoundException) {
-                                Log.i("Visilabs", "User doesn't have an activity for notification URI")
+                                Log.i(
+                                    "Visilabs",
+                                    "User doesn't have an activity for notification URI"
+                                )
                             }
                         }
                     }
@@ -246,10 +270,10 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
     }
 
     private fun setTitle() {
-        if(mInAppMessage!!.mActionData!!.mMsgTitle.isNullOrEmpty()) {
+        if (mInAppMessage!!.mActionData!!.mMsgTitle.isNullOrEmpty()) {
             binding.tvTitle.visibility = View.GONE
         } else {
-            if(!mInAppMessage!!.mActionData!!.mMsgTitleBackgroundColor.isNullOrEmpty()) {
+            if (!mInAppMessage!!.mActionData!!.mMsgTitleBackgroundColor.isNullOrEmpty()) {
                 binding.tvTitle.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgTitleBackgroundColor))
             }
             binding.tvTitle.visibility = View.VISIBLE
@@ -294,10 +318,10 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
     }
 
     private fun setBody() {
-        if(mInAppMessage!!.mActionData!!.mMsgBody.isNullOrEmpty()) {
+        if (mInAppMessage!!.mActionData!!.mMsgBody.isNullOrEmpty()) {
             binding.tvBody.visibility = View.GONE
         } else {
-            if(!mInAppMessage!!.mActionData!!.mMsgBodyBackgroundColor.isNullOrEmpty()) {
+            if (!mInAppMessage!!.mActionData!!.mMsgBodyBackgroundColor.isNullOrEmpty()) {
                 binding.tvBody.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgBodyBackgroundColor))
             }
             binding.tvBody.text = mInAppMessage!!.mActionData!!.mMsgBody!!.replace("\\n", "\n")
@@ -328,8 +352,57 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         }
     }
 
+    private fun setCouponCodeDesign() {
+        if (mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText!!.isNotEmpty()) {
+            binding.copyButton.visibility = View.VISIBLE
+            binding.tvCouponCodeWithButton.visibility = View.VISIBLE
+        } else
+            binding.tvCouponCode.visibility = View.GONE
+        binding.contentCopy.visibility = View.GONE
+    }
+
+    private fun setCopyButton() {
+        binding.copyButton.text = mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText
+        if (!mInAppMessage!!.mActionData!!.mButtonTextColor.isNullOrEmpty()) {
+            try {
+                binding.copyButton.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonTextColor))
+            } catch (e: Exception) {
+                Log.w(
+                    LOG_TAG,
+                    "Could not parse the data given for button text color\nSetting the default value."
+                )
+                e.printStackTrace()
+                binding.copyButton.setTextColor(
+                    ContextCompat.getColor(
+                        applicationContext,
+                        R.color.black
+                    )
+                )
+            }
+        } else {
+            binding.copyButton.setTextColor(
+                ContextCompat.getColor(
+                    applicationContext,
+                    R.color.black
+                )
+            )
+        }
+        if (!mInAppMessage!!.mActionData!!.mPromocodeCopyButtonColor.isNullOrEmpty()) {
+            try {
+                val gdButton = binding.copyButton.background as GradientDrawable
+                gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromocodeCopyButtonColor))
+            } catch (e: Exception) {
+                Log.w(
+                    LOG_TAG,
+                    "Could not parse the data given for button color\nSetting the default value."
+                )
+                e.printStackTrace()
+            }
+        }
+    }
+
     private fun setButton() {
-        if(mInAppMessage!!.mActionData!!.mBtnText.isNullOrEmpty()) {
+        if (mInAppMessage!!.mActionData!!.mBtnText.isNullOrEmpty()) {
             binding.btnTemplate.visibility = View.GONE
         } else {
             binding.btnTemplate.typeface = mInAppMessage!!.mActionData!!.getFontFamily(this)
@@ -363,7 +436,10 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                 try {
                     val gdButton = binding.btnTemplate.background as GradientDrawable
                     gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonColor))
-                    // TODO : gdButton.cornerRadius = real data as float (e.g. 30f)
+                    if (mInAppMessage!!.mActionData!!.mButtonBorderRadius != null) {
+                        gdButton.cornerRadius =
+                            mInAppMessage!!.mActionData!!.mButtonBorderRadius!!.toFloat()
+                    }
                 } catch (e: Exception) {
                     Log.w(
                         LOG_TAG,
@@ -426,11 +502,9 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                                     getString(R.string.copied_to_clipboard),
                                     Toast.LENGTH_LONG
                                 ).show()
-                            }
-                            else if(mInAppMessage!!.mActionData!!.mButtonFunction == Constants.BUTTON_REDIRECT){
+                            } else if (mInAppMessage!!.mActionData!!.mButtonFunction == Constants.BUTTON_REDIRECT) {
                                 AppUtils.goToNotificationSettings(applicationContext)
-                            }
-                            else {
+                            } else {
                                 if (!mInAppMessage!!.mActionData!!.mAndroidLnk.isNullOrEmpty()) {
                                     try {
                                         val viewIntent = Intent(
@@ -444,9 +518,8 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                                             "User doesn't have an activity for notification URI"
                                         )
                                     }
-                                }
-                                else
-                                AppUtils.goToNotificationSettings(applicationContext)
+                                } else
+                                    AppUtils.goToNotificationSettings(applicationContext)
                             }
                         } else {
                             if (!mInAppMessage!!.mActionData!!.mAndroidLnk.isNullOrEmpty()) {
@@ -532,7 +605,10 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             try {
                 val gdButton = binding.btnTemplateSecond.background as GradientDrawable
                 gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mSecondButtonColor))
-                // TODO : gdButton.cornerRadius = real data as float (e.g. 30f)
+                if (mInAppMessage!!.mActionData!!.mButtonBorderRadius != null) {
+                    gdButton.cornerRadius =
+                        mInAppMessage!!.mActionData!!.mButtonBorderRadius!!.toFloat()
+                }
             } catch (e: Exception) {
                 Log.w(
                     LOG_TAG,
@@ -617,7 +693,8 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                     }
                 }
                 NpsType.SMILE_RATING -> {
-                    result = true // Since the default is "GREAT", no need to check if the user chose something.
+                    result =
+                        true // Since the default is "GREAT", no need to check if the user chose something.
                 }
                 NpsType.NPS_WITH_NUMBERS -> {
                     if (binding.npsWithNumbersView.selectedRate != -1) {
@@ -639,20 +716,39 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             try {
                 binding.btnTemplate.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonTextColor))
             } catch (e: Exception) {
-                Log.w(LOG_TAG, "Could not parse the data given for button text color\nSetting the default value.")
+                Log.w(
+                    LOG_TAG,
+                    "Could not parse the data given for button text color\nSetting the default value."
+                )
                 e.printStackTrace()
-                binding.btnTemplate.setTextColor(ContextCompat.getColor(applicationContext, R.color.black))
+                binding.btnTemplate.setTextColor(
+                    ContextCompat.getColor(
+                        applicationContext,
+                        R.color.black
+                    )
+                )
             }
         } else {
-            binding.btnTemplate.setTextColor(ContextCompat.getColor(applicationContext, R.color.black))
+            binding.btnTemplate.setTextColor(
+                ContextCompat.getColor(
+                    applicationContext,
+                    R.color.black
+                )
+            )
         }
         if (!mInAppMessage!!.mActionData!!.mButtonColor.isNullOrEmpty()) {
             try {
                 val gdButton = binding.btnTemplate.background as GradientDrawable
                 gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonColor))
-                // TODO : gdButton.cornerRadius = real data as float (e.g. 30f)
+                if (mInAppMessage!!.mActionData!!.mButtonBorderRadius != null) {
+                    gdButton.cornerRadius =
+                        mInAppMessage!!.mActionData!!.mButtonBorderRadius!!.toFloat()
+                }
             } catch (e: Exception) {
-                Log.w(LOG_TAG, "Could not parse the data given for button color\nSetting the default value.")
+                Log.w(
+                    LOG_TAG,
+                    "Could not parse the data given for button color\nSetting the default value."
+                )
                 e.printStackTrace()
             }
         }
@@ -661,7 +757,11 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             if (binding.ratingBar.rating != 0f) {
                 if (secondPopUpType == NpsSecondPopUpType.FEEDBACK_FORM) {
                     if (isRatingAboveThreshold) {
-                        RequestHandler.createInAppNotificationClickRequest(applicationContext, mInAppMessage, rateReport)
+                        RequestHandler.createInAppNotificationClickRequest(
+                            applicationContext,
+                            mInAppMessage,
+                            rateReport
+                        )
                         InAppUpdateDisplayState.releaseDisplayState(mIntentId)
                         finish()
                     } else {
@@ -688,7 +788,10 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             try {
                 bindingSecondPopUp.container.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
             } catch (e: Exception) {
-                Log.w(LOG_TAG, "Could not parse the data given for background color\nSetting the default value.")
+                Log.w(
+                    LOG_TAG,
+                    "Could not parse the data given for background color\nSetting the default value."
+                )
                 e.printStackTrace()
             }
         }
@@ -698,18 +801,31 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                 bindingSecondPopUp.imageView2.visibility = View.GONE
                 bindingSecondPopUp.secondVideoView2.visibility = View.GONE
                 if (!mInAppMessage!!.mActionData!!.mPromotionCode.isNullOrEmpty()) {
-                    bindingSecondPopUp.couponContainer.setBackgroundColor(Color.parseColor(
+                    bindingSecondPopUp.couponContainer.setBackgroundColor(
+                        Color.parseColor(
                             mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor
-                    ))
-                    bindingSecondPopUp.couponCode.text = mInAppMessage!!.mActionData!!.mPromotionCode
-                    bindingSecondPopUp.couponCode.setTextColor(Color.parseColor(
+                        )
+                    )
+                    bindingSecondPopUp.couponCode.text =
+                        mInAppMessage!!.mActionData!!.mPromotionCode
+                    bindingSecondPopUp.couponCode.setTextColor(
+                        Color.parseColor(
                             mInAppMessage!!.mActionData!!.mPromoCodeTextColor
-                    ))
+                        )
+                    )
                     bindingSecondPopUp.couponContainer.setOnClickListener {
-                        val clipboard = applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                        val clip = ClipData.newPlainText(getString(R.string.coupon_code), mInAppMessage!!.mActionData!!.mPromotionCode)
+                        val clipboard =
+                            applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                        val clip = ClipData.newPlainText(
+                            getString(R.string.coupon_code),
+                            mInAppMessage!!.mActionData!!.mPromotionCode
+                        )
                         clipboard.setPrimaryClip(clip)
-                        Toast.makeText(applicationContext, getString(R.string.copied_to_clipboard), Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            applicationContext,
+                            getString(R.string.copied_to_clipboard),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 } else {
                     bindingSecondPopUp.couponContainer.visibility = View.GONE
@@ -721,7 +837,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                 if (!mInAppMessage!!.mActionData!!.mSecondPopupImg2.isNullOrEmpty()) {
                     bindingSecondPopUp.imageView2.visibility = View.VISIBLE
                     bindingSecondPopUp.secondVideoView2.visibility = View.GONE
-                    if(AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mSecondPopupImg2)) {
+                    if (AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mSecondPopupImg2)) {
                         Picasso.get().load(mInAppMessage!!.mActionData!!.mSecondPopupImg2)
                             .into(bindingSecondPopUp.imageView2)
                     } else {
@@ -731,11 +847,12 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                     }
                 } else {
                     bindingSecondPopUp.imageView2.visibility = View.GONE
-                    if(!mInAppMessage!!.mActionData!!.mSecondPopupVideoUrl2.isNullOrEmpty()) {
+                    if (!mInAppMessage!!.mActionData!!.mSecondPopupVideoUrl2.isNullOrEmpty()) {
                         bindingSecondPopUp.secondVideoView2.visibility = View.VISIBLE
                         player2 = ExoPlayer.Builder(this).build()
                         bindingSecondPopUp.secondVideoView2.player = player2
-                        val mediaItem = MediaItem.fromUri(mInAppMessage!!.mActionData!!.mSecondPopupVideoUrl2!!)
+                        val mediaItem =
+                            MediaItem.fromUri(mInAppMessage!!.mActionData!!.mSecondPopupVideoUrl2!!)
                         player2!!.setMediaItem(mediaItem)
                         player2!!.prepare()
                         player2!!.playWhenReady = true
@@ -767,7 +884,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         if (!mInAppMessage!!.mActionData!!.mSecondPopupImg1.isNullOrEmpty()) {
             bindingSecondPopUp.imageView.visibility = View.VISIBLE
             bindingSecondPopUp.secondVideoView.visibility = View.GONE
-            if(AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mSecondPopupImg1)) {
+            if (AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mSecondPopupImg1)) {
                 Picasso.get().load(mInAppMessage!!.mActionData!!.mSecondPopupImg1)
                     .into(bindingSecondPopUp.imageView)
             } else {
@@ -777,11 +894,12 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             }
         } else {
             bindingSecondPopUp.imageView.visibility = View.GONE
-            if(!mInAppMessage!!.mActionData!!.mSecondPopupVideoUrl1.isNullOrEmpty()) {
+            if (!mInAppMessage!!.mActionData!!.mSecondPopupVideoUrl1.isNullOrEmpty()) {
                 bindingSecondPopUp.secondVideoView.visibility = View.VISIBLE
                 player = ExoPlayer.Builder(this).build()
                 bindingSecondPopUp.secondVideoView.player = player
-                val mediaItem = MediaItem.fromUri(mInAppMessage!!.mActionData!!.mSecondPopupVideoUrl1!!)
+                val mediaItem =
+                    MediaItem.fromUri(mInAppMessage!!.mActionData!!.mSecondPopupVideoUrl1!!)
                 player!!.setMediaItem(mediaItem)
                 player!!.prepare()
                 startPlayer()
@@ -791,20 +909,29 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             }
         }
         bindingSecondPopUp.titleView.typeface = mInAppMessage!!.mActionData!!.getFontFamily(this)
-        bindingSecondPopUp.titleView.text = mInAppMessage!!.mActionData!!.mSecondPopupMsgTitle!!.replace("\\n", "\n")
+        bindingSecondPopUp.titleView.text =
+            mInAppMessage!!.mActionData!!.mSecondPopupMsgTitle!!.replace("\\n", "\n")
         bindingSecondPopUp.titleView.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgTitleColor))
         bindingSecondPopUp.bodyTextView.typeface = mInAppMessage!!.mActionData!!.getFontFamily(this)
-        bindingSecondPopUp.bodyTextView.text = mInAppMessage!!.mActionData!!.mSecondPopupMsgBody!!.replace("\\n", "\n")
+        bindingSecondPopUp.bodyTextView.text =
+            mInAppMessage!!.mActionData!!.mSecondPopupMsgBody!!.replace("\\n", "\n")
         bindingSecondPopUp.bodyTextView.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgBodyColor))
-        bindingSecondPopUp.bodyTextView.textSize = mInAppMessage!!.mActionData!!.mSecondPopupMsgBodyTextSize!!.toFloat() + 8
+        bindingSecondPopUp.bodyTextView.textSize =
+            mInAppMessage!!.mActionData!!.mSecondPopupMsgBodyTextSize!!.toFloat() + 8
         bindingSecondPopUp.button.typeface = mInAppMessage!!.mActionData!!.getFontFamily(this)
         bindingSecondPopUp.button.text = mInAppMessage!!.mActionData!!.mSecondPopupBtnText
         bindingSecondPopUp.button.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonTextColor))
         val gdButton = bindingSecondPopUp.button.background as GradientDrawable
         gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonColor))
-        // TODO : gdButton.cornerRadius = real data as float (e.g. 30f)
+        if (mInAppMessage!!.mActionData!!.mButtonBorderRadius != null) {
+            gdButton.cornerRadius = mInAppMessage!!.mActionData!!.mButtonBorderRadius!!.toFloat()
+        }
         bindingSecondPopUp.button.setOnClickListener {
-            RequestHandler.createInAppNotificationClickRequest(applicationContext, mInAppMessage, npsSecondPopupRateReport)
+            RequestHandler.createInAppNotificationClickRequest(
+                applicationContext,
+                mInAppMessage,
+                npsSecondPopupRateReport
+            )
             isNpsSecondPopupButtonClicked = true
             if (buttonCallback != null) {
                 RelatedDigital.setInAppButtonInterface(null)
@@ -812,8 +939,11 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             } else {
                 if (!mInAppMessage!!.mActionData!!.mAndroidLnk.isNullOrEmpty()) {
                     try {
-                        val viewIntent = Intent(Intent.ACTION_VIEW, Uri.parse(
-                                mInAppMessage!!.mActionData!!.mAndroidLnk))
+                        val viewIntent = Intent(
+                            Intent.ACTION_VIEW, Uri.parse(
+                                mInAppMessage!!.mActionData!!.mAndroidLnk
+                            )
+                        )
                         viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(viewIntent)
                     } catch (e: Exception) {
@@ -830,17 +960,49 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
 
     private fun setPromotionCode() {
         if (!StringUtils.isNullOrWhiteSpace(mInAppMessage!!.mActionData!!.mPromotionCode)
-                && !StringUtils.isNullOrWhiteSpace(mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor)
-                && !StringUtils.isNullOrWhiteSpace(mInAppMessage!!.mActionData!!.mPromoCodeTextColor)) {
+            && !StringUtils.isNullOrWhiteSpace(mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor)
+            && !StringUtils.isNullOrWhiteSpace(mInAppMessage!!.mActionData!!.mPromoCodeTextColor)
+        ) {
             binding.llCouponContainer.visibility = View.VISIBLE
             binding.llCouponContainer.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor))
             binding.tvCouponCode.text = mInAppMessage!!.mActionData!!.mPromotionCode
             binding.tvCouponCode.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeTextColor))
+            binding.tvCouponCodeWithButton.text = mInAppMessage!!.mActionData!!.mPromotionCode
+            binding.tvCouponCodeWithButton.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeTextColor))
+            //TODO When data comes use the codes below
+            //if(mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText!!.isNotEmpty()){
+            //   binding.copyButton.setOnClickListener {
+            //                val clipboard =
+            //                    applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            //                val clip = ClipData.newPlainText(
+            //                    getString(R.string.coupon_code),
+            //                    mInAppMessage!!.mActionData!!.mPromotionCode
+            //                )
+            //                clipboard.setPrimaryClip(clip)
+            //                Toast.makeText(
+            //                    applicationContext,
+            //                    getString(R.string.copied_to_clipboard),
+            //                    Toast.LENGTH_LONG
+            //                ).show()
+            //            }
+            //        } else {
+            //            binding.copyButton.visibility = View.GONE
+            //        }
+            //else {
+
             binding.llCouponContainer.setOnClickListener {
-                val clipboard = applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText(getString(R.string.coupon_code), mInAppMessage!!.mActionData!!.mPromotionCode)
+                val clipboard =
+                    applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText(
+                    getString(R.string.coupon_code),
+                    mInAppMessage!!.mActionData!!.mPromotionCode
+                )
                 clipboard.setPrimaryClip(clip)
-                Toast.makeText(applicationContext, getString(R.string.copied_to_clipboard), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.copied_to_clipboard),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         } else {
             binding.llCouponContainer.visibility = View.GONE
@@ -860,20 +1022,20 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         get() = when (secondPopUpType) {
             NpsSecondPopUpType.IMAGE_TEXT_BUTTON, NpsSecondPopUpType.IMAGE_TEXT_BUTTON_IMAGE -> {
                 "OM.s_point=" + binding.ratingBar.rating.toString() + "&OM.s_cat=" + mInAppMessage!!.mActionData!!.mMsgType
-                        .toString() + "&OM.s_page=act-" + mInAppMessage!!.mActId.toString() +
+                    .toString() + "&OM.s_page=act-" + mInAppMessage!!.mActId.toString() +
                         "&OM.btn_title=" + "Android Link Yonlendirme" +
                         "&OM.btn_source=" + "OM.act-" + mInAppMessage!!.mActId
             }
             NpsSecondPopUpType.FEEDBACK_FORM -> {
                 Toast.makeText(this, getString(R.string.feedback_toast), Toast.LENGTH_SHORT).show()
                 "OM.s_point=" + binding.ratingBar.rating.toString() + "&OM.s_cat=" + mInAppMessage!!.mActionData!!.mMsgType
-                        .toString() + "&OM.s_page=act-" + mInAppMessage!!.mActId.toString() + "&OM.s_feed=" +
+                    .toString() + "&OM.s_page=act-" + mInAppMessage!!.mActId.toString() + "&OM.s_feed=" +
                         bindingSecondPopUp.commentBox.text.toString()
             }
         }
 
     private fun setCloseButton() {
-        if(mInAppMessage!!.mActionData!!.mCloseEventTrigger != null) {
+        if (mInAppMessage!!.mActionData!!.mCloseEventTrigger != null) {
             if (mInAppMessage!!.mActionData!!.mCloseEventTrigger.equals("backgroundclick")) {
                 binding.ibClose.visibility = View.GONE
                 setFinishOnTouchOutside(true)
@@ -899,7 +1061,10 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
 
     private fun showNps() {
         binding.ratingBar.visibility = View.VISIBLE
-        binding.ratingBar.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(applicationContext, R.color.yellow))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            binding.ratingBar.progressTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(applicationContext, R.color.yellow))
+        }
     }
 
     private fun showSmileRating() {
@@ -914,7 +1079,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         }
 
         var isFromZero = false
-        if(!mInAppMessage!!.mActionData!!.mNumberRange.isNullOrEmpty()){
+        if (!mInAppMessage!!.mActionData!!.mNumberRange.isNullOrEmpty()) {
             isFromZero = mInAppMessage!!.mActionData!!.mNumberRange == "0-10"
         }
         binding.npsWithNumbersView.setColors(colors, isFromZero)
@@ -970,7 +1135,11 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             }
             if (mInAppMessage!!.mActionData!!.mMsgType == InAppNotificationType.NPS_AND_SECOND_POP_UP.toString()) {
                 if (!isNpsSecondPopupButtonClicked && isNpsSecondPopupActivated) {
-                    RequestHandler.createInAppNotificationClickRequest(applicationContext, mInAppMessage, rateReport)
+                    RequestHandler.createInAppNotificationClickRequest(
+                        applicationContext,
+                        mInAppMessage,
+                        rateReport
+                    )
                 }
             }
         }
@@ -981,8 +1150,10 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             !mInAppMessage!!.mActionData!!.mCloseEventTrigger.equals("closebutton")
         )
 
-        val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this,
-        LinearLayoutManager.HORIZONTAL, false)
+        val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL, false
+        )
 
         bindingCarousel.carouselRecyclerView.layoutManager = layoutManager
 
@@ -999,24 +1170,24 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
 
     private fun cacheResources() {
         if (!mInAppMessage!!.mActionData!!.mImg.isNullOrEmpty()) {
-            if(AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mImg)) {
+            if (AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mImg)) {
                 Picasso.get().load(mInAppMessage!!.mActionData!!.mImg).fetch()
             }
         }
         if (mInAppMessage!!.mActionData!!.mMsgType === InAppNotificationType.NPS_AND_SECOND_POP_UP.toString()) {
             if (!mInAppMessage!!.mActionData!!.mSecondPopupImg1.isNullOrEmpty()) {
-                if(AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mSecondPopupImg1)) {
+                if (AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mSecondPopupImg1)) {
                     Picasso.get().load(mInAppMessage!!.mActionData!!.mSecondPopupImg1).fetch()
                 }
             }
             if (!mInAppMessage!!.mActionData!!.mSecondPopupImg2.isNullOrEmpty()) {
-                if(AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mSecondPopupImg2)) {
+                if (AppUtils.isAnImage(mInAppMessage!!.mActionData!!.mSecondPopupImg2)) {
                     Picasso.get().load(mInAppMessage!!.mActionData!!.mSecondPopupImg2).fetch()
                 }
             }
         }
 
-        if(!mInAppMessage!!.mActionData!!.mVideoUrl.isNullOrEmpty()) {
+        if (!mInAppMessage!!.mActionData!!.mVideoUrl.isNullOrEmpty()) {
             initializePlayer()
         }
     }
@@ -1062,7 +1233,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
     }
 
     override fun onPress(link: String?) {
-        if(link.isNullOrEmpty()) {
+        if (link.isNullOrEmpty()) {
             Log.e("InAppCarousel", "The link is not formatted properly!")
             return
         }

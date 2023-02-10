@@ -50,6 +50,7 @@ import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.sqrt
 
+
 class ShakeToWinActivity : Activity(), SensorEventListener {
     private lateinit var bindingMailForm: ActivityShakeToWinMailFormBinding
     private lateinit var bindingStep1: ActivityShakeToWinStep1Binding
@@ -79,6 +80,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
         parseExtendedProps()
         cacheResources()
         setupMailForm()
+
     }
 
     private val shakeToWinMessage: Unit
@@ -127,7 +129,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                 val transaction: FragmentTransaction =
                     (ActivityUtils.parentActivity as FragmentActivity).supportFragmentManager.beginTransaction()
                 transaction.replace(android.R.id.content, shakeToWinCodeBannerFragment)
-                transaction.commitAllowingStateLoss()
+                transaction.commit()
                 ActivityUtils.parentActivity = null
             } catch (e: Exception) {
                 Log.e(LOG_TAG, "ShakeToWinCodeBanner : " + e.message)
@@ -512,12 +514,12 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
 
     private fun initializeSoundPlayer() {
         soundPlayer = ExoPlayer.Builder(this).build()
-        bindingStep2.videoView.player = soundPlayer
         val mediaItem = MediaItem.fromUri(
-            mShakeToWinMessage!!.actiondata!!.gameElements!!.videoUrl.toString()
+            mShakeToWinMessage!!.actiondata!!.gameElements!!.soundUrl.toString()
         )
         soundPlayer!!.setMediaItem(mediaItem)
         soundPlayer!!.prepare()
+        soundPlayer!!.playWhenReady = true
     }
 
     private fun parseExtendedProps() {

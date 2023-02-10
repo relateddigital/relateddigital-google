@@ -35,9 +35,9 @@ afterEvaluate {
                 artifact androidSourcesJar
 
                 pom {
-                    name = 'Related Digital Android SDK'
-                    description = 'Related Digital Android SDK'
-                    url = 'https://github.com/relateddigital/relateddigital-android'
+                    name = 'Related Digital Google SDK'
+                    description = 'Related Digital Google SDK'
+                    url = 'https://github.com/relateddigital/relateddigital-google'
                     licenses {
                         license {
                             name = 'The Apache Software License, Version 2.0'
@@ -52,9 +52,9 @@ afterEvaluate {
                         }
                     }
                     scm {
-                        connection = 'scm:git@github.com/relateddigital/relateddigital-android.git'
-                        developerConnection = 'scm:git@github.com/relateddigital/relateddigital-android.git'
-                        url = 'https://github.com/relateddigital/relateddigital-android'
+                        connection = 'scm:git@github.com/relateddigital/relateddigital-google.git'
+                        developerConnection = 'scm:git@github.com/relateddigital/relateddigital-google.git'
+                        url = 'https://github.com/relateddigital/relateddigital-google'
                     }
                 }
             }
