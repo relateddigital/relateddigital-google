@@ -24,7 +24,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Androidexampleapp"
+        android:theme="@style/Theme.Googleexampleapp"
         android:dataExtractionRules="@xml/data_extraction_rules"
         tools:targetApi="s"
         tools:ignore="DataExtractionRules">

@@ -431,4 +431,4 @@ class CarouselAdapter(
         val dotIndicator: LinearLayout = view.findViewById(R.id.dot_indicator)
         val closeButton: ImageButton = view.findViewById(R.id.carousel_close_button)
     }
-}}
+}
