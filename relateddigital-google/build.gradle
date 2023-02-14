@@ -66,7 +66,7 @@ android {
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     api 'com.google.android.gms:play-services-base:18.1.0'
@@ -81,7 +81,6 @@ dependencies {
     api 'com.google.android.exoplayer:exoplayer-core:2.18.2'
     api 'com.google.android.exoplayer:exoplayer-ui:2.18.2'
     api 'de.hdodenhof:circleimageview:3.1.0'
-    implementation 'androidx.core:core-ktx:+'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

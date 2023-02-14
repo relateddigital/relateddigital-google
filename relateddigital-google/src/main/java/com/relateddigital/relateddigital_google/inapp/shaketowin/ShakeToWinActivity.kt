@@ -15,21 +15,18 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.text.Editable
 import android.text.Html
 import android.text.Spanned
-import android.text.TextWatcher
 import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
-import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.Player
 import com.google.gson.Gson
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.constants.Constants
@@ -37,19 +34,15 @@ import com.relateddigital.relateddigital_google.databinding.ActivityShakeToWinMa
 import com.relateddigital.relateddigital_google.databinding.ActivityShakeToWinStep1Binding
 import com.relateddigital.relateddigital_google.databinding.ActivityShakeToWinStep2Binding
 import com.relateddigital.relateddigital_google.databinding.ActivityShakeToWinStep3Binding
-import com.relateddigital.relateddigital_google.inapp.scratchtowin.ScratchToWinActivity
-import com.relateddigital.relateddigital_google.model.ShakeToWin
-import com.relateddigital.relateddigital_google.model.ShakeToWinExtendedProps
+import com.relateddigital.relateddigital_google.model.*
 import com.relateddigital.relateddigital_google.network.RequestHandler
 import com.relateddigital.relateddigital_google.util.ActivityUtils
-import com.relateddigital.relateddigital_google.util.AppUtils
 import com.relateddigital.relateddigital_google.util.StringUtils
 import com.squareup.picasso.Picasso
 import java.net.URI
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.sqrt
-
 
 class ShakeToWinActivity : Activity(), SensorEventListener {
     private lateinit var bindingMailForm: ActivityShakeToWinMailFormBinding
@@ -114,7 +107,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
             )
         }
         releasePlayer()
-        if (mExtendedProps!!.promocodeBannerText!!.isNotEmpty()) {
+        if (mExtendedProps!!.promocodeBannerText!!.isNotEmpty() && isStep3) {
             try {
                 val extendedProps = Gson().fromJson(
                     URI(mShakeToWinMessage!!.actiondata!!.ExtendedProps).path,
@@ -139,7 +132,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
 
     private fun setupMailForm() {
 
-        var isMailForm = mShakeToWinMessage!!.actiondata!!.mailSubscription!!
+        val isMailForm = mShakeToWinMessage!!.actiondata!!.mailSubscription!!
 
         if (isMailForm) {
             if (mExtendedProps!!.backgroundColor!!.isNotEmpty()) {
@@ -284,14 +277,32 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
         }
     }
 
+    private val backgroundImageTarget = object : com.squareup.picasso.Target {
+        override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+            Log.i(LOG_TAG, "Could not background Image entered!")
+        }
+
+        override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+            bindingStep1.linearLayout.background = BitmapDrawable(resources, bitmap)
+        }
+
+        override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+    }
+
     private fun setupStep1View() {
         val isRuleScreen = true
         if (isRuleScreen) {
             setupCloseButtonStep1()
             if (mExtendedProps!!.backgroundColor!!.isNotEmpty()) {
                 bindingStep1.container.setBackgroundColor(Color.parseColor(mExtendedProps!!.backgroundColor))
+            } else if (mExtendedProps!!.backgroundImage!!.isNotEmpty()) {
+                Picasso.get()
+                    .load(mExtendedProps!!.backgroundImage)
+                    .into(backgroundImageTarget)
+            }
 
-            } else if (mShakeToWinMessage!!.actiondata!!.gamificationRules!!.backgroundImage!!.isNotEmpty()) {
+
+            if (mShakeToWinMessage!!.actiondata!!.gamificationRules!!.backgroundImage!!.isNotEmpty()) {
                 Picasso.get()
                     .load(mShakeToWinMessage!!.actiondata!!.gamificationRules!!.backgroundImage)
                     .into(object : com.squareup.picasso.Target {
@@ -300,12 +311,13 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                         }
 
                         override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                            bindingStep1.linearLayout.background = BitmapDrawable(resources, bitmap)
+                            bindingStep1.imageView.setImageBitmap(bitmap)
                         }
 
                         override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
                     })
             }
+
             bindingStep1.buttonView.text =
                 mShakeToWinMessage!!.actiondata!!.gamificationRules!!.buttonLabel
             bindingStep1.buttonView.setBackgroundColor(Color.parseColor(mExtendedProps!!.gamificationRules!!.buttonColor))
@@ -332,14 +344,13 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
         bindingStep1.closeButton.setOnClickListener { finish() }
     }
 
-
     private fun closeIconColor(): Int {
-        if (mExtendedProps!!.closeButtonColor!!.equals("white")) {
-            return R.drawable.ic_close_white_24dp;
-        } else if (mExtendedProps!!.closeButtonColor!!.equals("black")) {
-            return R.drawable.ic_close_black_24dp;
+        if (mExtendedProps!!.closeButtonColor!! == "white") {
+            return R.drawable.ic_close_white_24dp
+        } else if (mExtendedProps!!.closeButtonColor!! == "black") {
+            return R.drawable.ic_close_black_24dp
         }
-        return R.drawable.ic_close_black_24dp;
+        return R.drawable.ic_close_black_24dp
     }
 
     private fun initAccelerometer() {
@@ -520,6 +531,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
         soundPlayer!!.setMediaItem(mediaItem)
         soundPlayer!!.prepare()
         soundPlayer!!.playWhenReady = true
+        soundPlayer!!.repeatMode = Player.REPEAT_MODE_ONE
     }
 
     private fun parseExtendedProps() {

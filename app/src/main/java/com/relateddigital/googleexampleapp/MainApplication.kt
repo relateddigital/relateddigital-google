@@ -1,35 +1,19 @@
 package com.relateddigital.googleexampleapp
 
 import android.app.Application
-import android.text.TextUtils
 import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.model.RDNotificationPriority
-import com.relateddigital.relateddigital_google.util.GoogleUtils
+import com.relateddigital.relateddigital_google.constants.Constants as SdkConstants
 
 
 class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-
-        val liveOrganizationId = "676D325830564761676D453D"
-        val liveProfileId = "356467332F6533766975593D"
-        val liveDataSource = "visistore"
-
-        val testOrganizationId = "394A48556A2F76466136733D"
-        val testProfileId = "75763259366A3345686E303D"
-        val testDataSource = "mrhp"
-
-        // Initialize RelatedDigital with mandatory information
-        RelatedDigital.init(
-            context = applicationContext,
-            organizationId = liveOrganizationId,
-            profileId = liveProfileId,
-            dataSource = liveDataSource
-        )
+        initSdk(isTest = false)
 
 
         // Enable In-App Notifications
@@ -75,5 +59,27 @@ class MainApplication : Application() {
                     notificationPriority = RDNotificationPriority.NORMAL
                 )
             })
+    }
+
+
+    private fun initSdk(isTest: Boolean) {
+        var organizationId = "676D325830564761676D453D"
+        var profileId = "356467332F6533766975593D"
+        var dataSource = "visistore"
+
+        if (isTest) {
+            organizationId = "394A48556A2F76466136733D"
+            profileId = "75763259366A3345686E303D"
+            dataSource = "mrhp"
+            SdkConstants.ACTION_ENDPOINT = "http://tests.visilabs.net/"
+        }
+
+        // Initialize RelatedDigital with mandatory information
+        RelatedDigital.init(
+            context = applicationContext,
+            organizationId = organizationId,
+            profileId = profileId,
+            dataSource = dataSource
+        )
     }
 }
