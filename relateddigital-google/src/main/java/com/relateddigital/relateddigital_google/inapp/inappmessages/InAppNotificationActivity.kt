@@ -16,6 +16,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -167,18 +168,11 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                 setBody()
                 setButton()
 
-                //TODO When data comes use setCouponCodeDesign() and delete visibilities
-                //setCouponCodeDesign()
-                binding.tvCouponCode.visibility = View.VISIBLE
-                binding.contentCopy.visibility = View.VISIBLE
-
-                binding.copyButton.visibility = View.GONE
-                binding.tvCouponCodeWithButton.visibility = View.GONE
-
                 if (!mInAppMessage!!.mActionData!!.mSecondButtonFunction.isNullOrEmpty()) {
                     setupSecondButton()
                 }
                 setPromotionCode()
+                setCouponCodeDesign()
                 binding.ratingBar.visibility = View.GONE
                 binding.smileRating.visibility = View.GONE
             }
@@ -357,9 +351,40 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         if (mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText!!.isNotEmpty()) {
             binding.copyButton.visibility = View.VISIBLE
             binding.tvCouponCodeWithButton.visibility = View.VISIBLE
-        } else
+            binding.contentCopy.visibility = View.GONE
             binding.tvCouponCode.visibility = View.GONE
-        binding.contentCopy.visibility = View.GONE
+            binding.llCouponContainer.updatePadding(top = 50, bottom = 50)
+
+            if (!mInAppMessage!!.mActionData!!.mBackground.isNullOrEmpty()) {
+                try {
+                    binding.llCouponContainer.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
+                } catch (e: Exception) {
+                    Log.w(
+                        LOG_TAG,
+                        "Could not parse the data given for background color\nSetting the default value."
+                    )
+                    e.printStackTrace()
+                }
+            }
+
+            if (!mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor.isNullOrEmpty()) {
+                try {
+                    val gdButton = binding.tvCouponCodeWithButton.background as GradientDrawable
+                    gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor))
+                } catch (e: Exception) {
+                    Log.w(
+                        LOG_TAG,
+                        "Could not parse the data given for button color\nSetting the default value."
+                    )
+                    e.printStackTrace()
+                }
+            }
+
+
+
+            setCopyButton()
+        }
+
     }
 
     private fun setCopyButton() {
@@ -971,25 +996,24 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             binding.tvCouponCodeWithButton.text = mInAppMessage!!.mActionData!!.mPromotionCode
             binding.tvCouponCodeWithButton.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeTextColor))
             //TODO When data comes use the codes below
-            //if(mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText!!.isNotEmpty()){
-            //   binding.copyButton.setOnClickListener {
-            //                val clipboard =
-            //                    applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            //                val clip = ClipData.newPlainText(
-            //                    getString(R.string.coupon_code),
-            //                    mInAppMessage!!.mActionData!!.mPromotionCode
-            //                )
-            //                clipboard.setPrimaryClip(clip)
-            //                Toast.makeText(
-            //                    applicationContext,
-            //                    getString(R.string.copied_to_clipboard),
-            //                    Toast.LENGTH_LONG
-            //                ).show()
-            //            }
-            //        } else {
-            //            binding.copyButton.visibility = View.GONE
-            //        }
-            //else {
+            if (mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText!!.isNotEmpty()) {
+                binding.copyButton.setOnClickListener {
+                    val clipboard =
+                        applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = ClipData.newPlainText(
+                        getString(R.string.coupon_code),
+                        mInAppMessage!!.mActionData!!.mPromotionCode
+                    )
+                    clipboard.setPrimaryClip(clip)
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.copied_to_clipboard),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            } else {
+                binding.copyButton.visibility = View.GONE
+            }
 
             binding.llCouponContainer.setOnClickListener {
                 val clipboard =
@@ -1116,6 +1140,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         Log.i("VL", "Rated as: $level - $reselected")
     }
 
+
     override fun onBackPressed() {
         super.onBackPressed()
         InAppUpdateDisplayState.releaseDisplayState(mIntentId)
@@ -1221,7 +1246,6 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
     companion object {
         private const val LOG_TAG = "Template Activity"
         const val INTENT_ID_KEY = "INTENT_ID_KEY"
-        private const val CAROUSEL_LAST_INDEX_KEY = "carousel_last_index"
     }
 
     override fun onFinish() {
