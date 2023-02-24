@@ -96,7 +96,8 @@
                             android:paddingTop="12dp"
                             android:paddingRight="45dp"
                             android:paddingBottom="12dp"
-                            android:text="@string/coupon_code" />
+                            android:text="@string/coupon_code"
+                            android:visibility="gone"/>
 
                         <Button
                             android:id="@+id/copyButton"
