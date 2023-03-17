@@ -20,7 +20,7 @@ import com.relateddigital.relateddigital_google.util.PayloadUtils
 import com.relateddigital.relateddigital_google.util.SharedPref
 import java.util.*
 
-class RelatedDigitalFirebaseMessagingService : FirebaseMessagingService() {
+open class RelatedDigitalFirebaseMessagingService : FirebaseMessagingService() {
     companion object{
         private const val LOG_TAG = "RDFMessagingService"
     }
