@@ -996,7 +996,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             binding.tvCouponCode.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeTextColor))
             binding.tvCouponCodeWithButton.text = mInAppMessage!!.mActionData!!.mPromotionCode
             binding.tvCouponCodeWithButton.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeTextColor))
-            //TODO When data comes use the codes below
+            binding.tvCouponCodeWithButton.setTextSize(17f)
             if (mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText?.isNotEmpty() == true) {
                 binding.copyButton.setOnClickListener {
                     val clipboard =
