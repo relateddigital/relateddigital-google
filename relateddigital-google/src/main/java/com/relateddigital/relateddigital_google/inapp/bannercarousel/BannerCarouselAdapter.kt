@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,10 +21,14 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.model.AppBanner
+import com.relateddigital.relateddigital_google.model.MailSubReport
+import com.relateddigital.relateddigital_google.network.RequestHandler
 
 
-class BannerCarouselAdapter(private val mContext: Context,
-                            private val mBannerItemClickListener: BannerItemClickListener?): RecyclerView.Adapter<BannerCarouselAdapter.BannerHolder>() {
+class BannerCarouselAdapter(
+    private val mContext: Context,
+    private val mBannerItemClickListener: BannerItemClickListener?
+) : RecyclerView.Adapter<BannerCarouselAdapter.BannerHolder>() {
     private lateinit var mRecyclerView: RecyclerView
     private var isSwipe = true
     private var mHandler: Handler? = null
@@ -35,7 +40,7 @@ class BannerCarouselAdapter(private val mContext: Context,
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BannerHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
-        val view: View = if(isSwipe) {
+        val view: View = if (isSwipe) {
             inflater.inflate(R.layout.banner_carousel_swipe_list_item, parent, false)
         } else {
             inflater.inflate(R.layout.banner_carousel_slide_list_item, parent, false)
@@ -44,7 +49,7 @@ class BannerCarouselAdapter(private val mContext: Context,
     }
 
     override fun onBindViewHolder(bannerHolder: BannerHolder, position: Int) {
-        if(isSwipe) {
+        if (isSwipe) {
             Glide.with(mContext)
                 .asBitmap()
                 .transform(
@@ -62,7 +67,8 @@ class BannerCarouselAdapter(private val mContext: Context,
                 val view = View(mContext)
                 view.setBackgroundResource(R.drawable.dot_indicator_banner_default)
                 val layoutParams = LinearLayout.LayoutParams(
-                    20, 20)
+                    20, 20
+                )
                 layoutParams.setMargins(10, 0, 10, 0)
                 view.layoutParams = layoutParams
                 bannerHolder.dotIndicator!!.addView(view)
@@ -101,6 +107,19 @@ class BannerCarouselAdapter(private val mContext: Context,
                 mBannerItemClickListener!!.bannerItemClicked(mAppBanner!!.actionData!!.appBanners!![position].androidLink)
             }
         }
+        var report: MailSubReport?
+        try {
+            report = MailSubReport()
+            report.impression = mAppBanner!!.actionData!!.report!!.impression
+            report.click = mAppBanner!!.actionData!!.report!!.click
+        } catch (e: Exception) {
+            Log.e("AppBanner : ", "There is no report to send!")
+            e.printStackTrace()
+            report = null
+        }
+        if (report != null) {
+            RequestHandler.createInAppActionClickRequest(mContext, report)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -117,17 +136,17 @@ class BannerCarouselAdapter(private val mContext: Context,
             mRecyclerView.layoutManager =
                 object : LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false) {
                     override fun canScrollHorizontally(): Boolean {
-                        if(isScrolling) {
+                        if (isScrolling) {
                             return true
                         }
                         return false
                     }
                 }
 
-            mRecyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener(){
+            mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
-                    if(recyclerView.scrollState == RecyclerView.SCROLL_STATE_SETTLING){
+                    if (recyclerView.scrollState == RecyclerView.SCROLL_STATE_SETTLING) {
                         isScrolling = false
                     }
                 }
@@ -165,7 +184,7 @@ class BannerCarouselAdapter(private val mContext: Context,
         var numberIndicator: TextView? = null
 
         init {
-            if(isSwipe) {
+            if (isSwipe) {
                 swipeImageView = itemView.findViewById(R.id.banner_swipe_image_item)
                 dotIndicator = itemView.findViewById(R.id.banner_dot_indicator_item)
             } else {
