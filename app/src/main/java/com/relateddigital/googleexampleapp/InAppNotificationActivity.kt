@@ -14,11 +14,7 @@ import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.VisilabsCallback
 import com.relateddigital.relateddigital_google.inapp.VisilabsResponse
 import com.relateddigital.relateddigital_google.inapp.countdowntimer.CountdownTimerFragment
-import com.relateddigital.relateddigital_google.inapp.findtowin.FindToWinActivity
-import com.relateddigital.relateddigital_google.inapp.giftcatch.GiftCatchActivity
-import com.relateddigital.relateddigital_google.inapp.shaketowin.ShakeToWinActivity
 import com.relateddigital.relateddigital_google.model.FavsResponse
-import com.relateddigital.relateddigital_google.util.ActivityUtils
 import java.util.*
 
 
@@ -224,6 +220,13 @@ class InAppNotificationActivity : AppCompatActivity() {
         binding.findToWinButton.setOnClickListener {
             sendInAppRequest("findtowin")
         }
+
+        binding.inlineNps.setOnClickListener{
+            val intent = Intent(this, InlineNpsWithNumbersActivity::class.java)
+            startActivity(intent)
+
+        }
+
     }
 
     private fun sendInAppRequest(type: String) {

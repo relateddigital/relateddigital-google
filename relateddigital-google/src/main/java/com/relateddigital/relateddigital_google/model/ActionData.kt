@@ -11,6 +11,9 @@ import com.relateddigital.relateddigital_google.util.AppUtils.isFontResourceAvai
 
 
 class ActionData : Serializable {
+    @SerializedName("display_type")
+    var mDisplayType: String? = null
+
     @SerializedName("alert_type")
     var mAlertType: String? = null
 

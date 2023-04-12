@@ -324,6 +324,37 @@ object RequestHandler {
         )
     }
 
+
+    fun createNpsWithNumbersRequest(
+        context: Context,visilabsCallback: VisilabsCallback,
+        properties: java.util.HashMap<String, String>?
+    ) {
+        if (RelatedDigital.isBlocked(context)) {
+            Log.w(LOG_TAG, "Too much server load, ignoring the request!")
+            return
+        }
+
+        val queryMap = java.util.HashMap<String, String>()
+        val headerMap = java.util.HashMap<String, String>()
+        RequestFormer.formNpsActionRequest(
+            context = context,
+            model = RelatedDigital.getRelatedDigitalModel(context),
+            pageName = Constants.PAGE_NAME_REQUEST_VAL,
+            properties = properties,
+            queryMap = queryMap,
+            headerMap = headerMap
+        )
+
+        RequestSender.addToQueue(
+            Request(
+                Domain.IN_APP_NOTIFICATION_ACT_JSON,
+                queryMap,
+                headerMap,null,visilabsCallback
+
+            ), RelatedDigital.getRelatedDigitalModel(context), context
+        )
+    }
+
     fun createStoryActionRequest(
             context: Context,
             visilabsCallback: VisilabsCallback,
