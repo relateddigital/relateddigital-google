@@ -488,7 +488,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                 }
             }
         }
-       // sendPromotionCodeInfo(email = promoemail, promotionCode = mShakeToWinMessage!!.actiondata!!.promotionCode.toString())
+        sendPromotionCodeInfo(email = promoemail, promotionCode = mShakeToWinMessage!!.actiondata!!.promotionCode.toString())
     }
 
     private fun setupCloseButtonStep3() {
