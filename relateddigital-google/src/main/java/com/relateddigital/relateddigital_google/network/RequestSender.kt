@@ -6,12 +6,14 @@ import android.content.Intent
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.model.GiftBox
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.api.*
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.InAppManager
 import com.relateddigital.relateddigital_google.inapp.VisilabsResponse
 import com.relateddigital.relateddigital_google.inapp.findtowin.FindToWinActivity
+import com.relateddigital.relateddigital_google.inapp.giftbox.GiftBoxActivity
 import com.relateddigital.relateddigital_google.inapp.giftcatch.GiftCatchActivity
 import com.relateddigital.relateddigital_google.inapp.mailsubsform.MailSubscriptionFormHalfFragment
 import com.relateddigital.relateddigital_google.inapp.notification.InAppNotificationFragment
@@ -312,6 +314,18 @@ object RequestSender {
                                             val giftRainModel: GiftRain =
                                                 actionsResponse.mGiftRain!![0]
                                             intent.putExtra("gift-rain-data", giftRainModel)
+                                            currentRequest.parent!!.startActivity(intent)
+                                        }
+                                        !actionsResponse.mGiftBox.isNullOrEmpty() -> {
+                                            ActivityUtils.parentActivity = currentRequest.parent
+                                            val intent =
+                                                Intent(
+                                                    currentRequest.parent,
+                                                    GiftBoxActivity::class.java
+                                                )
+                                            val giftBoxModel: GiftBox =
+                                                actionsResponse.mGiftBox!![0]
+                                            intent.putExtra("gift-box-data", giftBoxModel)
                                             currentRequest.parent!!.startActivity(intent)
                                         }
                                         !actionsResponse.mFindToWin.isNullOrEmpty() -> {

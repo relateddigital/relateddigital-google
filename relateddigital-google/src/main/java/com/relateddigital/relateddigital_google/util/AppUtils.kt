@@ -25,6 +25,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.model.GiftBox
+import com.relateddigital.relateddigital_android.model.GiftBoxExtendedProps
 import com.relateddigital.relateddigital_google.BuildConfig
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.FontFamily
@@ -821,6 +823,57 @@ object AppUtils {
             result.add(baseUrlPath)
             result.add(htmlStr)
             result.add(Gson().toJson(giftRainModel, GiftRain::class.java))
+        }
+        return result
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    fun createGiftBoxCustomFontFiles(
+        context: Context,
+        jsonStr: String?,
+        jsStr: String
+    ): ArrayList<String?>? {
+        var result: ArrayList<String?>? = null
+        val giftBoxModel: GiftBox?
+        val extendedProps: GiftBoxExtendedProps?
+        val baseUrlPath = "file://" + context.filesDir.absolutePath + "/"
+        try {
+            giftBoxModel = Gson().fromJson(jsonStr, GiftBox::class.java)
+            extendedProps = Gson().fromJson(
+                URI(giftBoxModel!!.actiondata!!.ExtendedProps).path,
+                GiftBoxExtendedProps::class.java
+            )
+        } catch (e: java.lang.Exception) {
+            Log.e("GiftBox", "Extended properties could not be parsed properly!")
+            return null
+        }
+        if (giftBoxModel == null || extendedProps == null) {
+            return null
+        }
+        val fontFamily: String = extendedProps.fontFamily ?: return null
+
+        val htmlStr: String = writeHtmlToFile(context, "giftbox", jsStr)
+
+        if (fontFamily == "custom") {
+            val fontExtension = getFontNameWithExtension(
+                context,
+                extendedProps.customFontFamilyAndroid!!
+            )
+            if (fontExtension.isNotEmpty()) {
+                writeFontToFile(
+                    context,
+                    extendedProps.customFontFamilyAndroid!!,
+                    fontExtension
+                )
+                giftBoxModel.fontFiles.add(fontExtension)
+            }
+        }
+
+        if (htmlStr.isNotEmpty()) {
+            result = ArrayList()
+            result.add(baseUrlPath)
+            result.add(htmlStr)
+            result.add(Gson().toJson(giftBoxModel, GiftBox::class.java))
         }
         return result
     }
