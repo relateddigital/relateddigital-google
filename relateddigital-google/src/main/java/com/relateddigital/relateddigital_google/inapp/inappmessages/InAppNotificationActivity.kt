@@ -164,6 +164,19 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                 e.printStackTrace()
             }
         }
+        else {
+            try {
+                binding.llBack.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonTextColor))
+            } catch (e: Exception) {
+                Log.w(
+                    LOG_TAG,
+                    "Could not parse the data given for background color\nSetting the default value."
+                )
+                e.printStackTrace()
+            }
+
+
+        }
         when (mInAppMessage!!.mActionData!!.mMsgType) {
             InAppNotificationType.IMAGE_TEXT_BUTTON.toString() -> {
                 setTitle()
@@ -214,8 +227,10 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                 }
             }
             InAppNotificationType.IMAGE_BUTTON.toString() -> {
-                binding.smileRating.visibility = View.GONE
                 binding.llTextContainer.visibility = View.GONE
+                binding.ratingBar.visibility = View.GONE
+                binding.smileRating.visibility = View.GONE
+
                 setButton()
             }
             InAppNotificationType.NPS.toString() -> {
