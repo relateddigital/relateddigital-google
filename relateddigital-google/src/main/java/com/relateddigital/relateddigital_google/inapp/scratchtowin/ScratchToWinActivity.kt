@@ -20,6 +20,8 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
@@ -202,7 +204,7 @@ class ScratchToWinActivity : Activity(), ScratchToWinInterface {
                 binding.mailContainer.visibility = View.GONE
                 binding.emailEdit.visibility = View.GONE
                 binding.saveMail.visibility = View.GONE
-                RequestHandler.createSubsJsonRequest(applicationContext,
+                SubsJsonRequest.createSubsJsonRequest(applicationContext,
                         mScratchToWinMessage!!.actiondata!!.type!!,
                         mScratchToWinMessage!!.actid.toString(),
                         mScratchToWinMessage!!.actiondata!!.auth!!, email)
@@ -300,7 +302,7 @@ class ScratchToWinActivity : Activity(), ScratchToWinInterface {
             report = null
         }
         if (report != null) {
-            RequestHandler.createInAppActionClickRequest(applicationContext, report)
+            InAppActionClickRequest.createInAppActionClickRequest(applicationContext, report)
         }
     }
     private fun sendPromotionCodeInfo(email: String, promotionCode: String) {

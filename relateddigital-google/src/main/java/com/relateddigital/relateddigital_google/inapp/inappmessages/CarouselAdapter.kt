@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.PlayerView
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppNotificationClickRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
@@ -316,7 +317,7 @@ class CarouselAdapter(
                 mContext
             )
             holder.carouselButton.setOnClickListener {
-                RequestHandler.createInAppNotificationClickRequest(mContext, message, "")
+                InAppNotificationClickRequest.createInAppNotificationClickRequest(mContext, message, "")
                 val buttonCallback = RelatedDigital.getInAppButtonInterface()
                 if (buttonCallback != null) {
                     RelatedDigital.setInAppButtonInterface(null)

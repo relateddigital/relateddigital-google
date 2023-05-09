@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.network.requestHandler.BannerCarouselActionRequest
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.VisilabsCallback
@@ -40,7 +41,7 @@ class BannerRecyclerView : RecyclerView {
             mBannerItemClickListener = bannerItemClickListener
             mBannerRequestListener = bannerRequestListener
 
-            RequestHandler.createBannerCarouselActionRequest(
+            BannerCarouselActionRequest.createBannerCarouselActionRequest(
                 mContext,
                 getBannerCallback(context),
                 properties

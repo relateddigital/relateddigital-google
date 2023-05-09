@@ -23,7 +23,7 @@ object RequestHandler {
     private var latestDeliverPushId: String = ""
     private var latestOpenPushId: String = ""
 
-    fun createLoggerRequest(
+    /* fun createLoggerRequest(
             context: Context, model: RelatedDigitalModel, pageName: String,
             properties: HashMap<String, String>?
     ) {
@@ -737,5 +737,5 @@ object RequestHandler {
 
             RequestSender.sendRetentionRequest(context, retention, RetryCounterManager.counterId)
         }
-    }
+    } */
 }

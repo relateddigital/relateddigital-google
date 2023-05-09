@@ -13,6 +13,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.databinding.FragmentMailSubscriptionFormHalfBinding
 import com.relateddigital.relateddigital_google.model.MailSubActionData
@@ -180,8 +182,8 @@ class MailSubscriptionFormHalfFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            RequestHandler.createInAppActionClickRequest(requireContext(), mResponse!!.report)
-            RequestHandler.createSubsJsonRequest(requireContext(), "subscription_email", actId,
+            InAppActionClickRequest.createInAppActionClickRequest(requireContext(), mResponse!!.report)
+            SubsJsonRequest.createSubsJsonRequest(requireContext(), "subscription_email", actId,
                 mResponse!!.auth!!, email)
 
             Toast.makeText(activity, mResponse!!.success_message, Toast.LENGTH_SHORT).show()

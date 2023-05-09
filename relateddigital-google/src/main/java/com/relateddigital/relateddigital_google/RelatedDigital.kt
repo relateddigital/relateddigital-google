@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.google.firebase.FirebaseApp
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.network.requestHandler.*
 import com.relateddigital.relateddigital_google.appTracker.AppTracker
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.geofence.GeofenceStarter
@@ -918,7 +919,7 @@ object RelatedDigital {
     @JvmStatic
     fun sendPushNotificationOpenReport(context: Context, message: Message) {
         if (model!!.getIsPushNotificationEnabled()) {
-            RequestHandler.createRetentionRequest(
+            RetentionRequest.createRetentionRequest(
                 context, RetentionType.OPEN,
                 message.pushId, message.emPushSp
             )
@@ -952,7 +953,7 @@ object RelatedDigital {
                         }
                     }
                 }
-                RequestHandler.createLoggerRequest(
+                LoggerRequest.createLoggerRequest(
                     context, model!!, Constants.PAGE_NAME_REQUEST_VAL,
                     parameters
                 )
@@ -985,14 +986,14 @@ object RelatedDigital {
         if(model != null) {
             if (model!!.getIsInAppNotificationEnabled()) {
                 if(parent != null) {
-                    RequestHandler.createInAppNotificationRequest(
+                    InAppNotificationRequest.createInAppNotificationRequest(
                         context,
                         model!!,
                         pageName,
                         properties,
                         parent
                     )
-                    RequestHandler.createInAppActionRequest(
+                    InAppActionRequest.createInAppActionRequest(
                         context,
                         model!!,
                         pageName,
@@ -1006,7 +1007,7 @@ object RelatedDigital {
                             "Call RelatedDigital.setIsInAppNotificationEnabled() first"
                 )
             }
-            RequestHandler.createLoggerRequest(context, model!!, pageName, properties)
+            LoggerRequest.createLoggerRequest(context, model!!, pageName, properties)
         } else {
             Log.e(LOG_TAG, "Call RelatedDigital.init() first")
         }
@@ -1016,7 +1017,7 @@ object RelatedDigital {
     fun sync(context: Context, callback: EuromessageCallback? = null) {
         if(model != null) {
             if(model!!.getIsPushNotificationEnabled()) {
-                RequestHandler.createSyncRequest(context, callback)
+                SyncRequest.createSyncRequest(context, callback)
             } else {
                 Log.e(
                     LOG_TAG, "Push notification is not enabled." +
@@ -1029,7 +1030,7 @@ object RelatedDigital {
     }
 
     private fun syncForRegisterEmail(context: Context, registerEmailModel: RelatedDigitalModel) {
-        RequestHandler.createRegisterEmailRequest(context, registerEmailModel)
+        RegisterEmailRequest.createRegisterEmailRequest(context, registerEmailModel)
     }
 
     @JvmStatic
@@ -1373,7 +1374,7 @@ object RelatedDigital {
     ) {
         if (model != null) {
             if (model!!.getIsInAppNotificationEnabled()) {
-                RequestHandler.createFavsResponseRequest(
+                FavsResponseRequest.createFavsResponseRequest(
                     context, actionId,
                     actionType, visilabsCallback, properties)
             } else {
@@ -1398,7 +1399,7 @@ object RelatedDigital {
     ) {
         if (model != null) {
             if (model!!.getIsInAppNotificationEnabled()) {
-                RequestHandler.createRecommendationRequest(context, zoneId,
+                RecommendationRequest.createRecommendationRequest(context, zoneId,
                     productCode, visilabsCallback, properties, filters)
             } else {
                 Log.e(

@@ -4,6 +4,7 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
 import com.relateddigital.relateddigital_android.model.GiftBox
+import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.network.RequestHandler
 
 
@@ -47,7 +48,7 @@ class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: Gif
     fun subscribeEmail(email: String?) {
         if (!email.isNullOrEmpty()) {
             subEmail = email
-               RequestHandler.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), giftboxModel.actiondata!!.type!!,
+            SubsJsonRequest.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), giftboxModel.actiondata!!.type!!,
                 giftboxModel.actid.toString(), giftboxModel.actiondata!!.auth!!,
                 email)
         } else {

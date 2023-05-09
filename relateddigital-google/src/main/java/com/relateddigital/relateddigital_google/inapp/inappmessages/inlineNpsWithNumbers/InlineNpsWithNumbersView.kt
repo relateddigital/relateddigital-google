@@ -16,6 +16,8 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.relateddigital.relateddigital_android.inapp.*
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppNotificationClickRequest
+import com.relateddigital.relateddigital_android.network.requestHandler.NpsWithNumbersRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.inapp.*
@@ -71,7 +73,7 @@ class InlineNpsWithNumbersView : LinearLayout {
         if(RelatedDigital.getRelatedDigitalModel(context).getIsInAppNotificationEnabled()) {
             mNpsItemClickListener = npsItemClickListener
 
-            RequestHandler.createNpsWithNumbersRequest(
+            NpsWithNumbersRequest.createNpsWithNumbersRequest(
                 mContext,
                 getNpsCallback(context, null),
                 properties,
@@ -311,7 +313,7 @@ class InlineNpsWithNumbersView : LinearLayout {
             btnTemplate.setOnClickListener {
                 if (isRatingEntered) {
 
-                    RequestHandler.createInAppNotificationClickRequest(mContext,mInAppMessage, getRateReport(msgType, actId))
+                    InAppNotificationClickRequest.createInAppNotificationClickRequest(mContext,mInAppMessage, getRateReport(msgType, actId))
                     if (buttonCallback != null) {
                         RelatedDigital.setInAppButtonInterface(null)
                         buttonCallback.onPress(mInAppMessage!!.mActionData!!.mAndroidLnk)

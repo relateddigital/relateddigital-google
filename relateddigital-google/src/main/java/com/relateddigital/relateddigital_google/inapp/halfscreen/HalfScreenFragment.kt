@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppNotificationClickRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.databinding.FragmentHalfScreenBinding
@@ -110,7 +111,7 @@ class HalfScreenFragment : Fragment() {
         binding.halfScreenContainerTop.setOnClickListener {
             val uriString: String? = mInAppMessage!!.mActionData!!.mAndroidLnk
             val buttonInterface: InAppButtonInterface? = RelatedDigital.getInAppButtonInterface()
-            RequestHandler.createInAppNotificationClickRequest(requireActivity(), mInAppMessage, null)
+            InAppNotificationClickRequest.createInAppNotificationClickRequest(requireActivity(), mInAppMessage, null)
             if (buttonInterface != null) {
                 RelatedDigital.setInAppButtonInterface(null)
                 buttonInterface.onPress(uriString)
@@ -165,7 +166,7 @@ class HalfScreenFragment : Fragment() {
         binding.halfScreenContainerBot.setOnClickListener {
             val uriString: String? = mInAppMessage!!.mActionData!!.mAndroidLnk
             val buttonInterface: InAppButtonInterface? = RelatedDigital.getInAppButtonInterface()
-            RequestHandler.createInAppNotificationClickRequest(requireActivity(), mInAppMessage, null)
+            InAppNotificationClickRequest.createInAppNotificationClickRequest(requireActivity(), mInAppMessage, null)
             if (buttonInterface != null) {
                 RelatedDigital.setInAppButtonInterface(null)
                 buttonInterface.onPress(uriString)

@@ -19,6 +19,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
@@ -107,7 +109,7 @@ class BannerCarouselAdapter(
                     report = null
                 }
                 if (report != null) {
-                    RequestHandler.createInAppActionClickRequest(mContext, report)
+                    InAppActionClickRequest.createInAppActionClickRequest(mContext, report)
                 }
             }
         } else {
@@ -143,7 +145,7 @@ class BannerCarouselAdapter(
                     report = null
                 }
                 if (report != null) {
-                    RequestHandler.createInAppActionClickRequest(mContext, report)
+                    InAppActionClickRequest.createInAppActionClickRequest(mContext, report)
                 }
             }
         }

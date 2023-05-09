@@ -7,6 +7,9 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_android.network.requestHandler.SpinToWinPromoCodeRequest
+import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.VisilabsCallback
@@ -66,7 +69,7 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
     fun subscribeEmail(email: String?) {
         if (!email.isNullOrEmpty()) {
             subEmail = email
-            RequestHandler.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), spinToWinModel.actiondata!!.type!!,
+            SubsJsonRequest.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), spinToWinModel.actiondata!!.type!!,
                     spinToWinModel.actid.toString(), spinToWinModel.actiondata!!.auth!!,
                     email)
         } else {
@@ -90,7 +93,7 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
             report = null
         }
         if (report != null) {
-            RequestHandler.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
+            InAppActionClickRequest.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
         }
     }
 
@@ -129,7 +132,7 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
                 queryParameters["promotionid"] = selectedCode
                 queryParameters["promoauth"] = promoAuth
                 queryParameters["actionid"] = actId.toString()
-                RequestHandler.createSpinToWinPromoCodeRequest(mWebViewDialogFragment.requireContext(),
+                SpinToWinPromoCodeRequest.createSpinToWinPromoCodeRequest(mWebViewDialogFragment.requireContext(),
                         getVisilabsCallback(selectedIndex,
                                 selectedSliceText), queryParameters)
             } catch (e: java.lang.Exception) {

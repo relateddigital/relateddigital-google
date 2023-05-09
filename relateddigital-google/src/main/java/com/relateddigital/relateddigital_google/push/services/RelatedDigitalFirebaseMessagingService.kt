@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.network.requestHandler.RetentionRequest
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.model.Message
@@ -71,7 +72,7 @@ open class RelatedDigitalFirebaseMessagingService : FirebaseMessagingService() {
 
         if(!pushMessage.silent.isNullOrEmpty() && pushMessage.silent == "true") {
             Log.i("RDFirebase", "Silent Push")
-            RequestHandler.createRetentionRequest(
+            RetentionRequest.createRetentionRequest(
                 this, RetentionType.SILENT,
                 pushMessage.pushId, pushMessage.emPushSp
             )
@@ -156,7 +157,7 @@ open class RelatedDigitalFirebaseMessagingService : FirebaseMessagingService() {
                 if (pushMessage.deliver != null &&
                     pushMessage.deliver!!.lowercase() == "true"
                 ) {
-                    RequestHandler.createRetentionRequest(
+                    RetentionRequest.createRetentionRequest(
                         this, RetentionType.DELIVER,
                         pushMessage.pushId, pushMessage.emPushSp
                     )

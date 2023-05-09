@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.network.requestHandler.StoryImpressionClickRequest
 import com.relateddigital.relateddigital_google.BuildConfig
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.constants.Constants
@@ -61,7 +62,7 @@ class StoryLookingBannerAdapter(var mContext: Context, var mStoryItemClickListen
         val extendedPropsEncoded = mExtendsProps
         storyHolder.llStoryContainer.setOnClickListener {
             val locLink: String = mStoryLookingBanner!!.Story!![0].actiondata!!.stories!![position].link!!
-            RequestHandler.createStoryImpressionClickRequest(mContext, mStoryLookingBanner!!.Story!![0].actiondata!!.report!!.click)
+            StoryImpressionClickRequest.createStoryImpressionClickRequest(mContext, mStoryLookingBanner!!.Story!![0].actiondata!!.report!!.click)
             Log.i("StoryActivityShows ", "$actionid : $storyTitle")
             PersistentTargetManager.saveShownStory(mContext, actionid!!, storyTitle!!)
             setStoryList(mStoryLookingBanner, mExtendsProps)

@@ -3,6 +3,8 @@ package com.relateddigital.relateddigital_google.inapp.giftcatch
 import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.model.GiftRain
@@ -51,7 +53,7 @@ class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: G
     fun subscribeEmail(email: String?) {
         if (!email.isNullOrEmpty()) {
             subEmail = email
-            RequestHandler.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), giftRainModel.actiondata!!.type!!,
+            SubsJsonRequest.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), giftRainModel.actiondata!!.type!!,
                 giftRainModel.actid.toString(), giftRainModel.actiondata!!.auth!!,
                 email)
         } else {
@@ -75,7 +77,7 @@ class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: G
             report = null
         }
         if (report != null) {
-            RequestHandler.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
+            InAppActionClickRequest.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
         }
     }
 

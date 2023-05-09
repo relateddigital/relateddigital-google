@@ -15,6 +15,8 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.inputmethod.InputMethodManager
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.databinding.ActivityMailSubscriptionFormBinding
@@ -168,8 +170,8 @@ class MailSubscriptionFormActivity : Activity() {
             if (!checkCheckBoxes()) {
                 return@OnClickListener
             }
-            RequestHandler.createInAppActionClickRequest(applicationContext, mMailSubscriptionForm!!.actiondata!!.report)
-            RequestHandler.createSubsJsonRequest(applicationContext, "subscription_email", mMailSubscriptionForm!!.actid!!,
+            InAppActionClickRequest.createInAppActionClickRequest(applicationContext, mMailSubscriptionForm!!.actiondata!!.report)
+            SubsJsonRequest.createSubsJsonRequest(applicationContext, "subscription_email", mMailSubscriptionForm!!.actid!!,
                 mMailSubscriptionForm!!.actiondata!!.auth!!, email)
 
             binding.tvCheckConsentMessage.visibility = View.VISIBLE

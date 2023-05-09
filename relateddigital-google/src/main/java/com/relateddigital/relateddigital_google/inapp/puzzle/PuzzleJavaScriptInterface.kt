@@ -3,6 +3,8 @@ package com.relateddigital.relateddigital_google.inapp.puzzle
 import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.model.Puzzle
@@ -50,7 +52,7 @@ class PuzzleJavaScriptInterface internal constructor(webViewDialogFragment: Puzz
     fun subscribeEmail(email: String?) {
         if (!email.isNullOrEmpty()) {
             subEmail = email
-            RequestHandler.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), puzzleModel.actiondata!!.type!!,
+            SubsJsonRequest.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), puzzleModel.actiondata!!.type!!,
                 puzzleModel.actid.toString(), puzzleModel.actiondata!!.auth!!,
                 email)
         } else {
@@ -74,7 +76,7 @@ class PuzzleJavaScriptInterface internal constructor(webViewDialogFragment: Puzz
             report = null
         }
         if (report != null) {
-            RequestHandler.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
+            InAppActionClickRequest.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
         }
     }
 

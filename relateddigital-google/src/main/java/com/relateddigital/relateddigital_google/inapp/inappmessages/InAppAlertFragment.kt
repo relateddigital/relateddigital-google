@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.relateddigital.relateddigital_android.network.requestHandler.InAppNotificationClickRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.inapp.InAppButtonInterface
@@ -63,7 +64,7 @@ class InAppAlertFragment : DialogFragment() {
                             }
                         }
                     }
-                    RequestHandler.createInAppNotificationClickRequest(
+                    InAppNotificationClickRequest.createInAppNotificationClickRequest(
                         mContext!!,
                         mInAppMessage,
                         null

@@ -28,6 +28,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import com.google.gson.Gson
+import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
@@ -251,7 +252,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                     bindingMailForm.mailContainer.visibility = View.GONE
                     bindingMailForm.emailEdit.visibility = View.GONE
                     bindingMailForm.saveButton.visibility = View.GONE
-                    RequestHandler.createSubsJsonRequest(
+                    SubsJsonRequest.createSubsJsonRequest(
                         applicationContext,
                         mShakeToWinMessage!!.actiondata!!.type!!,
                         mShakeToWinMessage!!.actid.toString(),
