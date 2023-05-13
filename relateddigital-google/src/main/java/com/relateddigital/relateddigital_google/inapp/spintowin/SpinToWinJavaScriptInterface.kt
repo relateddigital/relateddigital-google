@@ -51,12 +51,12 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
     fun copyToClipboard(couponCode: String?) {
         mWebViewDialogFragment.dismiss()
 
-        if (spinToWinModel.actiondata!!.copyButtonFunction == "copy_redirect" &&
-            !spinToWinModel.actiondata!!.slices!![selectedIndex].androidLink.isNullOrEmpty()) {
-            mCopyToClipboardInterface?.copyToClipboard(couponCode, spinToWinModel.actiondata!!.slices!![selectedIndex].androidLink)
-        } else {
-            mCopyToClipboardInterface?.copyToClipboard(couponCode, null)
-        }
+            if(!spinToWinModel.actiondata!!.slices!![selectedIndex].androidLink.isNullOrEmpty()) {
+                mCopyToClipboardInterface?.copyToClipboard(
+                    couponCode,
+                    spinToWinModel.actiondata!!.slices!![selectedIndex].androidLink
+                )
+            }
 
     }
 
