@@ -1,4 +1,4 @@
-package com.relateddigital.relateddigital_android.model
+package com.relateddigital.relateddigital_google.model
 
 import java.io.Serializable
 

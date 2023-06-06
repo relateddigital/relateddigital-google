@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.relateddigital.relateddigital_android.network.requestHandler.RetentionRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.RetentionRequest
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.model.Carousel
 import com.relateddigital.relateddigital_google.model.Message

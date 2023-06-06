@@ -13,7 +13,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.google.firebase.FirebaseApp
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.network.requestHandler.*
+import com.relateddigital.relateddigital_google.network.requestHandler.*
 import com.relateddigital.relateddigital_google.appTracker.AppTracker
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.geofence.GeofenceStarter

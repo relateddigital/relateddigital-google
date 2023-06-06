@@ -11,9 +11,9 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.inapp.giftbox.*
-import com.relateddigital.relateddigital_android.model.GiftBox
-import com.relateddigital.relateddigital_android.model.GiftBoxExtendedProps
+import com.relateddigital.relateddigital_google.inapp.giftbox.*
+import com.relateddigital.relateddigital_google.model.GiftBox
+import com.relateddigital.relateddigital_google.model.GiftBoxExtendedProps
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.api.ApiMethods

@@ -15,7 +15,7 @@ import com.google.android.material.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.relateddigital.relateddigital_android.network.requestHandler.InAppNotificationClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppNotificationClickRequest
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.databinding.FragmentInAppBottomSheetBinding
 import com.relateddigital.relateddigital_google.inapp.InAppButtonInterface

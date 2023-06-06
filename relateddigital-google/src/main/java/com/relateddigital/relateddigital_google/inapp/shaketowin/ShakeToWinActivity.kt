@@ -28,7 +28,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants

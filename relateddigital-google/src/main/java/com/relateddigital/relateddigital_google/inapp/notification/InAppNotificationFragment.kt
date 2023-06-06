@@ -16,7 +16,7 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.databinding.*

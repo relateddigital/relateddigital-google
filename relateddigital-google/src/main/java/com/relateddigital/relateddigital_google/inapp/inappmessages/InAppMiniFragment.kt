@@ -11,7 +11,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import com.relateddigital.relateddigital_android.network.requestHandler.InAppNotificationClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppNotificationClickRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.databinding.FragmentInAppMiniBinding

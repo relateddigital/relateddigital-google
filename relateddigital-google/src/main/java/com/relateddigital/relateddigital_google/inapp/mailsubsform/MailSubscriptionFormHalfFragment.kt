@@ -13,8 +13,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionClickRequest
-import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.databinding.FragmentMailSubscriptionFormHalfBinding
 import com.relateddigital.relateddigital_google.model.MailSubActionData

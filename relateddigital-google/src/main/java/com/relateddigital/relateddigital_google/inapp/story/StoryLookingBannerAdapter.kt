@@ -13,7 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.network.requestHandler.StoryImpressionClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.StoryImpressionClickRequest
 import com.relateddigital.relateddigital_google.BuildConfig
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.constants.Constants

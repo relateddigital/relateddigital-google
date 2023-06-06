@@ -7,7 +7,7 @@ import androidx.annotation.RequiresApi
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.network.requestHandler.RetentionRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.RetentionRequest
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.model.Message

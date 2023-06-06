@@ -12,7 +12,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
-import com.relateddigital.relateddigital_android.network.requestHandler.GeofenceGetListResponseRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.GeofenceGetListResponseRequest
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.model.GeoFenceEntity
 import com.relateddigital.relateddigital_google.model.GeofenceListResponse

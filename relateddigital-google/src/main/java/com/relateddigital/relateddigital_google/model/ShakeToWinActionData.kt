@@ -1,10 +1,10 @@
 package com.relateddigital.relateddigital_google.model
 
 import com.google.gson.annotations.SerializedName
-import com.relateddigital.relateddigital_android.model.ShakeToWinGameElements
-import com.relateddigital.relateddigital_android.model.ShakeToWinGameResultElements
-import com.relateddigital.relateddigital_android.model.ShakeToWinGamificationRules
-import com.relateddigital.relateddigital_android.model.ShakeToWinMailSubscriptionForm
+import com.relateddigital.relateddigital_google.model.ShakeToWinGameElements
+import com.relateddigital.relateddigital_google.model.ShakeToWinGameResultElements
+import com.relateddigital.relateddigital_google.model.ShakeToWinGamificationRules
+import com.relateddigital.relateddigital_google.model.ShakeToWinMailSubscriptionForm
 import java.io.Serializable
 
 class ShakeToWinActionData : Serializable {

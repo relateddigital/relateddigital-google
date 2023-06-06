@@ -25,8 +25,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.model.GiftBox
-import com.relateddigital.relateddigital_android.model.GiftBoxExtendedProps
+import com.relateddigital.relateddigital_google.model.GiftBox
+import com.relateddigital.relateddigital_google.model.GiftBoxExtendedProps
 import com.relateddigital.relateddigital_google.BuildConfig
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.FontFamily

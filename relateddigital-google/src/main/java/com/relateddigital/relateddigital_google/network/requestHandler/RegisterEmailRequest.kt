@@ -1,4 +1,4 @@
-package com.relateddigital.relateddigital_android.network.requestHandler
+package com.relateddigital.relateddigital_google.network.requestHandler
 
 import android.content.Context
 import android.os.Build

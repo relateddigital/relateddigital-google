@@ -1,4 +1,4 @@
-package com.relateddigital.relateddigital_android.inapp.inappmessages.inlineNpsWithNumbers
+package com.relateddigital.relateddigital_google.inapp.inappmessages.inlineNpsWithNumbers
 
 import java.io.Serializable
 

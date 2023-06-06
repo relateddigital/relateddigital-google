@@ -7,7 +7,7 @@ import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.network.requestHandler.StoryActionRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.StoryActionRequest
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.VisilabsCallback

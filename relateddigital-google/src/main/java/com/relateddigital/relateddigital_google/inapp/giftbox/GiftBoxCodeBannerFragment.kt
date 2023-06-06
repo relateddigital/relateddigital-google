@@ -1,4 +1,4 @@
-package com.relateddigital.relateddigital_android.inapp.giftbox
+package com.relateddigital.relateddigital_google.inapp.giftbox
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -16,7 +16,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.relateddigital.relateddigital_android.model.GiftBoxExtendedProps
+import com.relateddigital.relateddigital_google.model.GiftBoxExtendedProps
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.databinding.FragmentGiftBoxCodeBannerBinding
 import com.relateddigital.relateddigital_google.inapp.FontFamily

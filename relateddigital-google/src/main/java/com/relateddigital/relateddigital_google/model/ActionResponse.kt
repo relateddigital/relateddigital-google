@@ -1,7 +1,7 @@
 package com.relateddigital.relateddigital_google.model
 
 import com.google.gson.annotations.SerializedName
-import com.relateddigital.relateddigital_android.model.GiftBox
+import com.relateddigital.relateddigital_google.model.GiftBox
 import java.io.Serializable
 
 class ActionResponse : Serializable {

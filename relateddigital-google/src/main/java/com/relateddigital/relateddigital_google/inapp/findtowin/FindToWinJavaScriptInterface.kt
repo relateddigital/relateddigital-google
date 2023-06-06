@@ -3,8 +3,8 @@ package com.relateddigital.relateddigital_google.inapp.findtowin
 import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionClickRequest
-import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.model.FindToWin

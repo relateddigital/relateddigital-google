@@ -1,4 +1,4 @@
-package com.relateddigital.relateddigital_android.inapp.inappmessages.inlineNpsWithNumbers
+package com.relateddigital.relateddigital_google.inapp.inappmessages.inlineNpsWithNumbers
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
@@ -15,9 +15,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.inapp.*
-import com.relateddigital.relateddigital_android.network.requestHandler.InAppNotificationClickRequest
-import com.relateddigital.relateddigital_android.network.requestHandler.NpsWithNumbersRequest
+import com.relateddigital.relateddigital_google.inapp.*
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppNotificationClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.NpsWithNumbersRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.inapp.*

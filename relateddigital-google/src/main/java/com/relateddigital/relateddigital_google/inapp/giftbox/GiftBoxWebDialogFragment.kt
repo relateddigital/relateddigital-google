@@ -1,4 +1,4 @@
-package com.relateddigital.relateddigital_android.inapp.giftbox
+package com.relateddigital.relateddigital_google.inapp.giftbox
 
 import android.annotation.SuppressLint
 import android.os.Build

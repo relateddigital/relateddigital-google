@@ -20,8 +20,8 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.network.requestHandler.InAppActionClickRequest
-import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants

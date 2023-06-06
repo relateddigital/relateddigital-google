@@ -1,10 +1,10 @@
-package com.relateddigital.relateddigital_android.inapp.giftbox
+package com.relateddigital.relateddigital_google.inapp.giftbox
 
 import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.model.GiftBox
-import com.relateddigital.relateddigital_android.network.requestHandler.SubsJsonRequest
+import com.relateddigital.relateddigital_google.model.GiftBox
+import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.network.RequestHandler
 
 

@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.network.requestHandler.StoryImpressionClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.StoryImpressionClickRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.model.SkinBasedStories

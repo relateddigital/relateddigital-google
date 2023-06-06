@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/black">
 
-    <com.relateddigital.relateddigital_android.inapp.inappmessages.inlineNpsWithNumbers.InlineNpsWithNumbersView
+    <com.relateddigital.relateddigital_google.inapp.inappmessages.inlineNpsWithNumbers.InlineNpsWithNumbersView
         android:id="@+id/inlineNps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

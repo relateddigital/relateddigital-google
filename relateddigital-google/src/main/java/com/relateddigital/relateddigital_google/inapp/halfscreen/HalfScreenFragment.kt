@@ -14,7 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.relateddigital.relateddigital_android.network.requestHandler.InAppNotificationClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppNotificationClickRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.databinding.FragmentHalfScreenBinding

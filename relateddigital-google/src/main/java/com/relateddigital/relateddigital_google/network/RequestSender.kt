@@ -6,7 +6,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_android.model.GiftBox
+import com.relateddigital.relateddigital_google.model.GiftBox
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.api.*
 import com.relateddigital.relateddigital_google.constants.Constants

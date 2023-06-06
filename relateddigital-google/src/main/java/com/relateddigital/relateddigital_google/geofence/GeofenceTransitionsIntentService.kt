@@ -8,7 +8,7 @@ import android.util.Log
 import androidx.core.app.JobIntentService
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
-import com.relateddigital.relateddigital_android.network.requestHandler.GeofenceTriggerRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.GeofenceTriggerRequest
 import com.relateddigital.relateddigital_google.network.RequestHandler
 import com.relateddigital.relateddigital_google.util.GeoFencesUtils
 import java.lang.Exception

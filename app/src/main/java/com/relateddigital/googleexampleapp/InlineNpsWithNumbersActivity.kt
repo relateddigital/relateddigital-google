@@ -8,7 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.relateddigital.googleexampleapp.databinding.ActivityInlineNpsWithNumbersBinding
-import com.relateddigital.relateddigital_android.inapp.inappmessages.inlineNpsWithNumbers.NpsItemClickListener
+import com.relateddigital.relateddigital_google.inapp.inappmessages.inlineNpsWithNumbers.NpsItemClickListener
 import com.relateddigital.relateddigital_google.constants.Constants.Companion.LOG_TAG
 
 class InlineNpsWithNumbersActivity : AppCompatActivity() {
