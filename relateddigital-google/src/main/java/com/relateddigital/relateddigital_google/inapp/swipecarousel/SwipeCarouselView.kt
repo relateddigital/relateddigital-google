@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.relateddigital.relateddigital_google.R
 
 class SwipeCarouselView @JvmOverloads constructor(
@@ -26,6 +27,9 @@ class SwipeCarouselView @JvmOverloads constructor(
     private lateinit var descriptionTextView: TextView
     private lateinit var closeButton: Button
     private var isExpanded = false
+    private lateinit var rv : RecyclerView
+    private var adapter : SwipeCarouselAdapter? = null
+
 
     init {
         orientation = VERTICAL
@@ -37,10 +41,13 @@ class SwipeCarouselView @JvmOverloads constructor(
 
         expandableView = findViewById(R.id.expandable_view)
         imageView = findViewById(R.id.image_view)
-        titleTextView = findViewById(R.id.title_text_view)
-        descriptionTextView = findViewById(R.id.description_text_view)
+        //titleTextView = findViewById(R.id.title_text_view)
+        //descriptionTextView = findViewById(R.id.description_text_view)
         closeButton = findViewById(R.id.close_button)
+        rv = findViewById(R.id.rv)
 
+        adapter =  SwipeCarouselAdapter(context)
+        rv.adapter = adapter
         expandableView.visibility = View.GONE
 
         imageView.setOnClickListener {
@@ -76,13 +83,13 @@ class SwipeCarouselView @JvmOverloads constructor(
         expandableView.translationY = -targetHeight.toFloat()
 
         val slideDownAnimation = AnimationUtils.loadAnimation(context, R.anim.slide_down)
-        slideDownAnimation.duration = 500 // Açılma süresini 500 milisaniye olarak ayarla
+        slideDownAnimation.duration = 100
         expandableView.startAnimation(slideDownAnimation)
 
         expandableView.animate()
             .alpha(1f)
             .translationY(0f)
-            .setDuration(500) // Açılma süresini 500 milisaniye olarak ayarla
+            .setDuration(1200)
             .setInterpolator(AccelerateDecelerateInterpolator())
             .setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
@@ -91,8 +98,9 @@ class SwipeCarouselView @JvmOverloads constructor(
             })
 
         imageView.isEnabled = false
-        val rotateAnimation = AnimationUtils.loadAnimation(context, R.anim.rotate_down)
-        imageView.startAnimation(rotateAnimation)
+        //val rotateAnimation = AnimationUtils.loadAnimation(context, R.anim.rotate_down)
+        //imageView.startAnimation(rotateAnimation)
+        imageView.visibility = GONE
     }
 
     private fun collapseView() {
@@ -106,13 +114,13 @@ class SwipeCarouselView @JvmOverloads constructor(
         val initialHeight = expandableView.height
 
         val slideUpAnimation = AnimationUtils.loadAnimation(context, R.anim.slide_up)
-        slideUpAnimation.duration = 500 // Kapanma süresini 500 milisaniye olarak ayarla
+        slideUpAnimation.duration = 1500
         expandableView.startAnimation(slideUpAnimation)
 
         expandableView.animate()
             .alpha(0f)
             .translationY(-initialHeight.toFloat())
-            .setDuration(500) // Kapanma süresini 500 milisaniye olarak ayarla
+            .setDuration(1500)
             .setInterpolator(AccelerateDecelerateInterpolator())
             .setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
@@ -122,7 +130,10 @@ class SwipeCarouselView @JvmOverloads constructor(
             })
 
         imageView.isEnabled = true
-        val rotateAnimation = AnimationUtils.loadAnimation(context, R.anim.rotate_up)
-        imageView.startAnimation(rotateAnimation)
+        //val rotateAnimation = AnimationUtils.loadAnimation(context, R.anim.rotate_up)
+        //imageView.startAnimation(rotateAnimation)
+        imageView.visibility = VISIBLE
+
+
     }
 }
