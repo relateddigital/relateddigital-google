@@ -25,6 +25,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Googleexampleapp">
         <activity
+            android:name=".SwipeCarouselActivity"
+            android:exported="false" />
+        <activity
             android:name=".InlineNpsWithNumbersActivity"
             android:exported="false" />
         <activity
