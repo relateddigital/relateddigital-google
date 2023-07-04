@@ -7,9 +7,11 @@
 
     <ImageView
         android:id="@+id/image_view"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_carousel_right_icon" />
+        android:layout_width="110dp"
+        android:layout_height="35dp"
+        android:layout_gravity="center"
+        android:background="@drawable/carousel_rounded_corner"
+        android:src="@drawable/carousel_icon_down" />
 
     <LinearLayout
         android:id="@+id/expandable_view"
@@ -23,14 +25,14 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
-            android:layout_height="630dp" />
+            android:layout_height="640dp" />
 
         <Button
             android:id="@+id/close_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:gravity="center"
-            android:text="Kapat" />
+            android:text="Close" />
 
 
     </LinearLayout>
