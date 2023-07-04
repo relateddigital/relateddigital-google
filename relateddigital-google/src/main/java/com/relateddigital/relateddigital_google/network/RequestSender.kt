@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.relateddigital.relateddigital_google.model.GiftBox
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.api.*
+import com.relateddigital.relateddigital_google.inapp.choosefavorite.ChooseFavoriteActivity
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.InAppManager
 import com.relateddigital.relateddigital_google.inapp.VisilabsResponse
@@ -335,6 +336,18 @@ object RequestSender {
                                             val giftBoxModel: GiftBox =
                                                 actionsResponse.mGiftBox!![0]
                                             intent.putExtra("gift-box-data", giftBoxModel)
+                                            currentRequest.parent!!.startActivity(intent)
+                                        }
+                                        !actionsResponse.mChooseFavoriteList.isNullOrEmpty() -> {
+                                            ActivityUtils.parentActivity = currentRequest.parent
+                                            val intent =
+                                                Intent(
+                                                    currentRequest.parent,
+                                                    ChooseFavoriteActivity::class.java
+                                                )
+                                            val chooseFavoriteModel: ChooseFavorite =
+                                                actionsResponse.mChooseFavoriteList!![0]
+                                            intent.putExtra("choose-favorite-data", chooseFavoriteModel)
                                             currentRequest.parent!!.startActivity(intent)
                                         }
                                         !actionsResponse.mFindToWin.isNullOrEmpty() -> {

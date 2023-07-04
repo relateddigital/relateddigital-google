@@ -225,6 +225,10 @@ class InAppNotificationActivity : AppCompatActivity() {
             sendInAppRequest("findtowin")
         }
 
+        binding.chooseFavoriteButton.setOnClickListener {
+            sendInAppRequest("choosefavorite")
+        }
+
         binding.inlineNps.setOnClickListener{
             val intent = Intent(this, InlineNpsWithNumbersActivity::class.java)
             startActivity(intent)

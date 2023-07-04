@@ -9,6 +9,9 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true">
         <activity
+            android:name=".inapp.choosefavorite.ChooseFavoriteActivity"
+            android:exported="false" />
+        <activity
             android:name=".inapp.giftbox.GiftBoxActivity"
             android:exported="false" />
         <activity

@@ -929,6 +929,58 @@ object AppUtils {
         return result
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    fun createChooseFavoriteCustomFontFiles(
+        context: Context,
+        jsonStr: String?,
+        jsStr: String
+    ): ArrayList<String?>? {
+        var result: ArrayList<String?>? = null
+        val chooseFavoriteModel: ChooseFavorite?
+        val extendedProps: ChooseFavoriteExtendedProps?
+        val baseUrlPath = "file://" + context.filesDir.absolutePath + "/"
+        try {
+            chooseFavoriteModel = Gson().fromJson(jsonStr, ChooseFavorite::class.java)
+            extendedProps = Gson().fromJson(
+                URI(chooseFavoriteModel.actiondata!!.ExtendedProps).path,
+                ChooseFavoriteExtendedProps::class.java
+            )
+        } catch (e: java.lang.Exception) {
+            Log.e("ChooseFavorite", "Extended properties could not be parsed properly!")
+            return null
+        }
+        if (chooseFavoriteModel == null || extendedProps == null) {
+            return null
+        }
+        val fontFamily: String = extendedProps.fontFamily ?: return null
+
+        val htmlStr: String = writeHtmlToFile(context, "find_to_win", jsStr)
+
+        if (fontFamily == "custom") {
+            val fontExtension = getFontNameWithExtension(
+                context,
+                extendedProps.customFontFamilyAndroid!!
+            )
+            if (fontExtension.isNotEmpty()) {
+                writeFontToFile(
+                    context,
+                    extendedProps.customFontFamilyAndroid!!,
+                    fontExtension
+                )
+                chooseFavoriteModel.fontFiles.add(fontExtension)
+            }
+        }
+
+        if (htmlStr.isNotEmpty()) {
+            result = ArrayList()
+            result.add(baseUrlPath)
+            result.add(htmlStr)
+            result.add(Gson().toJson(chooseFavoriteModel, ChooseFavorite::class.java))
+        }
+        return result
+    }
+
+
 
     fun goToNotificationSettings(context: Context) {
         try {
