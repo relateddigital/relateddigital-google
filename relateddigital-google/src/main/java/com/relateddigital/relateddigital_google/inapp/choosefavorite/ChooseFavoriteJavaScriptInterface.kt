@@ -1,8 +1,12 @@
 package com.relateddigital.relateddigital_google.inapp.choosefavorite
 
+import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
 import com.relateddigital.relateddigital_google.model.ChooseFavorite
+import com.relateddigital.relateddigital_google.model.MailSubReport
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 
 class ChooseFavoriteJavaScriptInterface internal constructor(webViewDialogFragment: ChooseFavoriteWebDialogFragment,
                                                              @get:JavascriptInterface val response: String) {
@@ -41,7 +45,7 @@ class ChooseFavoriteJavaScriptInterface internal constructor(webViewDialogFragme
      * @param email : String - the value entered for email
      */
     @JavascriptInterface
-            /* fun subscribeEmail(email: String?) {
+             fun subscribeEmail(email: String?) {
                  if (!email.isNullOrEmpty()) {
                      subEmail = email
                      SubsJsonRequest.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), chooseFavoriteModel.actiondata!!.type!!,
@@ -50,18 +54,18 @@ class ChooseFavoriteJavaScriptInterface internal constructor(webViewDialogFragme
                  } else {
                      Log.e("ChooseFavorite : ", "Email entered is not valid!")
                  }
-             } */
+             }
 
             /**
              * This method sends the report to the server
              */
-            /*
+
             @JavascriptInterface
             fun sendReport() {
                 var report: MailSubReport?
                 try {
                     report = MailSubReport()
-                    report.impression = chooseFavoriteModel.actiondata!!.!!.impression
+                    report.impression = chooseFavoriteModel.actiondata!!.report!!.impression
                     report.click = chooseFavoriteModel.actiondata!!.report!!.click
                 } catch (e: Exception) {
                     Log.e("ChooseFavorite : ", "There is no report to send!")
@@ -69,16 +73,16 @@ class ChooseFavoriteJavaScriptInterface internal constructor(webViewDialogFragme
                     report = null
                 }
                 if (report != null) {
-                    RequestHandler.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
+                    InAppActionClickRequest.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
                 }
             }
 
-            */
+
 
             /**
              * This method saves the promotion code shown
              */
-    // @JavascriptInterface
+            @JavascriptInterface
     fun saveCodeGotten(code: String, email: String?, report: String?) {
         mShowCodeInterface.onCodeShown(code)
     }
