@@ -229,6 +229,11 @@ class InAppNotificationActivity : AppCompatActivity() {
             sendInAppRequest("Choosefavorite")
         }
 
+        binding.jackpotButton.setOnClickListener {
+            sendInAppRequest("Jackpot")
+        }
+
+
         binding.inlineNps.setOnClickListener{
             val intent = Intent(this, InlineNpsWithNumbersActivity::class.java)
             startActivity(intent)
