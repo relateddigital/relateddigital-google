@@ -523,12 +523,27 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
 
     private fun initializePlayer() {
         player = ExoPlayer.Builder(this).build()
+        if (!mShakeToWinMessage!!.actiondata!!.gameElements!!.videoUrl.toString().isNullOrEmpty()) {
+            bindingStep2.videoView.visibility = View.VISIBLE
         bindingStep2.videoView.player = player
         val mediaItem = MediaItem.fromUri(
             mShakeToWinMessage!!.actiondata!!.gameElements!!.videoUrl.toString()
         )
         player!!.setMediaItem(mediaItem)
         player!!.prepare()
+        }
+        else
+        //TODO when backend ready this code will change
+            bindingStep2.videoView.visibility = View.VISIBLE
+        bindingStep2.videoView.player = player
+        val mediaItem = MediaItem.fromUri(
+            mShakeToWinMessage!!.actiondata!!.gameElements!!.videoUrl.toString()
+        )
+        player!!.setMediaItem(mediaItem)
+        player!!.prepare()
+        // bindingStep2.imageViewGif.visibility = View.VISIBLE
+        // Glide.with(this).load("https://media.giphy.com/media/4gH9mQjn6OGQg/giphy.gif").into( DrawableImageViewTarget(bindingStep2.imageViewGif));
+
     }
 
     private fun initializeSoundPlayer() {
