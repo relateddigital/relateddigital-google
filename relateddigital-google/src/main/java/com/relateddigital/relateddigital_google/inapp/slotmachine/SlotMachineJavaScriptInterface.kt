@@ -1,4 +1,4 @@
-package com.relateddigital.relateddigital_google.inapp.jackpot
+package com.relateddigital.relateddigital_google.inapp.slotmachine
 
 import android.util.Log
 import android.webkit.JavascriptInterface
@@ -8,12 +8,12 @@ import com.relateddigital.relateddigital_google.model.MailSubReport
 import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
 import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 
-class JackpotJavaScriptInterface  internal constructor(webViewDialogFragment: JackpotWebDialogFragment,
-                                                       @get:JavascriptInterface val response: String) {
-    var mWebViewDialogFragment: JackpotWebDialogFragment = webViewDialogFragment
-    private lateinit var mListener: JackpotCompleteInterface
-    private lateinit var mCopyToClipboardInterface: JackpotCopyToClipboardInterface
-    private lateinit var mShowCodeInterface: JackpotShowCodeInterface
+class SlotMachineJavaScriptInterface  internal constructor(webViewDialogFragment: SlotMachineWebDialogFragment,
+                                                           @get:JavascriptInterface val response: String) {
+    var mWebViewDialogFragment: SlotMachineWebDialogFragment = webViewDialogFragment
+    private lateinit var mListener: SlotMachineCompleteInterface
+    private lateinit var mCopyToClipboardInterface: SlotMachineCopyToClipboardInterface
+    private lateinit var mShowCodeInterface: SlotMachineShowCodeInterface
     private val jackpotModel: Jackpot = Gson().fromJson(this.response, Jackpot::class.java)
 
     private var subEmail = ""
@@ -88,9 +88,9 @@ class JackpotJavaScriptInterface  internal constructor(webViewDialogFragment: Ja
     }
 
     fun setJackpotListeners(
-        listener: JackpotCompleteInterface,
-        copyToClipboardInterface: JackpotCopyToClipboardInterface,
-        showCodeInterface: JackpotShowCodeInterface
+        listener: SlotMachineCompleteInterface,
+        copyToClipboardInterface: SlotMachineCopyToClipboardInterface,
+        showCodeInterface: SlotMachineShowCodeInterface
     ) {
         mListener = listener
         mCopyToClipboardInterface = copyToClipboardInterface

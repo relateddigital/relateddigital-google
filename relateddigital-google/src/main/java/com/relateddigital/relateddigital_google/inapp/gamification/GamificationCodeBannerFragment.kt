@@ -19,8 +19,8 @@ import androidx.fragment.app.FragmentActivity
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.databinding.FragmentJackpotCodeBannerBinding
 import com.relateddigital.relateddigital_google.inapp.FontFamily
-import com.relateddigital.relateddigital_google.inapp.jackpot.JackpotCodeBannerFragment
-import com.relateddigital.relateddigital_google.model.JackpotExtendedProps
+
+
 import com.relateddigital.relateddigital_google.util.AppUtils
 import java.util.*
 

@@ -3,21 +3,21 @@ package com.relateddigital.relateddigital_google.inapp.gamification
 import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_google.inapp.jackpot.JackpotCompleteInterface
-import com.relateddigital.relateddigital_google.inapp.jackpot.JackpotCopyToClipboardInterface
-import com.relateddigital.relateddigital_google.inapp.jackpot.JackpotShowCodeInterface
-import com.relateddigital.relateddigital_google.inapp.jackpot.JackpotWebDialogFragment
+import com.relateddigital.relateddigital_google.inapp.slotmachine.SlotMachineCompleteInterface
+import com.relateddigital.relateddigital_google.inapp.slotmachine.SlotMachineCopyToClipboardInterface
+import com.relateddigital.relateddigital_google.inapp.slotmachine.SlotMachineShowCodeInterface
+import com.relateddigital.relateddigital_google.inapp.slotmachine.SlotMachineWebDialogFragment
 import com.relateddigital.relateddigital_google.model.Jackpot
 import com.relateddigital.relateddigital_google.model.MailSubReport
 import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
 import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 
-class GamificationJavaScriptInterface internal constructor(webViewDialogFragment: JackpotWebDialogFragment,
+class GamificationJavaScriptInterface internal constructor(webViewDialogFragment: SlotMachineWebDialogFragment,
                                                            @get:JavascriptInterface val response: String)  {
-    var mWebViewDialogFragment: JackpotWebDialogFragment = webViewDialogFragment
-    private lateinit var mListener: JackpotCompleteInterface
-    private lateinit var mCopyToClipboardInterface: JackpotCopyToClipboardInterface
-    private lateinit var mShowCodeInterface: JackpotShowCodeInterface
+    var mWebViewDialogFragment: SlotMachineWebDialogFragment = webViewDialogFragment
+    private lateinit var mListener: SlotMachineCompleteInterface
+    private lateinit var mCopyToClipboardInterface: SlotMachineCopyToClipboardInterface
+    private lateinit var mShowCodeInterface: SlotMachineShowCodeInterface
     private val jackpotModel: Jackpot = Gson().fromJson(this.response, Jackpot::class.java)
 
     private var subEmail = ""
@@ -92,9 +92,9 @@ class GamificationJavaScriptInterface internal constructor(webViewDialogFragment
     }
 
     fun setJackpotListeners(
-        listener: JackpotCompleteInterface,
-        copyToClipboardInterface: JackpotCopyToClipboardInterface,
-        showCodeInterface: JackpotShowCodeInterface
+        listener: SlotMachineCompleteInterface,
+        copyToClipboardInterface: SlotMachineCopyToClipboardInterface,
+        showCodeInterface: SlotMachineShowCodeInterface
     ) {
         mListener = listener
         mCopyToClipboardInterface = copyToClipboardInterface

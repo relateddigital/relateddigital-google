@@ -14,7 +14,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.constants.Constants
-import com.relateddigital.relateddigital_google.inapp.jackpot.*
+
 
 class GamificationWebDialogFragment : DialogFragment() {
   /*  private var webView: WebView? = null

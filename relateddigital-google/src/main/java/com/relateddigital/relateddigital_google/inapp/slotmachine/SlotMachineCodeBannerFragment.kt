@@ -1,4 +1,4 @@
-package com.relateddigital.relateddigital_google.inapp.jackpot
+package com.relateddigital.relateddigital_google.inapp.slotmachine
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -25,10 +25,10 @@ import java.util.*
 
 /**
  * A simple [Fragment] subclass.
- * Use the [JackpotCodeBannerFragment.newInstance] factory method to
+ * Use the [SlotMachineCodeBannerFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class JackpotCodeBannerFragment : Fragment() {
+class SlotMachineCodeBannerFragment : Fragment() {
     companion object {
         private const val LOG_TAG = "JackpotBanner"
 
@@ -47,8 +47,8 @@ class JackpotCodeBannerFragment : Fragment() {
         fun newInstance(
             extendedProps: JackpotExtendedProps,
             code: String
-        ): JackpotCodeBannerFragment {
-            val fragment = JackpotCodeBannerFragment()
+        ): SlotMachineCodeBannerFragment {
+            val fragment = SlotMachineCodeBannerFragment()
             val args = Bundle()
             args.putSerializable(ARG_PARAM1, extendedProps)
             args.putString(ARG_PARAM2, code)
@@ -195,7 +195,7 @@ class JackpotCodeBannerFragment : Fragment() {
     private fun endFragment() {
         if (activity != null) {
             requireActivity().supportFragmentManager.beginTransaction()
-                .remove(this@JackpotCodeBannerFragment).commit()
+                .remove(this@SlotMachineCodeBannerFragment).commit()
         }
     }
 

@@ -20,9 +20,8 @@ import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.gamification.GamificationCompleteInterface
 import com.relateddigital.relateddigital_google.inapp.gamification.GamificationCopyToClipboardInterface
 import com.relateddigital.relateddigital_google.inapp.gamification.GamificationShowCodeInterface
-import com.relateddigital.relateddigital_google.inapp.jackpot.*
-import com.relateddigital.relateddigital_google.model.Jackpot
-import com.relateddigital.relateddigital_google.model.JackpotExtendedProps
+
+
 import com.relateddigital.relateddigital_google.util.ActivityUtils
 import com.relateddigital.relateddigital_google.util.AppUtils
 import okhttp3.ResponseBody

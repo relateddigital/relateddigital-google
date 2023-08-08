@@ -1,4 +1,4 @@
-package com.relateddigital.relateddigital_google.inapp.jackpot
+package com.relateddigital.relateddigital_google.inapp.slotmachine
 
 
 import android.content.ClipData
@@ -29,16 +29,16 @@ import retrofit2.Response
 import java.net.URI
 import java.util.HashMap
 
-class JackpotActivity : FragmentActivity(), JackpotCompleteInterface,
-    JackpotCopyToClipboardInterface, JackpotShowCodeInterface {
+class SlotMachineActivity : FragmentActivity(), SlotMachineCompleteInterface,
+    SlotMachineCopyToClipboardInterface, SlotMachineShowCodeInterface {
     private var jsonStr: String? = ""
     private var response: Jackpot? = null
     private var jackpotPromotionCode = ""
     private var link = ""
     private lateinit var activity: FragmentActivity
-    private lateinit var completeListener: JackpotCompleteInterface
-    private lateinit var copyToClipboardListener: JackpotCopyToClipboardInterface
-    private lateinit var showCodeListener: JackpotShowCodeInterface
+    private lateinit var completeListener: SlotMachineCompleteInterface
+    private lateinit var copyToClipboardListener: SlotMachineCopyToClipboardInterface
+    private lateinit var showCodeListener: SlotMachineShowCodeInterface
     private var jackpotJsStr = ""
 
     companion object {
@@ -56,7 +56,7 @@ class JackpotActivity : FragmentActivity(), JackpotCompleteInterface,
             ?.create(ApiMethods::class.java)
         val headers = HashMap<String, String>()
         headers[Constants.USER_AGENT_REQUEST_KEY] = RelatedDigital.getRelatedDigitalModel(this).getUserAgent()
-        val call: Call<ResponseBody> = jsApi?.getJackpotJsFile(headers)!!
+        val call: Call<ResponseBody> = jsApi?.getSlotMachineJsFile(headers)!!
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(
                 call: Call<ResponseBody?>,
@@ -96,8 +96,8 @@ class JackpotActivity : FragmentActivity(), JackpotCompleteInterface,
                                 Log.e(LOG_TAG, "Could not get the jackpot data properly!")
                                 finish()
                             } else {
-                                val webViewDialogFragment: JackpotWebDialogFragment =
-                                    JackpotWebDialogFragment.newInstance(res[0], res[1], res[2])
+                                val webViewDialogFragment: SlotMachineWebDialogFragment =
+                                    SlotMachineWebDialogFragment.newInstance(res[0], res[1], res[2])
                                 webViewDialogFragment.setJackpotListeners(completeListener, copyToClipboardListener, showCodeListener)
                                 if (!isFinishing && !supportFragmentManager.isDestroyed) {
                                     webViewDialogFragment.display(supportFragmentManager)
@@ -140,7 +140,7 @@ class JackpotActivity : FragmentActivity(), JackpotCompleteInterface,
                 if (!extendedProps.promocodeBannerButtonLabel.isNullOrEmpty()) {
                     if(ActivityUtils.parentActivity != null) {
                         val jackpotCodeBannerFragment =
-                            JackpotCodeBannerFragment.newInstance(extendedProps, jackpotPromotionCode)
+                            SlotMachineCodeBannerFragment.newInstance(extendedProps, jackpotPromotionCode)
 
                         val transaction: FragmentTransaction =
                             (ActivityUtils.parentActivity as FragmentActivity).supportFragmentManager.beginTransaction()
