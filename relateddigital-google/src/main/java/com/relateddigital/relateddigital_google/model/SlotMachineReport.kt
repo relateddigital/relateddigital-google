@@ -8,4 +8,5 @@ class SlotMachineReport  : Serializable {
     var impression: String? = null
 
     @SerializedName("click")
+    var click: String? = null
 }
