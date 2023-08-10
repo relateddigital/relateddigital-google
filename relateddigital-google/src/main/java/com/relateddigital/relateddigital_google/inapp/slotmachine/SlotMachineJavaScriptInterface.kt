@@ -3,8 +3,9 @@ package com.relateddigital.relateddigital_google.inapp.slotmachine
 import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_google.model.Jackpot
+
 import com.relateddigital.relateddigital_google.model.MailSubReport
+import com.relateddigital.relateddigital_google.model.SlotMachine
 import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
 import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 
@@ -14,12 +15,12 @@ class SlotMachineJavaScriptInterface  internal constructor(webViewDialogFragment
     private lateinit var mListener: SlotMachineCompleteInterface
     private lateinit var mCopyToClipboardInterface: SlotMachineCopyToClipboardInterface
     private lateinit var mShowCodeInterface: SlotMachineShowCodeInterface
-    private val jackpotModel: Jackpot = Gson().fromJson(this.response, Jackpot::class.java)
+    private val slotMachineModel: SlotMachine = Gson().fromJson(this.response, SlotMachine::class.java)
 
     private var subEmail = ""
 
     /**
-     * This method closes JackpotActivity
+     * This method closes SlotMachineActivity
      */
     @JavascriptInterface
     fun close() {
@@ -48,11 +49,11 @@ class SlotMachineJavaScriptInterface  internal constructor(webViewDialogFragment
     fun subscribeEmail(email: String?) {
         if (!email.isNullOrEmpty()) {
             subEmail = email
-            SubsJsonRequest.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), jackpotModel.actiondata!!.type!!,
-                jackpotModel.actid.toString(), jackpotModel.actiondata!!.auth!!,
+            SubsJsonRequest.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), slotMachineModel.actiondata!!.type!!,
+                slotMachineModel.actid.toString(), slotMachineModel.actiondata!!.auth!!,
                 email)
         } else {
-            Log.e("Jackpot : ", "Email entered is not valid!")
+            Log.e("SlotMachine : ", "Email entered is not valid!")
         }
     }
 
@@ -65,10 +66,10 @@ class SlotMachineJavaScriptInterface  internal constructor(webViewDialogFragment
         var report: MailSubReport?
         try {
             report = MailSubReport()
-            report.impression = jackpotModel.actiondata!!.report!!.impression
-            report.click = jackpotModel.actiondata!!.report!!.click
+            report.impression = slotMachineModel.actiondata!!.report!!.impression
+            report.click = slotMachineModel.actiondata!!.report!!.click
         } catch (e: Exception) {
-            Log.e("Jackpot : ", "There is no report to send!")
+            Log.e("SlotMachine : ", "There is no report to send!")
             e.printStackTrace()
             report = null
         }
@@ -87,7 +88,7 @@ class SlotMachineJavaScriptInterface  internal constructor(webViewDialogFragment
         mShowCodeInterface.onCodeShown(code)
     }
 
-    fun setJackpotListeners(
+    fun setSlotMachineListeners(
         listener: SlotMachineCompleteInterface,
         copyToClipboardInterface: SlotMachineCopyToClipboardInterface,
         showCodeInterface: SlotMachineShowCodeInterface

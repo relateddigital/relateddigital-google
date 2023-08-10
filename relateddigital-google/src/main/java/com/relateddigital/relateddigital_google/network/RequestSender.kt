@@ -20,6 +20,7 @@ import com.relateddigital.relateddigital_google.inapp.mailsubsform.MailSubscript
 import com.relateddigital.relateddigital_google.inapp.notification.InAppNotificationFragment
 import com.relateddigital.relateddigital_google.inapp.scratchtowin.ScratchToWinActivity
 import com.relateddigital.relateddigital_google.inapp.shaketowin.ShakeToWinActivity
+import com.relateddigital.relateddigital_google.inapp.slotmachine.SlotMachineActivity
 import com.relateddigital.relateddigital_google.inapp.socialproof.SocialProofFragment
 import com.relateddigital.relateddigital_google.inapp.spintowin.SpinToWinActivity
 import com.relateddigital.relateddigital_google.model.*
@@ -360,6 +361,18 @@ object RequestSender {
                                             val findToWinModel: FindToWin =
                                                 actionsResponse.mFindToWin!![0]
                                             intent.putExtra("find-to-win-data", findToWinModel)
+                                            currentRequest.parent!!.startActivity(intent)
+                                        }
+                                        !actionsResponse.mSlotMachine.isNullOrEmpty() -> {
+                                            ActivityUtils.parentActivity = currentRequest.parent
+                                            val intent =
+                                                Intent(
+                                                    currentRequest.parent,
+                                                    SlotMachineActivity::class.java
+                                                )
+                                            val slotMachineModel: SlotMachine =
+                                                actionsResponse.mSlotMachine!![0]
+                                            intent.putExtra("slotMachine-data", slotMachineModel)
                                             currentRequest.parent!!.startActivity(intent)
                                         }
                                         !actionsResponse.mAppBanner.isNullOrEmpty() -> {

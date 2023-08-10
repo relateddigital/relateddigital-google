@@ -15,6 +15,11 @@
             android:name=".inapp.giftbox.GiftBoxActivity"
             android:exported="false" />
         <activity
+            android:name=".inapp.slotmachine.SlotMachineActivity"
+            android:configChanges="orientation"
+            android:noHistory="true"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".inapp.story.StoryActivity"
             android:noHistory="true"
             android:theme="@style/Theme.AppCompat.NoActionBar" />

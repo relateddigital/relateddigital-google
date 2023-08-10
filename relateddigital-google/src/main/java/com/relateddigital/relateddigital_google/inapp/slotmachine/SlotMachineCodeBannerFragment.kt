@@ -19,9 +19,11 @@ import androidx.fragment.app.FragmentActivity
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.databinding.FragmentJackpotCodeBannerBinding
 import com.relateddigital.relateddigital_google.inapp.FontFamily
-import com.relateddigital.relateddigital_google.model.JackpotExtendedProps
+import com.relateddigital.relateddigital_google.model.SlotMachineExtendedProps
+
 import com.relateddigital.relateddigital_google.util.AppUtils
 import java.util.*
+
 
 /**
  * A simple [Fragment] subclass.
@@ -45,7 +47,7 @@ class SlotMachineCodeBannerFragment : Fragment() {
          * @return A new instance of fragment JackpotCodeBannerFragment.
          */
         fun newInstance(
-            extendedProps: JackpotExtendedProps,
+            extendedProps: SlotMachineExtendedProps,
             code: String
         ): SlotMachineCodeBannerFragment {
             val fragment = SlotMachineCodeBannerFragment()
@@ -57,13 +59,13 @@ class SlotMachineCodeBannerFragment : Fragment() {
         }
     }
 
-    private var mExtendedProps: JackpotExtendedProps? = null
+    private var mExtendedProps: SlotMachineExtendedProps? = null
     private var bannerCode: String? = null
     private lateinit var binding: FragmentJackpotCodeBannerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mExtendedProps = requireArguments().getSerializable(ARG_PARAM1) as JackpotExtendedProps
+        mExtendedProps = requireArguments().getSerializable(ARG_PARAM1) as SlotMachineExtendedProps
         bannerCode = requireArguments().getString(ARG_PARAM2)
         if (bannerCode.isNullOrEmpty()) {
             endFragment()

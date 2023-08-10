@@ -7,8 +7,9 @@ import com.relateddigital.relateddigital_google.inapp.slotmachine.SlotMachineCom
 import com.relateddigital.relateddigital_google.inapp.slotmachine.SlotMachineCopyToClipboardInterface
 import com.relateddigital.relateddigital_google.inapp.slotmachine.SlotMachineShowCodeInterface
 import com.relateddigital.relateddigital_google.inapp.slotmachine.SlotMachineWebDialogFragment
-import com.relateddigital.relateddigital_google.model.Jackpot
+
 import com.relateddigital.relateddigital_google.model.MailSubReport
+import com.relateddigital.relateddigital_google.model.SlotMachine
 import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
 import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 
@@ -18,7 +19,7 @@ class GamificationJavaScriptInterface internal constructor(webViewDialogFragment
     private lateinit var mListener: SlotMachineCompleteInterface
     private lateinit var mCopyToClipboardInterface: SlotMachineCopyToClipboardInterface
     private lateinit var mShowCodeInterface: SlotMachineShowCodeInterface
-    private val jackpotModel: Jackpot = Gson().fromJson(this.response, Jackpot::class.java)
+    private val jackpotModel: SlotMachine = Gson().fromJson(this.response, SlotMachine::class.java)
 
     private var subEmail = ""
 

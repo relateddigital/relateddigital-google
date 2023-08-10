@@ -16,7 +16,7 @@ import androidx.fragment.app.FragmentManager
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.constants.Constants
 
-class SlotMachineWebDialogFragment : DialogFragment() {
+class SlotMachineWebDialogFragment: DialogFragment() {
     private var webView: WebView? = null
     private var mResponse: String? = null
     private var baseUrl: String? = ""
@@ -51,7 +51,7 @@ class SlotMachineWebDialogFragment : DialogFragment() {
             htmlString = requireArguments().getString("htmlString")
             mResponse = requireArguments().getString("response")
             mJavaScriptInterface = SlotMachineJavaScriptInterface(this, mResponse!!)
-            mJavaScriptInterface!!.setJackpotListeners(mListener, mCopyToClipboardInterface, mShowCodeInterface)
+            mJavaScriptInterface!!.setSlotMachineListeners(mListener, mCopyToClipboardInterface, mShowCodeInterface)
         }
     }
 
@@ -100,7 +100,7 @@ class SlotMachineWebDialogFragment : DialogFragment() {
     val javaScriptInterface: SlotMachineJavaScriptInterface?
         get() = mJavaScriptInterface
 
-    fun setJackpotListeners(
+    fun setSlotMachineListeners(
         listener: SlotMachineCompleteInterface,
         copyToClipboardInterface: SlotMachineCopyToClipboardInterface,
         showCodeInterface: SlotMachineShowCodeInterface
