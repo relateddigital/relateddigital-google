@@ -47,7 +47,12 @@ class RelatedDigitalModel(
         private var visitorData: String,
         private var visitData: String,
         private var cookie: LoadBalanceCookie? = null,
-        private var extra: HashMap<String, Any> = HashMap()
+        private var extra: HashMap<String, Any> = HashMap(),
+        private var utmCampaign: String?,
+        private var utmContent: String?,
+        private var utmMedium: String?,
+        private var utmSource: String?,
+        private var utmTerm: String?
 ) : Serializable {
 
     companion object {
@@ -235,6 +240,41 @@ class RelatedDigitalModel(
     fun setToken(context: Context, token: String) {
         synchronized(this) {
             this.token = token
+            saveToSharedPrefs(context)
+        }
+    }
+
+    fun setUtmCampaign(context: Context, utmCampaign: String) {
+        synchronized(this) {
+            this.utmCampaign = utmCampaign
+            saveToSharedPrefs(context)
+        }
+    }
+
+    fun setUtmContent(context: Context, utmContent: String) {
+        synchronized(this) {
+            this.utmContent = utmContent
+            saveToSharedPrefs(context)
+        }
+    }
+
+    fun setUtmMedium(context: Context, utmMedium: String) {
+        synchronized(this) {
+            this.utmMedium = utmMedium
+            saveToSharedPrefs(context)
+        }
+    }
+
+    fun setUtmSource(context: Context, utmSource: String) {
+        synchronized(this) {
+            this.utmSource = utmSource
+            saveToSharedPrefs(context)
+        }
+    }
+
+    fun setUtmTerm(context: Context, utmTerm: String) {
+        synchronized(this) {
+            this.utmTerm = utmTerm
             saveToSharedPrefs(context)
         }
     }
@@ -480,6 +520,36 @@ class RelatedDigitalModel(
         }
     }
 
+    fun getUtmCampaign(): String? {
+        synchronized(this) {
+            return utmCampaign
+        }
+    }
+
+    fun getUtmContent(): String? {
+        synchronized(this) {
+            return utmContent
+        }
+    }
+
+    fun getUtmMedium(): String? {
+        synchronized(this) {
+            return utmMedium
+        }
+    }
+
+    fun getUtmSource(): String? {
+        synchronized(this) {
+            return utmSource
+        }
+    }
+
+    fun getUtmTerm(): String? {
+        synchronized(this) {
+            return utmTerm
+        }
+    }
+
     fun getUserAgent(): String {
         synchronized(this) {
             return userAgent
@@ -571,6 +641,21 @@ class RelatedDigitalModel(
             }
             if (model.getExVisitorId() != null) {
                 this.exVisitorId = model.getExVisitorId()
+            }
+            if (model.getUtmCampaign() != null) {
+                this.utmCampaign = model.getUtmCampaign()
+            }
+            if (model.getUtmContent() != null) {
+                this.utmContent = model.getUtmContent()
+            }
+            if (model.getUtmSource() != null) {
+                this.utmSource= model.getUtmSource()
+            }
+            if (model.getUtmMedium() != null) {
+                this.utmMedium = model.getUtmMedium()
+            }
+            if (model.getUtmTerm() != null) {
+                this.utmTerm = model.getUtmTerm()
             }
             if (model.getToken() != null) {
                 this.token = model.getToken()
@@ -771,6 +856,31 @@ class RelatedDigitalModel(
                 AppUtils.getCookieId(context)
             } else {
                 fromModel.getCookieId()
+            }
+            utmCampaign = if (fromModel.getUtmCampaign() == null) {
+                null
+            } else {
+                fromModel.getUtmCampaign()
+            }
+            utmContent = if (fromModel.getUtmContent() == null) {
+                null
+            } else {
+                fromModel.getUtmContent()
+            }
+            utmMedium = if (fromModel.getUtmMedium() == null) {
+                null
+            } else {
+                fromModel.getUtmMedium()
+            }
+            utmTerm = if (fromModel.getUtmTerm() == null) {
+                null
+            } else {
+                fromModel.getUtmTerm()
+            }
+            utmSource = if (fromModel.getUtmSource() == null) {
+                null
+            } else {
+                fromModel.getUtmSource()
             }
             userAgent = if (fromModel.getUserAgent().isNullOrEmpty()) {
                 AppUtils.getUserAgent()
