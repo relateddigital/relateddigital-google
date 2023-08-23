@@ -44,6 +44,7 @@ class Message : Serializable {
         private set
     private val params: MutableMap<String, String> = HashMap()
     private var elements: ArrayList<Element>? = null
+    private var actions: ArrayList<Actions>? = null
     var loginID: String? = null
 
     constructor(context: Context, bundle: Map<String, String?>) {
@@ -151,5 +152,9 @@ class Message : Serializable {
 
     fun getElements(): ArrayList<Element>? {
         return elements
+    }
+
+    fun getActions(): ArrayList<Actions>? {
+        return actions
     }
 }
