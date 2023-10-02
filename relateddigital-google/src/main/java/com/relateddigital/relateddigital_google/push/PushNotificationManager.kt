@@ -204,7 +204,7 @@ class PushNotificationManager {
             NotificationCompat.PRIORITY_DEFAULT
         }
         // TODO : When backend ready edit
-/*
+
         val actionList = ArrayList<NotificationCompat.Action>()
         val actions: ArrayList<Actions>? = pushMessage.getActions()
 
@@ -217,9 +217,14 @@ class PushNotificationManager {
                     Intent(Intent.ACTION_VIEW, linkUri),
                     PendingIntent.FLAG_UPDATE_CURRENT
                 )
-
-                val actionIcon = actionItem?.Icon?.toInt() ?: R.drawable.ic_carousel_icon
-                val actionTitle = actionItem?.Title ?: "Default Title"
+                var actionIcon = R.drawable.ic_carousel_icon
+                    if (!actionItem.Icon.isNullOrEmpty()){
+                   actionIcon = actionItem.Icon!!.toInt()
+                }
+                var actionTitle = actionItem.Title ?: "Default Title"
+                if (!actionItem.Title.isNullOrEmpty()){
+                    actionTitle = actionItem.Title!!
+                }
 
                 val action = NotificationCompat.Action.Builder(
                     actionIcon,
@@ -230,7 +235,7 @@ class PushNotificationManager {
                 actionList.add(action)
             }
         }
-*/
+
 
         val style = if (pushImage == null) NotificationCompat.BigTextStyle()
             .bigText(pushMessage.message) else NotificationCompat.BigPictureStyle()
@@ -247,11 +252,11 @@ class PushNotificationManager {
                 .setPriority(importance)
                 .setContentText(pushMessage.message)
                 // TODO !!
-        /*if (actions != null && actions.isNotEmpty()) {
+        if (actions != null && actions.isNotEmpty()) {
             for (action in actionList) {
                 mBuilder.addAction(action)
             }
-        } */
+        }
         setNumber(mBuilder, context)
         setNotificationSmallIcon(mBuilder, context)
         if (pushMessage.sound != null) {
