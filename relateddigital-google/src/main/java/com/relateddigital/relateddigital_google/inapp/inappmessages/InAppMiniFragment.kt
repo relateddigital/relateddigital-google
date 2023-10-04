@@ -48,8 +48,17 @@ class InAppMiniFragment: Fragment() {
             if (mInAppMessage == null) {
                 remove()
             } else {
+                //TODO when backend ready arrange gravity
+                /*
+                if (mInAppMessage!!.mActionData!!mGravity = "top" {
+                binding!!.ll.gravity = Gravity.TOP
+                }
+                */
+
                 binding!!.tvInAppTitleMini.text = mInAppMessage!!.mActionData!!.mMsgTitle!!.replace("\\n", "\n")
                 binding!!.tvInAppTitleMini.typeface = mInAppMessage!!.mActionData!!.getFontFamily(requireActivity())
+                //TODO when backend ready setCloseButton()
+                //setCloseButton()
                 if (!mInAppMessage!!.mActionData!!.mImg.equals("")) {
                     binding!!.ivInAppImageMini.visibility = View.VISIBLE
                     Picasso.get().load(mInAppMessage!!.mActionData!!.mImg).into(binding!!.ivInAppImageMini)
@@ -64,6 +73,23 @@ class InAppMiniFragment: Fragment() {
         }
         return view
     }
+
+    private val closeIcon: Int
+        get() {
+            when (mInAppMessage!!.mActionData!!.mCloseButtonColor) {
+                "white" -> return R.drawable.ic_close_white_24dp
+                "black" -> return R.drawable.ic_close_black_24dp
+            }
+            return R.drawable.ic_close_black_24dp
+        }
+            fun setCloseButton(){
+            binding!!.ibClose.setBackgroundResource(R.drawable.ic_close_white_24dp)
+            binding!!.ibClose.setOnClickListener {
+
+                remove()
+            }
+        }
+
 
     fun setInAppState(stateId: Int, inAppState: InAppNotificationState?) {
         mInAppStateId = stateId
@@ -83,6 +109,7 @@ class InAppMiniFragment: Fragment() {
     override fun onResume() {
         super.onResume()
         if (mInAppMessage != null) {
+            //TODO when backend ready make arrangement for delay time here
             mHandler!!.postDelayed(mDisplayMini!!, 500)
         }
     }
@@ -193,6 +220,7 @@ class InAppMiniFragment: Fragment() {
             mHandler!!.removeCallbacks(mDisplayMini!!)
             val fragmentManager = requireActivity().supportFragmentManager
             try {
+                //TODO When backend ready arrange close animation
                 val transaction = requireActivity().supportFragmentManager.beginTransaction()
                 transaction.setCustomAnimations(0, R.anim.anim_slide_down).remove(this).commitAllowingStateLoss()
                 InAppUpdateDisplayState.releaseDisplayState(mInAppStateId)

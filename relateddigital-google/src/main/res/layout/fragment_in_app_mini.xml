@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll"
     android:layout_width="match_parent"
     android:layout_height="75dp"
     android:layout_gravity="bottom"
@@ -22,5 +23,14 @@
         android:paddingRight="15dp"
         android:textColor="#ffffff"
         android:textSize="20sp" />
+
+    <ImageButton
+        android:id="@+id/ib_close"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="5dp"
+        android:textColor="#000000"
+        android:visibility="gone"/>
 
 </LinearLayout>
