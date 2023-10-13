@@ -15,6 +15,7 @@ import com.relateddigital.relateddigital_google.network.requestHandler.InAppNoti
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.databinding.FragmentInAppMiniBinding
+import com.relateddigital.relateddigital_google.databinding.FragmentInAppMiniTopBinding
 import com.relateddigital.relateddigital_google.inapp.InAppButtonInterface
 import com.relateddigital.relateddigital_google.inapp.InAppNotificationState
 import com.relateddigital.relateddigital_google.inapp.InAppUpdateDisplayState
@@ -35,6 +36,8 @@ class InAppMiniFragment: Fragment() {
     private var mDisplayMini: Runnable? = null
     private var mCleanedUp = false
     private var binding: FragmentInAppMiniBinding? = null
+    private var bindingTop: FragmentInAppMiniTopBinding? = null
+    private var useBinding: Boolean = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mCleanedUp = false
@@ -42,18 +45,14 @@ class InAppMiniFragment: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        binding = FragmentInAppMiniBinding.inflate(inflater, container, false)
-        var view: View? = binding!!.root
-        if (mInAppNotificationState != null) {
+        if (useBinding) {
+            binding = FragmentInAppMiniBinding.inflate(inflater, container, false)
+            var view: View? = binding!!.root
+            if (mInAppNotificationState != null) {
+
             if (mInAppMessage == null) {
                 remove()
             } else {
-                //TODO when backend ready arrange gravity
-                /*
-                if (mInAppMessage!!.mActionData!!mGravity = "top" {
-                binding!!.ll.gravity = Gravity.TOP
-                }
-                */
 
                 binding!!.tvInAppTitleMini.text = mInAppMessage!!.mActionData!!.mMsgTitle!!.replace("\\n", "\n")
                 binding!!.tvInAppTitleMini.typeface = mInAppMessage!!.mActionData!!.getFontFamily(requireActivity())
@@ -73,6 +72,27 @@ class InAppMiniFragment: Fragment() {
         }
         return view
     }
+        else {
+            bindingTop= FragmentInAppMiniTopBinding.inflate(inflater, container, false)
+            var viewTop: View? = bindingTop!!.root
+            if (mInAppNotificationState != null) {
+                bindingTop!!.tvInAppTitleMini.text = mInAppMessage!!.mActionData!!.mMsgTitle!!.replace("\\n", "\n")
+                bindingTop!!.tvInAppTitleMini.typeface = mInAppMessage!!.mActionData!!.getFontFamily(requireActivity())
+                //TODO when backend ready setCloseButton()
+                setCloseButton()
+                if (!mInAppMessage!!.mActionData!!.mImg.equals("")) {
+                    bindingTop!!.ivInAppImageMini.visibility = View.VISIBLE
+                    Picasso.get().load(mInAppMessage!!.mActionData!!.mImg).into(bindingTop!!.ivInAppImageMini)
+                } else {
+                    bindingTop!!.ivInAppImageMini.visibility = View.GONE
+                }
+                mHandler!!.postDelayed(mRemover!!, MINI_REMOVE_TIME.toLong())            } else {
+                cleanUp()
+                viewTop = null
+            }
+            return viewTop
+        }
+    }
 
     private val closeIcon: Int
         get() {
@@ -83,12 +103,25 @@ class InAppMiniFragment: Fragment() {
             return R.drawable.ic_close_black_24dp
         }
             fun setCloseButton(){
+
+                //TODO up or bottom
+              /*  if(mInAppMessage!!.mActionData!!up) {
+                binding!!.ibClose.visibility = View.VISIBLE
             binding!!.ibClose.setBackgroundResource(R.drawable.ic_close_white_24dp)
             binding!!.ibClose.setOnClickListener {
-
                 remove()
             }
-        }
+                }*/
+               // else
+                 //   {
+        //bindingTop!!.ibClose.visibility = View.VISIBLE
+        //bindingTop!!.ibClose.setBackgroundResource(R.drawable.ic_close_white_24dp)
+        //bindingTop!!.ibClose.setOnClickListener {
+         //   remove()
+               //     }
+           // }      */
+
+            }
 
 
     fun setInAppState(stateId: Int, inAppState: InAppNotificationState?) {
@@ -139,8 +172,26 @@ class InAppMiniFragment: Fragment() {
             requireView().visibility = View.VISIBLE
             requireView().setBackgroundColor(mInAppNotificationState!!.getHighlightColor())
             requireView().setOnTouchListener { _, event -> mDetector!!.onTouchEvent(event) }
-            requireView().startAnimation(AnimationManager.getMiniTranslateAnimation(requireActivity()))
-            binding!!.ivInAppImageMini.startAnimation(AnimationManager.getMiniScaleAnimation(requireActivity()))
+            if(useBinding) {
+                requireView().startAnimation(
+                    AnimationManager.getMiniTranslateAnimation(
+                        requireActivity()
+                    )
+                )
+                binding!!.ivInAppImageMini.startAnimation(
+                    AnimationManager.getMiniScaleAnimation(
+                        requireActivity()
+                    )
+                )
+            }
+            else {
+                requireView().startAnimation(
+                    AnimationManager.getMiniTranslateTopAnimation(
+                        requireActivity()
+                    )
+                )
+            bindingTop!!.ivInAppImageMini.startAnimation(AnimationManager.getMiniScaleAnimation(requireActivity()))
+            }
         }
     }
 

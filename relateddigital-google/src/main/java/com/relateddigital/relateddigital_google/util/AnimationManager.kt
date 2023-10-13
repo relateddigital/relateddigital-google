@@ -25,6 +25,13 @@ object AnimationManager {
             scale.duration = 200
             return scale
         }
+    fun getMiniTranslateTopAnimation(context: Context, duration: Long = 200): TranslateAnimation {
+        val heightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 75f, context.resources.displayMetrics)
+        val translate = TranslateAnimation(0f, 0f, -heightPx, 0f)
+        translate.interpolator = DecelerateInterpolator()
+        translate.duration = duration
+        return translate
+    }
 
     fun getMiniTranslateAnimation(context: Context): TranslateAnimation {
         val heightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 75f,
