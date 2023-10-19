@@ -161,6 +161,7 @@ class Constants {
         const val TWITTER_KEY = "twitter"
         const val FACEBOOK_KEY = "facebook"
         const val EMAIL_KEY = "email"
+        const val SET_ANONYMOUS_KEY = "setAnonymous"
         const val LOCATION_KEY = "location"
         const val RELATED_DIGITAL_USER_KEY = "keyID"
         const val MSISDN_KEY = "msisdn"
