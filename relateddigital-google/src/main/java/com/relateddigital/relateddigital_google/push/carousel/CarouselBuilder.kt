@@ -7,7 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
+
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
@@ -17,7 +17,6 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.constants.Constants
-import com.relateddigital.relateddigital_google.model.Actions
 import com.relateddigital.relateddigital_google.model.Carousel
 import com.relateddigital.relateddigital_google.model.CarouselItem
 import com.relateddigital.relateddigital_google.model.Message
@@ -57,6 +56,9 @@ class CarouselBuilder private constructor(private val context: Context, notifica
     private var placeHolderImagePath //Stores path of these images if set by user
             : String? = null
     private var isImagesInCarousel = true
+    private val actions = mutableListOf<NotificationCompat.Action>()
+
+
     fun beginTransaction(): CarouselBuilder {
         clearCarouselIfExists()
         return this
@@ -242,11 +244,13 @@ class CarouselBuilder private constructor(private val context: Context, notifica
         }
         showCarousel()
     }
+    fun addAction(action: NotificationCompat.Action) {
+        actions.add(action)
+    }
 
     private fun showCarousel() {
         if (carouselItems != null && carouselItems!!.size > 0) {
             if (carousel == null || carousel!!.carouselNotificationId != carouselNotificationId) {
-                //First save this set up into a carousel setup item
                 carousel = saveCarouselSetUp()
             } else {
                 carousel!!.currentStartIndex = currentStartIndex
@@ -279,48 +283,7 @@ class CarouselBuilder private constructor(private val context: Context, notifica
                 carouselNotificationId
             )
 
-            /*val actionList = ArrayList<NotificationCompat.Action>()
-            val actions: ArrayList<Actions>? = pushMessage.getActions()
 
-            if (actions != null && actions.isNotEmpty()) {
-                actions.forEach { actionItem ->
-                    val linkUri = Uri.parse(actionItem?.Url)
-                    val actionIntent = PendingIntent.getActivity(
-                        context,
-                        0,
-                        Intent(Intent.ACTION_VIEW, linkUri),
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-                    var actionIcon = R.drawable.ic_carousel_icon
-                    if (!actionItem.Icon.isNullOrEmpty()){
-                        actionIcon = actionItem.Icon!!.toInt()
-                    }
-                    var actionTitle = actionItem.Title ?: "Default Title"
-                    if (!actionItem.Title.isNullOrEmpty()){
-                        actionTitle = actionItem.Title!!
-                    }
-
-                    val action = NotificationCompat.Action.Builder(
-                        actionIcon,
-                        actionTitle,
-                        actionIntent
-                    ).build()
-
-                    actionList.add(action)
-                }
-            } */
-
-            // TODO : Check the number of buttons and related
-            // pending intents here when BE gets ready and
-            // set them accordingly.
-            /*
-            mBuilder.addAction(R.drawable.notification_button, "Open" , contentIntent);
-            */
-           /* if (actions != null && actions.isNotEmpty()) {
-                for (action in actionList) {
-                    mBuilder.addAction(action)
-                }
-            } */
             val foregroundNote = mBuilder.build()
             foregroundNote.bigContentView = bigView
             mNotifyManager?.notify(carouselNotificationId, foregroundNote)

@@ -19,6 +19,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.constants.Constants
+import com.relateddigital.relateddigital_google.inapp.spintowin.SpinToWinActivity
 import com.relateddigital.relateddigital_google.model.Actions
 import com.relateddigital.relateddigital_google.model.CarouselItem
 import com.relateddigital.relateddigital_google.model.Element
@@ -42,9 +43,44 @@ class PushNotificationManager {
                 CarouselItem(item.id, item.title, item.content, item.picture)
             carouselBuilder.addCarouselItem(cItem)
         }
+
+        val actionList = ArrayList<NotificationCompat.Action>()
+        val actions: ArrayList<Actions>? = pushMessage.getActions()
+
+        if (actions != null && actions.isNotEmpty()) {
+            actions.forEach { actionItem ->
+                val linkUri = Uri.parse(actionItem?.Url)
+                val actionIntent = PendingIntent.getActivity(
+                    context,
+                    0,
+                    Intent(Intent.ACTION_VIEW, linkUri),
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+                var actionIcon = R.drawable.ic_carousel_icon
+                if (!actionItem.Icon.isNullOrEmpty()){
+                    actionIcon = actionItem.Icon!!.toInt()
+                }
+                var actionTitle = actionItem.Title ?: "Default Title"
+                if (!actionItem.Title.isNullOrEmpty()){
+                    actionTitle = actionItem.Title!!
+                }
+
+                val action = NotificationCompat.Action.Builder(
+                    actionIcon,
+                    actionTitle,
+                    actionIntent
+                ).build()
+
+                actionList.add(action)
+                if (actions != null && actions.isNotEmpty()) {
+                for (action in actionList) {
+                    carouselBuilder.addAction(action)
+                }
+                }
+            }
+        }
         carouselBuilder.buildCarousel(pushMessage)
     }
-
     fun generateNotification(
         context: Context,
         pushMessage: Message,
@@ -203,7 +239,6 @@ class PushNotificationManager {
         } else {
             NotificationCompat.PRIORITY_DEFAULT
         }
-        // TODO : When backend ready edit
 
         val actionList = ArrayList<NotificationCompat.Action>()
         val actions: ArrayList<Actions>? = pushMessage.getActions()
@@ -251,7 +286,7 @@ class PushNotificationManager {
                 .setDefaults(Notification.DEFAULT_VIBRATE or Notification.FLAG_SHOW_LIGHTS)
                 .setPriority(importance)
                 .setContentText(pushMessage.message)
-                // TODO !!
+
         if (actions != null && actions.isNotEmpty()) {
             for (action in actionList) {
                 mBuilder.addAction(action)
