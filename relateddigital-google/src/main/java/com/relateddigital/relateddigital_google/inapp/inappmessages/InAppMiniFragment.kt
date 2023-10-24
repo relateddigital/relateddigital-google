@@ -55,6 +55,9 @@ class InAppMiniFragment: Fragment() {
                         mInAppMessage!!.mActionData!!.mMsgTitle!!.replace("\\n", "\n")
                     bindingTop!!.tvInAppTitleMini.typeface =
                         mInAppMessage!!.mActionData!!.getFontFamily(requireActivity())
+                    if(!mInAppMessage!!.mActionData!!.mMsgTitleColor.isNullOrEmpty()) {
+                        bindingTop!!.tvInAppTitleMini!!.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgTitleColor))
+                    }
                     setCloseButton()
                     if (!mInAppMessage!!.mActionData!!.mImg.equals("")) {
                         bindingTop!!.ivInAppImageMini.visibility = View.VISIBLE
@@ -84,6 +87,9 @@ class InAppMiniFragment: Fragment() {
                             mInAppMessage!!.mActionData!!.mMsgTitle!!.replace("\\n", "\n")
                         binding!!.tvInAppTitleMini.typeface =
                             mInAppMessage!!.mActionData!!.getFontFamily(requireActivity())
+                        if(!mInAppMessage!!.mActionData!!.mMsgTitleColor.isNullOrEmpty()) {
+                            binding!!.tvInAppTitleMini!!.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgTitleColor))
+                        }
 
                 setCloseButton()
                         if (!mInAppMessage!!.mActionData!!.mImg.equals("")) {
@@ -171,7 +177,12 @@ class InAppMiniFragment: Fragment() {
     private fun displayMiniInApp() {
         mDisplayMini = Runnable {
             requireView().visibility = View.VISIBLE
-            requireView().setBackgroundColor(mInAppNotificationState!!.getHighlightColor())
+            if(!mInAppMessage!!.mActionData!!.mBackground.isNullOrEmpty()) {
+                requireView().setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
+            }
+            else {
+                requireView().setBackgroundColor(mInAppNotificationState!!.getHighlightColor())
+            }
             requireView().setOnTouchListener { _, event -> mDetector!!.onTouchEvent(event) }
             if (mInAppMessage!!.mActionData!!.mPos == "top") {
                 requireView().startAnimation(
