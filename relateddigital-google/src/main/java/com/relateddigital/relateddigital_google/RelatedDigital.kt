@@ -22,7 +22,6 @@ import com.relateddigital.relateddigital_google.inapp.VisilabsCallback
 import com.relateddigital.relateddigital_google.locationPermission.LocationPermissionHandler
 import com.relateddigital.relateddigital_google.model.*
 import com.relateddigital.relateddigital_google.network.RequestFormer
-import com.relateddigital.relateddigital_google.network.RequestHandler
 import com.relateddigital.relateddigital_google.push.EuromessageCallback
 import com.relateddigital.relateddigital_google.push.PushMessageInterface
 import com.relateddigital.relateddigital_google.push.RetentionType
@@ -1634,6 +1633,27 @@ object RelatedDigital {
             }
         } else {
             Log.e(LOG_TAG, "Call RelatedDigital.init() first")
+        }
+    }
+
+    @JvmStatic
+    fun requestNotificationPermission(context: Context) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            val callback = object : NotificationPermissionCallback {
+                override fun onPermissionResult(granted: Boolean) {
+                    model?.setIsPushNotificationEnabled(context, granted)
+                    model?.setPushPermissionStatus(context, AppUtils.getNotificationPermissionStatus(context))
+                    if(model?.getPushPermissionStatus() == "granted") {
+                        model?.add(context, "pushPermit", "Y")
+                    } else {
+                        model?.add(context, "pushPermit", "N")
+                    }
+                    sync(context)
+                }
+            }
+            NotificationPermissionActivity.callback = callback
+            val intent = Intent(context, NotificationPermissionActivity::class.java)
+            context.startActivity(intent)
         }
     }
 
