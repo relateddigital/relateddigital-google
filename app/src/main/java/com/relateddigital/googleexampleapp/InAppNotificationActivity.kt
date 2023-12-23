@@ -88,6 +88,11 @@ class InAppNotificationActivity : AppCompatActivity() {
             sendInAppRequest("spintowin")
         }
 
+        binding.customActionsButton.setOnClickListener{
+            sendInAppRequest("mobileCustomActions")
+
+        }
+
         binding.socialProofButton.setOnClickListener {
             val parameters: HashMap<String, String> = HashMap()
             parameters["OM.inapptype"] = "socialproof"

@@ -17,6 +17,9 @@ class ActionResponse : Serializable {
     @SerializedName("ShakeToWin")
     var mShakeToWinList: List<ShakeToWin>? = null
 
+    @SerializedName("MobileCustomActions")
+    var mCustomActionList: List<CustomActions>? = null
+
     @SerializedName("ScratchToWin")
     var mScratchToWinList: List<ScratchToWin>? = null
 
@@ -72,6 +75,11 @@ class ActionResponse : Serializable {
         get() = mShakeToWinList
         set(ShakeToWin) {
             mShakeToWinList = shakeToWinList
+        }
+    var customActionsList: List<CustomActions>?
+        get() = mCustomActionList
+        set(customActionsList) {
+            mCustomActionList = customActionsList
         }
     var scratchToWinList: List<ScratchToWin>?
         get() = mScratchToWinList
