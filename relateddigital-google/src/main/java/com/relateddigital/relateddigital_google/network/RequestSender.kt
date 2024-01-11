@@ -11,9 +11,9 @@ import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.api.*
 import com.relateddigital.relateddigital_google.inapp.choosefavorite.ChooseFavoriteActivity
 import com.relateddigital.relateddigital_google.constants.Constants
-import com.relateddigital.relateddigital_google.customactions.CustomActionFragment
 import com.relateddigital.relateddigital_google.inapp.InAppManager
 import com.relateddigital.relateddigital_google.inapp.VisilabsResponse
+import com.relateddigital.relateddigital_google.inapp.customactions.CustomActionFragment
 import com.relateddigital.relateddigital_google.inapp.findtowin.FindToWinActivity
 import com.relateddigital.relateddigital_google.inapp.giftbox.GiftBoxActivity
 import com.relateddigital.relateddigital_google.inapp.giftcatch.GiftCatchActivity
