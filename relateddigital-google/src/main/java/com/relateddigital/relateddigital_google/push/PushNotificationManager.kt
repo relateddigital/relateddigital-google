@@ -50,12 +50,20 @@ class PushNotificationManager {
         if (actions != null && actions.isNotEmpty()) {
             actions.forEach { actionItem ->
                 val linkUri = Uri.parse(actionItem?.Url)
-                val actionIntent = PendingIntent.getActivity(
+                val actionIntent = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R){
+                PendingIntent.getActivity(
+                    context,
+                    0,
+                    Intent(Intent.ACTION_VIEW, linkUri),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            } else {
+                PendingIntent.getActivity(
                     context,
                     0,
                     Intent(Intent.ACTION_VIEW, linkUri),
                     PendingIntent.FLAG_UPDATE_CURRENT
                 )
+            }
                 var actionIcon = R.drawable.ic_carousel_icon
                 if (!actionItem.Icon.isNullOrEmpty()){
                     actionIcon = actionItem.Icon!!.toInt()
@@ -246,12 +254,22 @@ class PushNotificationManager {
         if (actions != null && actions.isNotEmpty()) {
             actions.forEach { actionItem ->
                 val linkUri = Uri.parse(actionItem?.Url)
-                val actionIntent = PendingIntent.getActivity(
-                    context,
-                    0,
-                    Intent(Intent.ACTION_VIEW, linkUri),
-                    PendingIntent.FLAG_UPDATE_CURRENT
-                )
+                val actionIntent = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R){
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        Intent(Intent.ACTION_VIEW, linkUri),
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                } else {
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        Intent(Intent.ACTION_VIEW, linkUri),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                }
+
+
                 var actionIcon = R.drawable.ic_carousel_icon
                     if (!actionItem.Icon.isNullOrEmpty()){
                    actionIcon = actionItem.Icon!!.toInt()
