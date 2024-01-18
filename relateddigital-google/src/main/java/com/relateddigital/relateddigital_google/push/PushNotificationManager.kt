@@ -57,10 +57,10 @@ class PushNotificationManager {
                     Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM",linkUri),
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             } else {
-                PendingIntent.getActivity(
+                PendingIntent.getBroadcast(
                     context,
                     0,
-                    Intent(Intent.ACTION_VIEW, linkUri),
+                    Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM", linkUri),
                     PendingIntent.FLAG_UPDATE_CURRENT
                 )
             }
