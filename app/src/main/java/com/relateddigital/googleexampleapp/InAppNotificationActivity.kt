@@ -14,6 +14,7 @@ import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.VisilabsCallback
 import com.relateddigital.relateddigital_google.inapp.VisilabsResponse
 import com.relateddigital.relateddigital_google.inapp.countdowntimer.CountdownTimerFragment
+import com.relateddigital.relateddigital_google.inapp.inappreview.InappReviewActivity
 import com.relateddigital.relateddigital_google.model.FavsResponse
 import java.util.*
 
@@ -238,9 +239,14 @@ class InAppNotificationActivity : AppCompatActivity() {
             sendInAppRequest("slotMachine")
         }
 
-
         binding.inlineNps.setOnClickListener{
             val intent = Intent(this, InlineNpsWithNumbersActivity::class.java)
+            startActivity(intent)
+
+        }
+
+        binding.inAppReviewButton.setOnClickListener{
+            val intent = Intent(this, InappReviewActivity::class.java)
             startActivity(intent)
 
         }
