@@ -122,6 +122,18 @@
                 android:nextFocusLeft="@id/autotext"
                 android:nextFocusUp="@id/autotext" />
 
+            <AutoCompleteTextView
+                android:id="@+id/autotextkey"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:textColorHint="@color/black"
+                android:background="@android:drawable/edit_text"
+                android:hint="Key Id"
+                android:inputType="textEmailAddress"
+                android:nextFocusLeft="@id/autotext"
+                android:nextFocusUp="@id/autotext" />
+
             <Button
                 android:id="@+id/btn_sync"
                 android:layout_width="wrap_content"

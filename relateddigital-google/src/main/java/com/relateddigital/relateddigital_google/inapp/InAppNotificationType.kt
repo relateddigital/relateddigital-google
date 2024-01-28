@@ -65,5 +65,10 @@ enum class InAppNotificationType {
         override fun toString(): String {
             return "nps_with_secondpopup"
         }
+    },
+    APPRATING {
+        override fun toString(): String {
+            return "apprating"
+        }
     }
 }

@@ -250,21 +250,20 @@ class PushNotificationManager {
 
         val actionList = ArrayList<NotificationCompat.Action>()
         val actions: ArrayList<Actions>? = pushMessage.getActions()
-
         if (actions != null && actions.isNotEmpty()) {
             actions.forEach { actionItem ->
                 val linkUri = Uri.parse(actionItem?.Url)
                 val actionIntent = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R){
-                    PendingIntent.getActivity(
+                    PendingIntent.getBroadcast(
                         context,
                         0,
-                        Intent(Intent.ACTION_VIEW, linkUri),
+                        Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM",linkUri),
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 } else {
-                    PendingIntent.getActivity(
+                    PendingIntent.getBroadcast(
                         context,
                         0,
-                        Intent(Intent.ACTION_VIEW, linkUri),
+                        Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM",linkUri),
                         PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 }
@@ -272,7 +271,7 @@ class PushNotificationManager {
 
                 var actionIcon = R.drawable.ic_carousel_icon
                     if (!actionItem.Icon.isNullOrEmpty()){
-                   actionIcon = actionItem.Icon!!.toInt()
+                   actionIcon = R.drawable.ic_carousel_icon
                 }
                 var actionTitle = actionItem.Title ?: "Default Title"
                 if (!actionItem.Title.isNullOrEmpty()){

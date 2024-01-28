@@ -246,8 +246,7 @@ class InAppNotificationActivity : AppCompatActivity() {
         }
 
         binding.inAppReviewButton.setOnClickListener{
-            val intent = Intent(this, InappReviewActivity::class.java)
-            startActivity(intent)
+            sendInAppRequest("apprating")
 
         }
 

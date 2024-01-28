@@ -163,7 +163,7 @@ class PushNotificationActivity : AppCompatActivity() {
                 RelatedDigital.setTwitterId(this, "testTwitterId")
                 RelatedDigital.setEmail(this, binding.autotext.text.toString())
                 RelatedDigital.setFacebookId(this, "testFacebookId")
-                RelatedDigital.setRelatedDigitalUserId(this, "testRelatedDigitalUserId")
+                RelatedDigital.setRelatedDigitalUserId(this,  binding.autotextkey.text.toString())
                 RelatedDigital.setPhoneNumber(this, "testPhoneNumber")
                 RelatedDigital.setUserProperty(this, "instagram", "testInstagramId")
 
@@ -181,6 +181,8 @@ class PushNotificationActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Invalid email", Toast.LENGTH_LONG).show()
             }
+
+
         }
     }
 
