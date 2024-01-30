@@ -23,6 +23,7 @@ import com.relateddigital.relateddigital_google.locationPermission.LocationPermi
 import com.relateddigital.relateddigital_google.model.*
 import com.relateddigital.relateddigital_google.network.RequestFormer
 import com.relateddigital.relateddigital_google.push.EuromessageCallback
+import com.relateddigital.relateddigital_google.push.NotificationActionListener
 import com.relateddigital.relateddigital_google.push.PushMessageInterface
 import com.relateddigital.relateddigital_google.push.RetentionType
 import com.relateddigital.relateddigital_google.recommendation.VisilabsTargetFilter
@@ -38,6 +39,7 @@ object RelatedDigital {
     private var mRunnable: Runnable? = null
     private const val LOG_TAG: String = "RelatedDigital"
     private var previousModel: RelatedDigitalModel? = null
+    var actionButtonCallback: NotificationActionListener? = null
 
     @JvmStatic
     fun init(context: Context,
@@ -1123,6 +1125,12 @@ object RelatedDigital {
                 model!!.setCookieId(context, null)
             }
         }
+    }
+
+    @JvmStatic
+    fun setPushNotificationActionButtonCallback(context: Context , callback : NotificationActionListener) {
+       actionButtonCallback = callback
+
     }
 
     @JvmStatic

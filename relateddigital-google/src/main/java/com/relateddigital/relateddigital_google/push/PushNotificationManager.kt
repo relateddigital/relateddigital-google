@@ -18,6 +18,7 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.relateddigital.relateddigital_google.R
+import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.spintowin.SpinToWinActivity
 import com.relateddigital.relateddigital_google.model.Actions
@@ -250,20 +251,36 @@ class PushNotificationManager {
 
         val actionList = ArrayList<NotificationCompat.Action>()
         val actions: ArrayList<Actions>? = pushMessage.getActions()
+        intent = AppUtils.getStartActivityIntent(context, pushMessage)
         if (actions != null && actions.isNotEmpty()) {
             actions.forEach { actionItem ->
                 val linkUri = Uri.parse(actionItem?.Url)
-                val actionIntent = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R){
+
+                val actionCallbackIntent = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R){
                     PendingIntent.getBroadcast(
-                        context,
-                        0,
+                        context, 0,
                         Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM",linkUri),
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 } else {
                     PendingIntent.getBroadcast(
                         context,
                         0,
                         Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM",linkUri),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                }
+
+                val actionIntent = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R){
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        intent!!, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                } else {
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        intent!!,
                         PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 }
@@ -278,13 +295,24 @@ class PushNotificationManager {
                     actionTitle = actionItem.Title!!
                 }
 
+                val actionCallback = NotificationCompat.Action.Builder(
+                    actionIcon,
+                    actionTitle,
+                    actionCallbackIntent
+                ).build()
+
                 val action = NotificationCompat.Action.Builder(
                     actionIcon,
                     actionTitle,
                     actionIntent
                 ).build()
 
+                if (RelatedDigital.actionButtonCallback== null ) {
                 actionList.add(action)
+                }
+                    else {
+                        actionList.add(actionCallback)
+                }
             }
         }
 
