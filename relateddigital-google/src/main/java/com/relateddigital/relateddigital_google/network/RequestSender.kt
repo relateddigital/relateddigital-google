@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import com.google.android.play.core.review.ReviewInfo
+import com.google.android.play.core.review.ReviewManager
+import com.google.android.play.core.tasks.Task
 import com.google.gson.Gson
 import com.relateddigital.relateddigital_google.model.GiftBox
 import com.relateddigital.relateddigital_google.RelatedDigital
@@ -17,6 +20,7 @@ import com.relateddigital.relateddigital_google.inapp.customactions.CustomAction
 import com.relateddigital.relateddigital_google.inapp.findtowin.FindToWinActivity
 import com.relateddigital.relateddigital_google.inapp.giftbox.GiftBoxActivity
 import com.relateddigital.relateddigital_google.inapp.giftcatch.GiftCatchActivity
+import com.google.android.play.core.tasks.OnCompleteListener
 import com.relateddigital.relateddigital_google.inapp.mailsubsform.MailSubscriptionFormHalfFragment
 import com.relateddigital.relateddigital_google.inapp.notification.InAppNotificationFragment
 import com.relateddigital.relateddigital_google.inapp.scratchtowin.ScratchToWinActivity
@@ -324,6 +328,23 @@ object RequestSender {
                                             val transaction : FragmentTransaction= (currentRequest.parent!! as FragmentActivity).supportFragmentManager.beginTransaction()
                                             transaction.replace(android.R.id.content, CustomActionFragment)
                                             transaction.commit()
+                                        }
+                                        !actionsResponse.mAppRatingList.isNullOrEmpty() -> {
+                                            lateinit var reviewManager: ReviewManager
+
+                                            val request: Task<ReviewInfo> = reviewManager.requestReviewFlow()
+                                            request.addOnCompleteListener(OnCompleteListener { task ->
+                                                if (task.isSuccessful) {
+
+                                                    val reviewInfo: ReviewInfo = task.result
+                                                    val flow: Task<Void> = reviewManager.launchReviewFlow(currentRequest.parent!!, reviewInfo)
+                                                    flow.addOnCompleteListener(OnCompleteListener { reviewFlowTask ->
+
+                                                    })
+                                                } else {
+                                                LOG_TAG
+                                                }
+                                            })
                                         }
                                         !actionsResponse.mGiftRain.isNullOrEmpty() -> {
                                             ActivityUtils.parentActivity = currentRequest.parent

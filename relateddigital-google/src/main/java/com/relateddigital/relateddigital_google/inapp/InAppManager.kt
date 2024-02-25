@@ -114,7 +114,6 @@ class InAppManager(
 
                     InAppNotificationType.FULL_IMAGE.toString(),
                     InAppNotificationType.SMILE_RATING.toString(),
-                    InAppNotificationType.APPRATING.toString(),
                     InAppNotificationType.NPS.toString(), InAppNotificationType.IMAGE_TEXT_BUTTON.toString(),
                     InAppNotificationType.NPS_WITH_NUMBERS.toString(), InAppNotificationType.IMAGE_BUTTON.toString(),
                     InAppNotificationType.CAROUSEL.toString(), InAppNotificationType.NPS_AND_SECOND_POP_UP.toString() -> {

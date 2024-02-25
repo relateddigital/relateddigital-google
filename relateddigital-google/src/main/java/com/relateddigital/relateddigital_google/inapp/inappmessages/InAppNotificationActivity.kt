@@ -75,7 +75,6 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         mIntentId = savedInstanceState?.getInt(INTENT_ID_KEY, Int.MAX_VALUE)
             ?: intent.getIntExtra(INTENT_ID_KEY, Int.MAX_VALUE)
         mInAppMessage = inAppMessage
-        if (isShowingNpsInApp || isInAppReview) {
         if (mInAppMessage == null) {
             Log.e(LOG_TAG, "InAppMessage is null! Could not get display state!")
             InAppUpdateDisplayState.releaseDisplayState(mIntentId)
@@ -104,7 +103,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                 finish()
             }
         }
-    }
+
     }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
