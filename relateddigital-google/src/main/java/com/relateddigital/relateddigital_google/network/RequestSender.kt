@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
 import com.google.gson.Gson
 import com.relateddigital.relateddigital_google.model.GiftBox
@@ -330,21 +331,12 @@ object RequestSender {
                                             transaction.commit()
                                         }
                                         !actionsResponse.mAppRatingList.isNullOrEmpty() -> {
-                                            lateinit var reviewManager: ReviewManager
-
-                                            val request: Task<ReviewInfo> = reviewManager.requestReviewFlow()
-                                            request.addOnCompleteListener(OnCompleteListener { task ->
-                                                if (task.isSuccessful) {
-
-                                                    val reviewInfo: ReviewInfo = task.result
-                                                    val flow: Task<Void> = reviewManager.launchReviewFlow(currentRequest.parent!!, reviewInfo)
-                                                    flow.addOnCompleteListener(OnCompleteListener { reviewFlowTask ->
-
-                                                    })
-                                                } else {
-                                                LOG_TAG
+                                            val reviewManager = ReviewManagerFactory.create(currentRequest.parent!!)
+                                            reviewManager.requestReviewFlow().addOnCompleteListener{
+                                                if(it.isSuccessful) {
+                                                    reviewManager.launchReviewFlow(currentRequest.parent!!, it.result)
                                                 }
-                                            })
+                                            }
                                         }
                                         !actionsResponse.mGiftRain.isNullOrEmpty() -> {
                                             ActivityUtils.parentActivity = currentRequest.parent
