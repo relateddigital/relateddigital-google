@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.SnapHelper
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.relateddigital.relateddigital_google.network.requestHandler.InAppNotificationClickRequest
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
@@ -38,7 +37,7 @@ import com.relateddigital.relateddigital_google.inapp.InAppNotificationState
 import com.relateddigital.relateddigital_google.inapp.InAppNotificationType
 import com.relateddigital.relateddigital_google.inapp.InAppUpdateDisplayState
 import com.relateddigital.relateddigital_google.model.InAppMessage
-import com.relateddigital.relateddigital_google.network.RequestHandler
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppNotificationClickRequest
 import com.relateddigital.relateddigital_google.util.AppUtils
 import com.relateddigital.relateddigital_google.util.StringUtils
 import com.squareup.picasso.Picasso
@@ -141,8 +140,14 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         } else {
             binding.ivTemplate.visibility = View.GONE
             if (!mInAppMessage!!.mActionData!!.mVideoUrl.isNullOrEmpty()) {
-                binding.videoView.visibility = View.VISIBLE
-                startPlayer()
+                if (mInAppMessage!!.mActionData!!.mVideoUrl!!.toLowerCase().contains("youtube.com") || mInAppMessage!!.mActionData!!.mVideoUrl!!.toLowerCase().contains("youtu.be")) {
+                binding.webViewInapp.visibility = View.VISIBLE
+                }
+                else {
+                    binding.videoView.visibility = View.VISIBLE
+                    startPlayer()
+                }
+
             } else {
                 binding.videoView.visibility = View.GONE
                 releasePlayer()
@@ -634,21 +639,24 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         }
     }
 
-    private fun setVideo() {
-      /*  val webSettings: WebSettings = webView.settings
+    private fun setYoutubeVideo() {
+
+        val webSettings: WebSettings = binding.webViewInapp.settings
+        binding.webViewInapp.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
         webSettings.javaScriptEnabled = true
         webSettings.domStorageEnabled = true
         webSettings.setSupportZoom(false)
         webSettings.builtInZoomControls = false
         webSettings.cacheMode = WebSettings.LOAD_NO_CACHE
-        webView.settings.mediaPlaybackRequiresUserGesture = false
-        webView.settings.allowContentAccess = true
-        webView.settings.allowFileAccess = true
-        webView.settings.allowFileAccessFromFileURLs = true
-        webView.settings.allowUniversalAccessFromFileURLs = true
+        binding.webViewInapp.settings.mediaPlaybackRequiresUserGesture = false
+        binding.webViewInapp.settings.allowContentAccess = true
+        binding.webViewInapp.settings.allowFileAccess = true
+        binding.webViewInapp.settings.allowFileAccessFromFileURLs = true
+        binding.webViewInapp.settings.allowUniversalAccessFromFileURLs = true
 
-        webView.webChromeClient = WebChromeClient()
-        var urlString ="https://www.youtube.com/watch?v=pwNv6g-otB0&list=RDBWUR1e6fMtw&index=11"
+        binding.webViewInapp.webChromeClient = WebChromeClient()
+        var urlString =mInAppMessage!!.mActionData!!.mVideoUrl
+        var videoId = extractVideoId(urlString)
         val html = """
         <style>
           .iframe-container iframe {
@@ -671,7 +679,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
           function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
               width: '100%',
-              videoId: '$urlString',
+              videoId: '$videoId',
               playerVars: { 'autoplay': 1, 'playsinline': 1 },
               events: {
                 'onReady': function(event) {
@@ -691,11 +699,28 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
     """
 
 
-        webView.loadDataWithBaseURL("https://www.youtube.com", html, "text/html", "UTF-8", null)
+        binding.webViewInapp.loadDataWithBaseURL("https://www.youtube.com", html, "text/html", "UTF-8", null)
 
-    */
+
 
     }
+
+    private fun extractVideoId(videoUrl: String?): String? {
+        var videoId: String? = null
+        if (videoUrl != null && videoUrl.trim { it <= ' ' }.length > 0) {
+            val split = videoUrl.split("v=".toRegex()).dropLastWhile { it.isEmpty() }
+                .toTypedArray()
+            if (split.size > 1) {
+                videoId = split[1]
+                val ampersandPosition = videoId.indexOf('&')
+                if (ampersandPosition != -1) {
+                    videoId = videoId.substring(0, ampersandPosition)
+                }
+            }
+        }
+        return videoId
+    }
+
     private fun setupSecondButton() {
         binding.btnTemplateSecond.visibility = View.VISIBLE
         binding.btnTemplateSecond.text = mInAppMessage!!.mActionData!!.mSecondButtonText
@@ -1347,8 +1372,18 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             }
         }
 
+
         if (!mInAppMessage!!.mActionData!!.mVideoUrl.isNullOrEmpty()) {
-            initializePlayer()
+            if (mInAppMessage!!.mActionData!!.mVideoUrl!!.toLowerCase().contains("youtube.com") || mInAppMessage!!.mActionData!!.mVideoUrl!!.toLowerCase().contains("youtu.be")) {
+                setYoutubeVideo()
+
+            } else {
+                initializePlayer()
+            }
+
+
+
+
         }
     }
 
