@@ -21,14 +21,13 @@ import com.relateddigital.relateddigital_google.push.PushMessageInterface
 import com.relateddigital.relateddigital_google.push.PushNotificationManager
 import com.relateddigital.relateddigital_google.push.TestPush
 import com.relateddigital.relateddigital_google.util.AppUtils
-import com.relateddigital.relateddigital_google.util.GoogleUtils
 import com.relateddigital.relateddigital_google.util.SharedPref
 import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PushNotificationActivity : AppCompatActivity() {
+class PushNotificationActivity : AppCompatActivity()  {
     companion object{
         private const val LOG_TAG = "PushNotificationActivity"
     }
@@ -53,6 +52,7 @@ class PushNotificationActivity : AppCompatActivity() {
         setupTemplatePushButtons()
         setupSyncButton()
         setupRegisterEmailButton()
+        setupDeleteButton()
     }
 
     private fun showToken() {
@@ -313,5 +313,15 @@ class PushNotificationActivity : AppCompatActivity() {
             payloadStr.append(param.key).append(" : ").append(param.value).append("\n\n")
         }
         binding.payloadView.text = payloadStr.toString()
+    }
+
+    private fun setupDeleteButton() {
+        binding.btnTextDelete.setOnClickListener{
+         //var deleteNotifications = RelatedDigital
+
+            RelatedDigital.deletePushNotification(this)
+
+        }
+
     }
 }

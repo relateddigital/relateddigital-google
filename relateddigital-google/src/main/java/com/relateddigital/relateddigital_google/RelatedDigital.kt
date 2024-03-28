@@ -1128,8 +1128,18 @@ object RelatedDigital {
     }
 
     @JvmStatic
-    fun setPushNotificationActionButtonCallback(context: Context , callback : NotificationActionListener) {
-       actionButtonCallback = callback
+    fun deletePushNotification(context: Context,notificationId : Int? = null){
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
+        if (notificationId != null) {
+            notificationManager?.cancel(notificationId)
+        } else {
+            notificationManager?.cancelAll()
+        }
+    }
+
+    @JvmStatic
+    fun setPushNotificationActionButtonCallback(context: Context , callback : NotificationActionListener) { actionButtonCallback = callback
 
     }
 
