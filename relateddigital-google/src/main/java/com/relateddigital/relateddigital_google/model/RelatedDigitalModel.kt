@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
+
 class RelatedDigitalModel(
         private var isPushNotificationEnabled: Boolean = false,
         private var isInAppNotificationEnabled: Boolean = false,
@@ -52,11 +53,13 @@ class RelatedDigitalModel(
         private var utmContent: String?,
         private var utmMedium: String?,
         private var utmSource: String?,
-        private var utmTerm: String?
-) : Serializable {
+        private var utmTerm: String?,
 
+) : Serializable {
     companion object {
         private const val LOG_TAG = "RelatedDigitalModel"
+        private val googleAppAliasLock = Any()
+        private val huaweiAppAliasLock = Any()
     }
 
     fun setIsPushNotificationEnabled(context: Context, isPushNotificationEnabled: Boolean) {
@@ -381,15 +384,14 @@ class RelatedDigitalModel(
             return isGeofenceEnabled
         }
     }
-
     fun getGoogleAppAlias(): String {
-        synchronized(this) {
+        synchronized(googleAppAliasLock) {
             return googleAppAlias
         }
     }
 
     fun getHuaweiAppAlias(): String {
-        synchronized(this) {
+        synchronized(huaweiAppAliasLock) {
             return huaweiAppAlias
         }
     }
