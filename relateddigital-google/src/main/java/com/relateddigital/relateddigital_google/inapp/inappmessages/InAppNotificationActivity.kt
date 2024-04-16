@@ -642,7 +642,13 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
     private fun setYoutubeVideo() {
 
         val webSettings: WebSettings = binding.webViewInapp.settings
-        binding.webViewInapp.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
+        if(!mInAppMessage!!.mActionData!!.mBackground.isNullOrEmpty()) {
+            binding.webViewInapp.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
+
+        }
+        else {
+            binding.webViewInapp.setBackgroundColor(resources.getColor(R.color.black))
+        }
         webSettings.javaScriptEnabled = true
         webSettings.domStorageEnabled = true
         webSettings.setSupportZoom(false)
@@ -680,7 +686,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             player = new YT.Player('player', {
               width: '100%',
               videoId: '$videoId',
-              playerVars: { 'autoplay': 1, 'playsinline': 1 },
+              playerVars: { 'autoplay': 1, 'playsinline': 1, 'rel': 0  },
               events: {
                 'onReady': function(event) {
                   event.target.playVideo();
