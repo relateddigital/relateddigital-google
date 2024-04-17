@@ -52,7 +52,8 @@ class PushNotificationActivity : AppCompatActivity()  {
         setupTemplatePushButtons()
         setupSyncButton()
         setupRegisterEmailButton()
-        setupDeleteButton()
+        setupDeleteAllPushButton()
+        setupDeletePushWithIdButton()
     }
 
     private fun showToken() {
@@ -315,11 +316,21 @@ class PushNotificationActivity : AppCompatActivity()  {
         binding.payloadView.text = payloadStr.toString()
     }
 
-    private fun setupDeleteButton() {
-        binding.btnTextDelete.setOnClickListener{
-         //var deleteNotifications = RelatedDigital
+    private fun setupDeleteAllPushButton() {
+        binding.btnTextDeleteAllPush.setOnClickListener{
 
-            RelatedDigital.deletePushNotification(this)
+
+            RelatedDigital.deleteAllPushNotifications(this)
+
+        }
+
+    }
+
+    private fun setupDeletePushWithIdButton() {
+        binding.btnTextDeletePushWithId.setOnClickListener{
+
+
+            RelatedDigital.deletePushNotificationWithId(this)
 
         }
 

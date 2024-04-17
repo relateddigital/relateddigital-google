@@ -1128,14 +1128,20 @@ object RelatedDigital {
     }
 
     @JvmStatic
-    fun deletePushNotification(context: Context,notificationId : Int? = null){
+    fun deleteAllPushNotifications(context: Context){
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
+            notificationManager?.cancelAll()
+    }
+
+    @JvmStatic
+    fun deletePushNotificationWithId(context: Context,notificationId : Int? = null){
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
         if (notificationId != null) {
             notificationManager?.cancel(notificationId)
-        } else {
-            notificationManager?.cancelAll()
         }
+
     }
 
     @JvmStatic
