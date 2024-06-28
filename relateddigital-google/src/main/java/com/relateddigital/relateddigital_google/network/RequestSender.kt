@@ -3,6 +3,8 @@ package com.relateddigital.relateddigital_google.network
 import androidx.fragment.app.FragmentTransaction
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import com.google.android.play.core.review.ReviewInfo
@@ -244,16 +246,23 @@ object RequestSender {
                                 if (actionsResponse != null) {
                                     when {
                                         !actionsResponse.mSpinToWinList.isNullOrEmpty() -> {
+                                            val spinToWinModel: SpinToWin =
+                                                actionsResponse.mSpinToWinList!![0]
+                                            var waitTime = 0L
+                                            if(!spinToWinModel!!.actiondata!!.waitingTime.toString().isNullOrEmpty()) {
+                                                 waitTime = spinToWinModel!!.actiondata!!.waitingTime!!.toLong()
+                                            }
                                             ActivityUtils.parentActivity = currentRequest.parent
                                             val intent =
                                                     Intent(
                                                             currentRequest.parent,
                                                             SpinToWinActivity::class.java
                                                     )
-                                            val spinToWinModel: SpinToWin =
-                                                    actionsResponse.mSpinToWinList!![0]
+
                                             intent.putExtra("spin-to-win-data", spinToWinModel)
-                                            currentRequest.parent!!.startActivity(intent)
+                                                Handler(Looper.getMainLooper()).postDelayed({
+                                                    currentRequest.parent!!.startActivity(intent)
+                                                }, waitTime * 1000L)
                                         }
                                         !actionsResponse.mScratchToWinList.isNullOrEmpty() -> {
                                             val intent =
@@ -339,16 +348,23 @@ object RequestSender {
                                             }
                                         }
                                         !actionsResponse.mGiftRain.isNullOrEmpty() -> {
+                                            val giftRainModel: GiftRain =
+                                                actionsResponse.mGiftRain!![0]
+                                            var waitTime = 0L
+                                            if(!giftRainModel!!.actiondata!!.waitingTime.toString().isNullOrEmpty()) {
+                                                 waitTime = giftRainModel!!.actiondata!!.waitingTime!!.toLong()
+                                            }
                                             ActivityUtils.parentActivity = currentRequest.parent
                                             val intent =
                                                 Intent(
                                                     currentRequest.parent,
                                                     GiftCatchActivity::class.java
                                                 )
-                                            val giftRainModel: GiftRain =
-                                                actionsResponse.mGiftRain!![0]
                                             intent.putExtra("gift-rain-data", giftRainModel)
-                                            currentRequest.parent!!.startActivity(intent)
+                                                Handler(Looper.getMainLooper()).postDelayed({
+                                                    currentRequest.parent!!.startActivity(intent)
+                                                }, waitTime * 1000L)
+
                                         }
                                         !actionsResponse.mGiftBox.isNullOrEmpty() -> {
                                             ActivityUtils.parentActivity = currentRequest.parent
