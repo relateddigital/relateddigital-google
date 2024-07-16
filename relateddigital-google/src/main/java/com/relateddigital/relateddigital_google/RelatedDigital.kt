@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import com.google.firebase.FirebaseApp
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import com.relateddigital.relateddigital_google.network.requestHandler.*
 import com.relateddigital.relateddigital_google.appTracker.AppTracker
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.geofence.GeofenceStarter
@@ -23,6 +22,7 @@ import com.relateddigital.relateddigital_google.inapp.VisilabsCallback
 import com.relateddigital.relateddigital_google.locationPermission.LocationPermissionHandler
 import com.relateddigital.relateddigital_google.model.*
 import com.relateddigital.relateddigital_google.network.RequestFormer
+import com.relateddigital.relateddigital_google.network.requestHandler.*
 import com.relateddigital.relateddigital_google.push.EuromessageCallback
 import com.relateddigital.relateddigital_google.push.NotificationActionListener
 import com.relateddigital.relateddigital_google.push.PushMessageInterface
@@ -30,6 +30,7 @@ import com.relateddigital.relateddigital_google.push.RetentionType
 import com.relateddigital.relateddigital_google.recommendation.VisilabsTargetFilter
 import com.relateddigital.relateddigital_google.remoteConfig.RemoteConfigHelper
 import com.relateddigital.relateddigital_google.util.*
+import org.json.JSONArray
 import org.json.JSONObject
 
 
@@ -1570,6 +1571,67 @@ object RelatedDigital {
                 }
             }
         }) {}.start()
+    }
+
+
+    @JvmStatic
+    fun deletePushMessageByIdFromLSPM(activity: Activity , messageId: String?): Boolean {
+        val payloads: String = SharedPref.readString(activity.applicationContext, Constants.PAYLOAD_SP_KEY)
+        return if (!payloads.isEmpty()) {
+            try {
+                val jsonObject = JSONObject(payloads)
+                val jsonArray = jsonObject.getJSONArray(Constants.PAYLOAD_SP_ARRAY_KEY)
+                val newJsonArray = JSONArray()
+                var messageFound = false
+                for (i in 0 until jsonArray.length()) {
+                    val currentObject = jsonArray.getJSONObject(i)
+                    val currentMessage =
+                        Gson().fromJson(currentObject.toString(), Message::class.java)
+                    if (currentMessage.pushId != messageId) {
+                        newJsonArray.put(currentObject)
+                    } else {
+                        messageFound = true
+                    }
+                }
+                if (messageFound) {
+                    jsonObject.put(Constants.PAYLOAD_SP_ARRAY_KEY, newJsonArray)
+                    SharedPref.writeString(
+                        activity.applicationContext,
+                        Constants.PAYLOAD_SP_KEY,
+                        jsonObject.toString()
+                    )
+                    true
+                } else {
+                    false
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                false
+            }
+        } else {
+            false
+        }
+    }
+    @JvmStatic
+    fun deleteAllPushMessagesFromLSPM(activity: Activity ): Boolean {
+        val payloads: String = SharedPref.readString(activity.applicationContext, Constants.PAYLOAD_SP_KEY)
+        return if (!payloads.isEmpty()) {
+            try {
+                val jsonObject = JSONObject(payloads)
+                jsonObject.put(Constants.PAYLOAD_SP_ARRAY_KEY, JSONArray())
+                SharedPref.writeString(
+                    activity.applicationContext,
+                    Constants.PAYLOAD_SP_KEY,
+                    jsonObject.toString()
+                )
+                true
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                false
+            }
+        } else {
+            false
+        }
     }
 
     /**

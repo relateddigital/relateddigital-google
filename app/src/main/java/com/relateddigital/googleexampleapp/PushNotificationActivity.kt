@@ -3,11 +3,11 @@ package com.relateddigital.googleexampleapp
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -22,7 +22,6 @@ import com.relateddigital.relateddigital_google.push.PushNotificationManager
 import com.relateddigital.relateddigital_google.push.TestPush
 import com.relateddigital.relateddigital_google.util.AppUtils
 import com.relateddigital.relateddigital_google.util.SharedPref
-import java.lang.Exception
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -54,10 +53,24 @@ class PushNotificationActivity : AppCompatActivity()  {
         setupRegisterEmailButton()
         setupDeleteAllPushButton()
         setupDeletePushWithIdButton()
+
+
     }
 
     private fun showToken() {
         binding.etToken.setText(RelatedDigital.getRelatedDigitalModel(this).getToken())
+    }
+
+    private fun deletefromGpm() {
+
+        binding.btnTextDeletePushWithIdFromGpm.setOnClickListener {
+            RelatedDigital.deletePushMessageByIdFromLSPM(this,"75d7ed18-0bac-433d-a1ff-21395a5c5679")
+        }
+
+        binding.btnTextDeleteAllPushFromGpm.setOnClickListener {
+            RelatedDigital.deleteAllPushMessagesFromLSPM(this)
+        }
+
     }
 
     private fun createSpinners() {
