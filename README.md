@@ -4,7 +4,7 @@
 
 # Latest Version 
 
-***July 9, 2024*** - [v1.3.0](https://github.com/relateddigital/relateddigital-google/releases)
+***July 24, 2024*** - [v1.3.1](https://github.com/relateddigital/relateddigital-google/releases)
 
 # About SDK
 
@@ -37,7 +37,7 @@ allprojects {
 Please, add the dependency of relateddigital-google library into your module-level build.gradle file as shown below:
 
  ```gradle
-implementation 'com.github.relateddigital:relateddigital-google:1.3.0'
+implementation 'com.github.relateddigital:relateddigital-google:1.3.1'
  ```
 
 # Licences
