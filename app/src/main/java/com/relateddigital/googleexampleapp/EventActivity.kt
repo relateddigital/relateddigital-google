@@ -25,10 +25,10 @@ class EventActivity : AppCompatActivity() {
         binding.tvExvisitorId.setText(exVisitor)
         binding.btnLogin.setOnClickListener {
             val parameters = HashMap<String, String>()
-            parameters["OM.sys.TokenID"] = token
-            parameters["OM.sys.AppID"] = appID
-            RelatedDigital.login(applicationContext, binding.tvExvisitorId.text.toString(), parameters, this)
-            Toast.makeText(applicationContext, "Login", Toast.LENGTH_LONG).show()
+            parameters["utm_source"] = "relateddigital"
+            parameters["utm_medium"] = "push"
+            parameters["utm_campaign"] = "hosgeldin"
+            RelatedDigital.sendCampaignParameters(applicationContext, parameters, this)
         }
         binding.btnLogout.setOnClickListener {
             PreferenceManager.getDefaultSharedPreferences(applicationContext).edit().clear().apply()
