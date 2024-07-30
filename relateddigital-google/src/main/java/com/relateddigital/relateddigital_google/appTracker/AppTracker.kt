@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
+import com.relateddigital.relateddigital_google.util.SharedPref
 import java.util.*
 
 object AppTracker {
@@ -38,12 +39,17 @@ object AppTracker {
                 Log.d(TAG, "Skipping app: ${appInfo.packageName}")
             }
         }
-
         if (appsStrBuilder.isNotEmpty()) {
             appsStrBuilder.deleteCharAt(appsStrBuilder.length - 1)
             val apps = appsStrBuilder.toString()
             val parameters = HashMap<String, String>()
             parameters[Constants.APP_TRACKER_REQUEST_KEY] = apps
+            if (RelatedDigital.getExVisitorId(context).isNotEmpty()) {
+                parameters["OM.appTrackerID"] = RelatedDigital.getExVisitorId(context)
+            } else {
+                parameters["OM.appTrackerID"] = RelatedDigital.getToken(context)
+            }
+
             RelatedDigital.customEvent(context, Constants.PAGE_NAME_REQUEST_VAL, parameters)
         }
     }
