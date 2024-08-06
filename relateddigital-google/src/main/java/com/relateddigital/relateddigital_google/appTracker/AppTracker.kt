@@ -44,12 +44,6 @@ object AppTracker {
             val apps = appsStrBuilder.toString()
             val parameters = HashMap<String, String>()
             parameters[Constants.APP_TRACKER_REQUEST_KEY] = apps
-            if (RelatedDigital.getExVisitorId(context).isNotEmpty()) {
-                parameters["OM.appTrackerID"] = RelatedDigital.getExVisitorId(context)
-            } else {
-                parameters["OM.appTrackerID"] = RelatedDigital.getToken(context)
-            }
-
             RelatedDigital.customEvent(context, Constants.PAGE_NAME_REQUEST_VAL, parameters)
         }
     }
