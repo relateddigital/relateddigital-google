@@ -14,7 +14,6 @@ import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.VisilabsCallback
 import com.relateddigital.relateddigital_google.inapp.VisilabsResponse
 import com.relateddigital.relateddigital_google.inapp.countdowntimer.CountdownTimerFragment
-import com.relateddigital.relateddigital_google.inapp.inappreview.InappReviewActivity
 import com.relateddigital.relateddigital_google.model.FavsResponse
 import java.util.*
 
@@ -245,10 +244,10 @@ class InAppNotificationActivity : AppCompatActivity() {
 
         }
 
-        binding.inAppReviewButton.setOnClickListener{
+        /*binding.inAppReviewButton.setOnClickListener{
             sendInAppRequest("apprating")
 
-        }
+        } */
 
     }
 

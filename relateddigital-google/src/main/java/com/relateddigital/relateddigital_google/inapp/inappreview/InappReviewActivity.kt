@@ -3,13 +3,8 @@ package com.relateddigital.relateddigital_google.inapp.inappreview
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.play.core.review.ReviewInfo
-import com.google.android.play.core.review.ReviewManager
-import com.google.android.play.core.review.ReviewManagerFactory
-import com.google.android.play.core.tasks.Task
-import com.google.android.play.core.tasks.OnCompleteListener
 import com.relateddigital.relateddigital_google.R
-
+/*
 class InappReviewActivity : AppCompatActivity() {
 
     private lateinit var reviewManager: ReviewManager
@@ -44,4 +39,4 @@ class InappReviewActivity : AppCompatActivity() {
             }
         })
     }
-}
+} */
