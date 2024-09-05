@@ -130,6 +130,11 @@ interface ApiMethods {
         @HeaderMap headers: Map<String, String>
     ): Call<ResponseBody>
 
+    @GET("/clawmachine.js")
+    fun getClawMachineJsFile(
+        @HeaderMap headers: Map<String, String>
+    ): Call<ResponseBody>
+
     @GET("/jackpot.js")
     fun getSlotMachineJsFile(
         @HeaderMap headers: Map<String, String>

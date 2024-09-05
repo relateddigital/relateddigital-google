@@ -32,6 +32,10 @@
             android:configChanges="orientation"
             android:noHistory="true"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".inapp.clawmachine.ClawMachineActivity"
+            android:exported="false" />
         <activity
             android:name=".inapp.scratchtowin.ScratchToWinActivity"
             android:noHistory="true"

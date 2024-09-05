@@ -26,6 +26,9 @@ class ActionResponse : Serializable {
     @SerializedName("ScratchToWin")
     var mScratchToWinList: List<ScratchToWin>? = null
 
+    @SerializedName("ClawMachine")
+    var mClawMachineList: List<ClawMachine>? = null
+
     @SerializedName("ProductStatNotifier")
     var mProductStatNotifierList: List<ProductStatNotifier>? = null
 

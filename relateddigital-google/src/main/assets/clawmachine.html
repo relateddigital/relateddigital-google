@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLAW MACHINE GAME</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+</head>
+
+<body>
+<script src="clawmachine.js"></script>
+<script type="text/javascript">
+        var config = {};
+        var clawMachine = {};
+        window.initClawMachine = function(responseConfig) {
+            config = responseConfig;
+            clawMachine = new ClawMachine(config);
+        };
+        if (window.Android) {
+            config = JSON.parse(Android.getResponse());
+            initClawMachine(config);
+        } else if (window.webkit && window.webkit.messageHandlers.eventHandler) {
+            window.webkit.messageHandlers.eventHandler.postMessage({
+                method: "initClawMachine"
+            });
+            window.console.log = function(message) {
+                var stringMessage = message;
+                if (typeof message !== "string") {
+                    stringMessage = JSON.stringify(message);
+                }
+                window.webkit.messageHandlers.eventHandler.postMessage({
+                    method: "console.log",
+                    message: stringMessage
+                });
+            };
+        } else {
+            window.BrowserTest = {
+                getPromotionCode: function() {
+                    window.chooseSlice(2, 'asd');
+                },
+                sendReport: function() {
+
+                }
+            };
+
+            const extendedProps = {
+    "background_image": "",
+    "background_color": "#d86dfb",
+    "font_family": "custom",
+    "custom_font_family_ios": "",
+    "custom_font_family_android": "",
+    "close_button_color": "white",
+    "mail_subscription_form": {
+        "title_text_color": "#000000",
+        "title_text_size": "2",
+        "text_color": "#000000",
+        "text_size": "2",
+        "button_color": "#e0c3fc",
+        "button_text_color": "#fff",
+        "button_text_size": "2",
+        "emailpermit_text_size": "2",
+        "emailpermit_text_url": "https://www.google.com",
+        "consent_text_size": "2",
+        "consent_text_url": "https://www.google.com"
+    },
+    "gamification_rules": {
+        "button_color": "#0014b2",
+        "button_text_color": "#e8e7ff",
+        "button_text_size": "4"
+    },
+    "game_elements": {
+        "catchbutton_color": "#9d0a0a",
+        "catchbutton_text_color": "#afafaf",
+        "catchbutton_text_size": "5"
+    },
+    "game_result_elements": {
+        "title_text_color": "#000000",
+        "title_text_size": "3",
+        "text_color": "#000000",
+        "text_size": "2"
+    },
+    "promocode_background_color": "#000000",
+    "promocode_text_color": "#ffffff",
+    "copybutton_color": "#782828",
+    "copybutton_text_color": "#878787",
+    "copybutton_text_size": "3",
+    "promocode_banner_text": "Do not forget to use your promotion code.",
+    "promocode_banner_text_color": "#ffffff",
+    "promocode_banner_background_color": "#000000",
+    "promocode_banner_button_label": "Copy to clipboard"
+};
+
+            let extendedPropsString = JSON.stringify(extendedProps);
+            //console.log(extendedPropsString);
+            extendedPropsString = encodeURI(extendedPropsString);
+            //console.log(extendedPropsString);
+
+            config = {
+    "actid": 1274,
+    "title": "Tayfun for RMC-449",
+    "actiontype": "ClawMachine",
+    "actiondata": {
+        "mail_subscription": true,
+        "mail_subscription_form": {
+            "title": "Mail Title",
+"message": "Mail Text",
+"placeholder": "Email Adress",
+"button_label": "Kaydet",
+"consent_text": "Kullanım Koşulları. <LINK>Oku</LINK>",
+"invalid_email_message": "Geçersiz E-Posta Adresi",
+"success_message": "Başarılı",
+"emailpermit_text": "Email İzni. <LINK>Izin Metni</LINK>",
+"check_consent_message": "Kullanım Koşullarını Kabul Edin."
+        },
+        "gamification_rules": {
+                        "background_image": "https://imgvisilabsnet.azureedge.net/shake_to_win/uploaded_images/163_1100_1664_20240603135037798.png",
+            "button_label": "ileri"
+        },
+        "game_elements": {
+            "toy_images": [
+                {
+                    "image": "https://imgvisilabsnet.azureedge.net/claw_machine/uploaded_images/test/112_885_1274_20240731124149153.png",
+                    "staticcode": "promocode01"
+                },
+                {
+                    "image": "https://imgvisilabsnet.azureedge.net/claw_machine/uploaded_images/test/112_885_1274_20240731124212545.png",
+                    "staticcode": "promocode02"
+                },
+                {
+                    "image": "https://imgvisilabsnet.azureedge.net/claw_machine/uploaded_images/test/112_885_1274_20240802011133093.png",
+                    "staticcode": "promocode03"
+                },
+                {
+                    "image": "https://imgvisilabsnet.azureedge.net/claw_machine/uploaded_images/test/112_885_1274_20240731124321948.png",
+                    "staticcode": "promocode04"
+                }
+            ],
+            "clawmachine_image": "",
+            "toysbackground_image": "https://imgvisilabsnet.azureedge.net/claw_machine/uploaded_images/test/112_885_1274_20240731124140833.png",
+            "catchbutton_label": "Catch"
+        },
+        "game_result_elements": {
+            "title": "Result Screen Title <%PromotionCode%>",
+            "message": "Result Screen Message\n  ADs gfgj fg jkgfyh khjflfuhj lgfhgfh lgf fgh lkfguhygfjll fu ft ltf g.\n  your code: <%PromotionCode%>"
+        },
+        "copybutton_label": "Copy to clipboard",
+        "copybutton_function": "copy_redirect",
+        "ios_lnk": "http://iOSLink",
+        "android_lnk": "http://AndroidLink",
+        "ExtendedProps": extendedPropsString,
+        "report": {
+            "impression": "",
+            "click": "OM.zn=acttype-44&OM.zpc=act-1274"
+        },
+        "auth": "9EFEFD47E16A9D2BAFBDDD43D7326371AC10A5373956AA19D1358859AEB4651A",
+        "type": "subscription_email"
+    },
+    "panelv2": false
+};
+initClawMachine(config); // half_spin, full_spin
+        }
+    </script>
+</body>
+
+</html>
