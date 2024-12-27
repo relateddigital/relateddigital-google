@@ -49,11 +49,11 @@ class RelatedDigitalModel(
         private var visitData: String,
         private var cookie: LoadBalanceCookie? = null,
         private var extra: HashMap<String, Any> = HashMap(),
-        private var utmCampaign: String?,
-        private var utmContent: String?,
-        private var utmMedium: String?,
-        private var utmSource: String?,
-        private var utmTerm: String?,
+        private var utmCampaign: String? = "",
+        private var utmContent: String? = "",
+        private var utmMedium: String? = "",
+        private var utmSource: String? = "",
+        private var utmTerm: String? = ""
 
 ) : Serializable {
     companion object {

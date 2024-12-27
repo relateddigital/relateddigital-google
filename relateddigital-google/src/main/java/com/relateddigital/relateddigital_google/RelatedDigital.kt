@@ -54,8 +54,13 @@ object RelatedDigital {
         val modelStr = SharedPref.readString(context, Constants.RELATED_DIGITAL_MODEL_KEY, "")
 
         if (modelStr.isNotEmpty()) {
-            model!!.fill(Gson().fromJson(modelStr, RelatedDigitalModel::class.java))
-        }
+            try {
+                val parsedModel = Gson().fromJson(modelStr, RelatedDigitalModel::class.java)
+                model!!.fill(parsedModel)
+            } catch (e: JsonSyntaxException) {
+                Log.e(LOG_TAG, "JSON parsing error in init: ${e.message}")
+                SharedPref.writeString(context, Constants.RELATED_DIGITAL_MODEL_KEY, "")
+            }        }
 
         model!!.setOrganizationId(context, organizationId)
         model!!.setProfileId(context, profileId)
@@ -1467,11 +1472,15 @@ object RelatedDigital {
                     val jsonArray = jsonObject.getJSONArray(Constants.PAYLOAD_SP_ARRAY_KEY)
                     for (i in 0 until jsonArray.length()) {
                         val currentObject = jsonArray.getJSONObject(i)
-                        val currentMessage: Message = Gson().fromJson(
-                            currentObject.toString(),
-                            Message::class.java
-                        )
-                        pushMessages.add(currentMessage)
+                        try {
+                            val currentMessage: Message = Gson().fromJson(
+                                currentObject.toString(),
+                                Message::class.java
+                            )
+                            pushMessages.add(currentMessage)
+                        } catch (e: JsonSyntaxException) {
+                            Log.e(LOG_TAG, "JSON parsing error in getPushMessages: ${e.message}")
+                        }
                     }
                     val orderedPushMessages: List<Message> = PayloadUtils.orderPushMessages(
                         activity.applicationContext,
@@ -1491,7 +1500,8 @@ object RelatedDigital {
                         "De-serializing JSON string of push message : " + e.message,
                         element.className + "/" + element.methodName + "/" + element.lineNumber
                     )
-                    activity.runOnUiThread { callback.fail(e.message!!) }
+                    val errorMessage = e.message ?: "An unknown error occurred while processing push messages."
+                    activity.runOnUiThread { callback.fail(errorMessage) }
                 }
             } else {
                 activity.runOnUiThread {
@@ -1515,10 +1525,12 @@ object RelatedDigital {
         val loginID: String =
             SharedPref.readString(activity, Constants.NOTIFICATION_LOGIN_ID_KEY)
 
-        if(loginID.isEmpty()) {
-            Log.e("getPushMessagesID() : ", "login ID is empty!");
-            return;
+        if (loginID.isEmpty()) {
+            Log.e("getPushMessagesID() : ", "login ID is empty!")
+            callback.fail("Login ID is empty") // Callback ile bilgilendirme de yapalım.
+            return
         }
+
 
         object : Thread(Runnable {
             val payloads: String = SharedPref.readString(
@@ -1532,14 +1544,16 @@ object RelatedDigital {
                     val jsonArray = jsonObject.getJSONArray(Constants.PAYLOAD_SP_ARRAY_ID_KEY)
                     for (i in 0 until jsonArray.length()) {
                         val currentObject = jsonArray.getJSONObject(i)
-                        val currentMessage: Message = Gson().fromJson(
-                            currentObject.toString(),
-                            Message::class.java
-                        )
-                        if(!currentMessage.loginID.isNullOrEmpty()) {
-                            if(loginID == currentMessage.loginID) {
-                                pushMessages.add(currentMessage);
+                        try {
+                            val currentMessage: Message = Gson().fromJson(
+                                currentObject.toString(),
+                                Message::class.java
+                            )
+                            if (!currentMessage.loginID.isNullOrEmpty() && loginID == currentMessage.loginID) {
+                                pushMessages.add(currentMessage)
                             }
+                        } catch (e: JsonSyntaxException) {
+                            Log.e(LOG_TAG, "JSON parsing error in getPushMessagesWithID: ${e.message}")
                         }
                     }
                     val orderedPushMessages: List<Message> = PayloadUtils.orderPushMessages(
@@ -1560,7 +1574,8 @@ object RelatedDigital {
                         "De-serializing JSON string of push message : " + e.message,
                         element.className + "/" + element.methodName + "/" + element.lineNumber
                     )
-                    activity.runOnUiThread { callback.fail(e.message!!) }
+                    val errorMessage = e.message ?: "An unknown error occurred while processing push messages with ID."
+                    activity.runOnUiThread { callback.fail(errorMessage) }
                 }
             } else {
                 activity.runOnUiThread {
