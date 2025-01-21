@@ -360,6 +360,13 @@ class PushNotificationManager {
         }
     }
 
+    /*
+   fun tryPush(context: Context) {
+
+
+   }
+   */
+
     private fun setNotificationSmallIcon(builder: NotificationCompat.Builder, context: Context) {
         var transparentSmallIcon: Int
         if (isInDarkMode(context)) {
