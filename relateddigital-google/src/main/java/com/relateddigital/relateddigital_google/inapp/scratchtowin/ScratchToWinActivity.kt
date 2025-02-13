@@ -126,6 +126,20 @@ class ScratchToWinActivity : Activity(), ScratchToWinInterface {
             val clipData = ClipData.newPlainText("", mScratchToWinMessage!!.actiondata!!.promotionCode)
             clipboardManager.setPrimaryClip(clipData)
             Toast.makeText(applicationContext, getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
+
+            if (mScratchToWinMessage!!.actiondata!!.copybuttonFunction.equals(Constants.BUTTON_COPY_REDIRECT)) {
+
+                try {
+                    val viewIntent = Intent(
+                        Intent.ACTION_VIEW,
+                        StringUtils.getURIfromUrlString(mScratchToWinMessage!!.actiondata!!.androidLnk)
+                    )
+                    startActivity(viewIntent)
+                    finish()
+                } catch (e: Exception) {
+                    Log.i(LOG_TAG, "Error : Could not direct to the URI given")
+                }
+            }
             finish()
         }
     }
