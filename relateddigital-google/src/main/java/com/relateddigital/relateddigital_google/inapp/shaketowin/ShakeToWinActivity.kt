@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
@@ -69,6 +71,13 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
     private var promoemail =""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!isAndroidTV(this)) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
+
         bindingMailForm = ActivityShakeToWinMailFormBinding.inflate(layoutInflater)
         bindingStep1 = ActivityShakeToWinStep1Binding.inflate(layoutInflater)
         bindingStep2 = ActivityShakeToWinStep2Binding.inflate(layoutInflater)
@@ -96,6 +105,10 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                 finish()
             }
         }
+
+    private fun isAndroidTV(context: Context): Boolean {
+        return context.packageManager.hasSystemFeature("android.software.leanback")
+    }
 
     override fun onDestroy() {
         super.onDestroy()

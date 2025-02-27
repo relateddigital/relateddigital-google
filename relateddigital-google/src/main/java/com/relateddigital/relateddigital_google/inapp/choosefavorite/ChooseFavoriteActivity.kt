@@ -2,9 +2,11 @@ package com.relateddigital.relateddigital_google.inapp.choosefavorite
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -51,6 +53,11 @@ class ChooseFavoriteActivity : FragmentActivity(), ChooseFavoriteCompleteInterfa
         completeListener = this
         copyToClipboardListener = this
         showCodeListener = this
+        if (!isAndroidTV(this)) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
         val jsApi = JSApiClient.getClient(RelatedDigital.getRelatedDigitalModel(this).getRequestTimeoutInSecond())
             ?.create(ApiMethods::class.java)
         val headers = HashMap<String, String>()
@@ -129,6 +136,10 @@ class ChooseFavoriteActivity : FragmentActivity(), ChooseFavoriteCompleteInterfa
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString("choosefavorite-json-str", jsonStr)
         super.onSaveInstanceState(outState)
+    }
+
+    private fun isAndroidTV(context: Context): Boolean {
+        return context.packageManager.hasSystemFeature("android.software.leanback")
     }
     override fun onDestroy() {
         super.onDestroy()
