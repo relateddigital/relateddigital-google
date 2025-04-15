@@ -205,10 +205,8 @@ class PushNotificationManager {
         context: Context,
         pushImage: Bitmap?, pushMessage: Message, contentIntent: PendingIntent
     ): NotificationCompat.Builder {
-        val title: String = if (TextUtils.isEmpty(pushMessage.title)) AppUtils.getAppLabel(
-            context,
-            ""
-        ) else pushMessage.title!!
+        val title: String = pushMessage.title.toString()
+
         val largeIconBitmap: Bitmap?
         val willLargeIconBeUsed: Boolean =
             SharedPref.readBoolean(context, Constants.NOTIFICATION_USE_LARGE_ICON)
@@ -325,13 +323,14 @@ class PushNotificationManager {
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setStyle(style)
                 .setLargeIcon(largeIconBitmap)
-                .setContentTitle(title)
                 .setColorized(false)
                 .setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_VIBRATE or Notification.FLAG_SHOW_LIGHTS)
                 .setPriority(importance)
                 .setContentText(pushMessage.message)
-
+        if (!title.isNullOrEmpty()) {
+            mBuilder.setContentTitle(title)
+        }
         if (actions != null && actions.isNotEmpty()) {
             for (action in actionList) {
                 mBuilder.addAction(action)
