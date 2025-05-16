@@ -5,13 +5,46 @@ import android.util.Log
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.api.ApiMethods
 import com.relateddigital.relateddigital_google.api.GraylogApiClient
+import com.relateddigital.relateddigital_google.api.LogConfigApiClient
 import com.relateddigital.relateddigital_google.model.GraylogModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.http.GET
 
 object LogUtils {
     private const val LOG_TAG = "LogUtils"
+
+    // Log config için data class
+    data class LogConfig(
+        val isLoggingEnabled: Boolean,
+        val excludedCustomerIds: List<String>
+    )
+
+    // Log config API interface
+    interface LogConfigApi {
+        @GET("log_rc.json")
+        fun getLogConfig(): Call<LogConfig>
+    }
+
+    private fun shouldSendLog(context: Context): Boolean {
+        return try {
+            val apiService = LogConfigApiClient.client?.create(LogConfigApi::class.java)
+            val call = apiService?.getLogConfig()
+            val response = call?.execute()
+
+            val config = response?.body() ?: return true // Config yoksa default true
+            if (!config.isLoggingEnabled) return false
+            val customerId = RelatedDigital.getRelatedDigitalModel(context).getGoogleAppAlias()
+
+            Log.i(LOG_TAG, "Customer ID: $customerId")
+
+            !config.excludedCustomerIds.contains(customerId)
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, "Failed to fetch log config: ${e.message}")
+            true // Hata durumunda default olarak log gönder
+        }
+    }
 
     private fun sendGraylogMessage(graylogModel: GraylogModel) {
         if (GraylogApiClient.client == null) {
@@ -41,6 +74,10 @@ object LogUtils {
         context: Context, logLevel: String, logMessage: String,
         logPlace: String
     ) {
+        if (!shouldSendLog(context)) {
+            Log.i(LOG_TAG, "Log sending skipped due to configuration")
+            return
+        }
         val graylogModel = GraylogModel()
         graylogModel.logLevel = logLevel
         graylogModel.logMessage = logMessage
