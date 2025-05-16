@@ -119,13 +119,6 @@ class CarouselBuilder private constructor(private val context: Context, notifica
         try {
             smallIcon = BitmapFactory.decodeResource(context.resources, resourceId)
         } catch (e: Exception) {
-            val element = Throwable().stackTrace[0]
-            LogUtils.formGraylogModel(
-                context,
-                "e",
-                "Getting carousel small icon bitmap : " + e.message,
-                element.className + "/" + element.methodName + "/" + element.lineNumber
-            )
             smallIcon = null
             Log.e(TAG, "Unable to decode resource")
         }
@@ -139,13 +132,6 @@ class CarouselBuilder private constructor(private val context: Context, notifica
         try {
             largeIcon = BitmapFactory.decodeResource(context.resources, resourceId)
         } catch (e: Exception) {
-            val element = Throwable().stackTrace[0]
-            LogUtils.formGraylogModel(
-                context,
-                "e",
-                "Getting carousel large icon bitmap : " + e.message,
-                element.className + "/" + element.methodName + "/" + element.lineNumber
-            )
             Log.e(TAG, "Unable to decode resource")
         }
         return this
@@ -165,13 +151,6 @@ class CarouselBuilder private constructor(private val context: Context, notifica
         try {
             caraousalPlaceholder = BitmapFactory.decodeResource(context.resources, resourceId)
         } catch (e: Exception) {
-            val element = Throwable().stackTrace[0]
-            LogUtils.formGraylogModel(
-                context,
-                "e",
-                "Getting carousel place holder bitmap : " + e.message,
-                element.className + "/" + element.methodName + "/" + element.lineNumber
-            )
             caraousalPlaceholder = null
             Log.e(TAG, "Unable to decode resource")
         }
@@ -593,13 +572,7 @@ class CarouselBuilder private constructor(private val context: Context, notifica
                 intent = Intent(context.applicationContext, Class.forName(intentStr))
                 intent.putExtras(bundle)
             } catch (e: Exception) {
-                val element = Throwable().stackTrace[0]
-                LogUtils.formGraylogModel(
-                    context,
-                    "e",
-                    "Navigating to the activity of the customer : " + e.message,
-                    element.className + "/" + element.methodName + "/" + element.lineNumber
-                )
+
                 Log.e("PushClick : ", "The class could not be found!")
                 val packageManager = context.packageManager
                 intent = packageManager.getLaunchIntentForPackage(context.packageName)!!
@@ -622,13 +595,7 @@ class CarouselBuilder private constructor(private val context: Context, notifica
         try {
             clearCarouselIfExists()
         } catch (e: Exception) {
-            val element = Throwable().stackTrace[0]
-            LogUtils.formGraylogModel(
-                context,
-                "e",
-                "Clearing carousel : " + e.message,
-                element.className + "/" + element.methodName + "/" + element.lineNumber
-            )
+
             e.printStackTrace()
             Log.e(TAG, "Unable To send notification's pendingIntent")
         }
@@ -716,14 +683,7 @@ class CarouselBuilder private constructor(private val context: Context, notifica
                                     .getApplicationIcon(context.packageName)
                             )
                         } catch (e: PackageManager.NameNotFoundException) {
-                            val element =
-                                Throwable().stackTrace[0]
-                            LogUtils.formGraylogModel(
-                                context,
-                                "e",
-                                "Getting carousel app icon bitmap : " + e.message,
-                                element.className + "/" + element.methodName + "/" + element.lineNumber
-                            )
+
                             appIcon = null
                             Log.e(
                                 TAG,
