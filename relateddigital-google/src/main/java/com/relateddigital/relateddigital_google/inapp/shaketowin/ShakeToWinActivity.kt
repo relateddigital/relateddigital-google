@@ -325,30 +325,50 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                                     .load(mExtendedProps!!.backgroundImage)
                                     .into(backgroundImageTarget)
                             }
-                                bindingStep1.buttonView.text =
-                                    mShakeToWinMessage!!.actiondata!!.gamificationRules!!.buttonLabel
-                                bindingStep1.buttonView.setBackgroundColor(Color.parseColor(mExtendedProps!!.gamificationRules!!.buttonColor))
-                                bindingStep1.buttonView.setTextColor(Color.parseColor(mExtendedProps!!.gamificationRules!!.buttonTextColor))
-                                bindingStep1.buttonView.textSize =
-                                    mExtendedProps!!.gamificationRules!!.buttonTextSize!!.toFloat() + 10
-                                bindingStep1.buttonView.setOnClickListener {
+                            bindingStep1.buttonView.text =
+                                mShakeToWinMessage!!.actiondata!!.gamificationRules!!.buttonLabel
+                            bindingStep1.buttonView.setBackgroundColor(Color.parseColor(mExtendedProps!!.gamificationRules!!.buttonColor))
+                            bindingStep1.buttonView.setTextColor(Color.parseColor(mExtendedProps!!.gamificationRules!!.buttonTextColor))
+                            bindingStep1.buttonView.textSize =
+                                mExtendedProps!!.gamificationRules!!.buttonTextSize!!.toFloat() + 10
+
+                            bindingStep1.buttonView.setOnClickListener {
+                                try {
                                     setContentView(bindingStep2.root)
                                     setupStep2View()
+                                } catch (e: Exception) {
+                                    Log.e(
+                                        "ShakeToWin",
+                                        "2. Adım layoutu yüklenemedi. ShakeToWin Gösterilemiyor.",
+                                        e
+                                    )
+                                    finish()
                                 }
-
-
+                            }
                         }
 
                         override fun onError(e: Exception?) {
-
+                            Log.e("ShakeToWin", "Resim yüklenirken hata oluştu.", e)
                         }
 
                     })
             }
 
         } else {
-            setContentView(bindingStep2.root)
-            setupStep2View()
+
+            try {
+
+                setContentView(bindingStep2.root)
+                setupStep2View()
+            } catch (e: Exception) {
+                Log.e(
+                    "ShakeToWin",
+                    "2. Adım layoutu yüklenemedi. ShakeToWin Gösterilemiyor.",
+                    e
+                )
+                finish()
+            }
+
         }
     }
 
