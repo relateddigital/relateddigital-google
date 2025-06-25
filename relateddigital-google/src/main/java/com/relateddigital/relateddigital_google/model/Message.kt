@@ -2,6 +2,7 @@ package com.relateddigital.relateddigital_google.model
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import com.relateddigital.relateddigital_google.util.LogUtils
 import org.json.JSONArray
 import org.json.JSONException
@@ -78,9 +79,18 @@ class Message : Serializable {
         deliver = bundle["deliver"]
         silent = bundle["silent"]
         campaignId = bundle["cId"]
-        pushType = if (bundle["pushType"] != null) {
-            PushType.valueOf(bundle["pushType"]!!)
+        val pushTypeStr = bundle["pushType"]
+        pushType = if (pushTypeStr != null) {
+            try {
+
+                PushType.valueOf(pushTypeStr)
+            } catch (e: IllegalArgumentException) {
+
+                Log.w("RelatedDigital", "Bilinmeyen pushType değeri alındı: '$pushTypeStr'. Varsayılan olarak 'Text' ayarlandı.")
+                PushType.Text
+            }
         } else {
+
             PushType.Text
         }
         collapseKey = bundle["collapse_key"]
@@ -173,8 +183,14 @@ class Message : Serializable {
         deliver = bundle.getString("deliver")
         silent = bundle.getString("silent")
         campaignId = bundle.getString("cId")
-        pushType = if (bundle.getString("pushType") != null) {
-            PushType.valueOf(bundle.getString("pushType")!!)
+        val pushTypeStr = bundle.getString("pushType")
+        pushType = if (pushTypeStr != null) {
+            try {
+                PushType.valueOf(pushTypeStr)
+            } catch (e: IllegalArgumentException) {
+                Log.w("RelatedDigital", "Bilinmeyen pushType değeri alındı: '$pushTypeStr'. Varsayılan olarak 'Text' ayarlandı.")
+                PushType.Text
+            }
         } else {
             PushType.Text
         }
