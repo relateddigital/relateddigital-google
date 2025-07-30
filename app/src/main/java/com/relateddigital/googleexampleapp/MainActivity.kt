@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
+import android.os.Build
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -37,7 +38,11 @@ class MainActivity : AppCompatActivity() {
 
         setupUi()
         val intentFilter = IntentFilter("InAppLink")
-        registerReceiver(broad,intentFilter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(broad, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(broad, intentFilter)
+        }
 
 
 

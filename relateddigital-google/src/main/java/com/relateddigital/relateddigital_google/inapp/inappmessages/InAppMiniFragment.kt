@@ -215,7 +215,7 @@ class InAppMiniFragment: Fragment() {
                 return true
             }
 
-            override fun onFling(e1: MotionEvent, e2: MotionEvent,
+            override fun onFling(e1: MotionEvent?, e2: MotionEvent,
                                  velocityX: Float, velocityY: Float): Boolean {
                 if (velocityY > 0) {
                     remove()
@@ -224,7 +224,7 @@ class InAppMiniFragment: Fragment() {
             }
 
             override fun onLongPress(e: MotionEvent) {}
-            override fun onScroll(e1: MotionEvent, e2: MotionEvent,
+            override fun onScroll(e1: MotionEvent?, e2: MotionEvent,
                                   distanceX: Float, distanceY: Float): Boolean {
                 return false
             }
