@@ -279,6 +279,16 @@ class InAppNotificationActivity : AppCompatActivity() {
 
         } */
 
+        binding.notificationBellButton.setOnClickListener {
+            sendInAppRequest("notification_bell")
+
+        }
+
+        binding.multipleChoiceSurveyButton.setOnClickListener {
+            sendInAppRequest("MultipleChoiceSurvey")
+
+        }
+
     }
 
     private fun sendInAppRequest(type: String) {

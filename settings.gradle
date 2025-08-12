@@ -1,3 +1,18 @@
-include ':relateddigital-google'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal() // Plugin'leri bulmak için eklendi
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+rootProject.name = "Google Example App" // Proje adınızı buraya yazabilirsiniz
 include ':app'
-rootProject.name = "googleexampleapp"
+include ':relateddigital-google'

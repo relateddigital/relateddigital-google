@@ -48,6 +48,8 @@
     <string name="jackpot">JACKPOT</string>
     <string name="claw_machine">CLAW MACHINE</string>
     <string name="countdownTimerBanner">COUNTDOWN TIMER BANNER</string>
+    <string name="notification_bell">NOTIFICATION BELL</string>
+    <string name="multiple_choice_survey">MULTIPLE CHOICE SURVEY</string>
 
     <string name="custom_actions">CUSTOM ACTIONS</string>
     <string name="inapp_review">INAPP REVIEW</string>

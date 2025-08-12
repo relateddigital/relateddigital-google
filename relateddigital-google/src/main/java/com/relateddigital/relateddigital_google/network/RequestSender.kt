@@ -27,6 +27,8 @@ import com.relateddigital.relateddigital_google.inapp.shaketowin.ShakeToWinActiv
 import com.relateddigital.relateddigital_google.inapp.slotmachine.SlotMachineActivity
 import com.relateddigital.relateddigital_google.inapp.socialproof.SocialProofFragment
 import com.relateddigital.relateddigital_google.inapp.spintowin.SpinToWinActivity
+import com.relateddigital.relateddigital_google.inapp.notificationbell.NotificationBellFragment
+import com.relateddigital.relateddigital_google.inapp.survey.SurveyActivity
 import com.relateddigital.relateddigital_google.model.*
 import com.relateddigital.relateddigital_google.model.Retention
 import com.relateddigital.relateddigital_google.push.EuromessageCallback
@@ -474,6 +476,29 @@ object RequestSender {
                                                 null
                                             )
                                             currentRequest.visilabsCallback?.success(visilabsResponse)
+                                        }
+                                        !actionsResponse.mNotificationBell.isNullOrEmpty() -> {
+                                            val notificationBellFragment: NotificationBellFragment = NotificationBellFragment.newInstance(actionsResponse.mNotificationBell!![0])
+
+                                            val transaction : FragmentTransaction= (currentRequest.parent!! as FragmentActivity).supportFragmentManager.beginTransaction()
+                                            transaction.replace(android.R.id.content, notificationBellFragment)
+                                            transaction.commit()
+                                        }
+                                        !actionsResponse.mSurveyList.isNullOrEmpty() -> {
+                                            val surveyModel: SurveyModel =
+                                                actionsResponse.mSurveyList!![0]
+                                            var waitTime = 0L
+                                            ActivityUtils.parentActivity = currentRequest.parent
+                                            val intent =
+                                                Intent(
+                                                    currentRequest.parent,
+                                                    SurveyActivity::class.java
+                                                )
+
+                                            intent.putExtra("survey-data", surveyModel)
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                currentRequest.parent!!.startActivity(intent)
+                                            }, waitTime)
                                         }
                                         else -> {
                                             Log.e(

@@ -153,7 +153,7 @@ object AppUtils {
     fun getAppVersion(context: Context): String {
         try {
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            return pInfo.versionName
+            return pInfo.versionName ?: ""
         } catch (e: Exception) {
             Log.d("AppVersion", "Version Name Error : $e")
         }
@@ -768,6 +768,40 @@ object AppUtils {
             result.add(htmlStr)
             result.add(Gson().toJson(spinToWinModel, SpinToWin::class.java))
         }
+        return result
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    fun createSurveyFiles(context: Context, jsonStr: String, surveyJsStr: String): ArrayList<String>? {
+        var result: ArrayList<String>? = null
+        var surveyModel: SurveyModel? = null
+        var extendedProps: SurveyExtendedProps? = null
+
+        val baseUrlPath = "file://${context.filesDir.absolutePath}/"
+        var htmlStr = ""
+
+        try {
+            surveyModel = Gson().fromJson(jsonStr, SurveyModel::class.java)
+            val uriPath = URI(surveyModel.actiondata?.extendedProps ?: "").path
+            extendedProps = Gson().fromJson(uriPath, SurveyExtendedProps::class.java)
+        } catch (e: Exception) {
+            Log.e("Survey", "Extended properties could not be parsed properly!")
+            return null
+        }
+
+        if (surveyModel == null || extendedProps == null) {
+            return null
+        }
+
+        htmlStr = writeHtmlToFile(context, "survey", surveyJsStr)
+
+        if (htmlStr.isNotEmpty()) {
+            result = arrayListOf()
+            result.add(baseUrlPath)
+            result.add(htmlStr)
+            result.add(Gson().toJson(surveyModel, SurveyModel::class.java))
+        }
+
         return result
     }
 

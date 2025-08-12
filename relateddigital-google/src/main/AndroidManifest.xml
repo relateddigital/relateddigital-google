@@ -71,6 +71,12 @@
             android:noHistory="true"
             android:theme="@style/Theme.Transparent" />
 
+        <activity
+            android:name=".inapp.survey.SurveyActivity"
+            android:configChanges="orientation"
+            android:noHistory="true"
+            />
+
         <service
             android:name=".push.services.RelatedDigitalFirebaseMessagingService"
             android:exported="false">
