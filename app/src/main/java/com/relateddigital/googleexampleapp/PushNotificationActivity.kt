@@ -1,5 +1,6 @@
 package com.relateddigital.googleexampleapp
 
+import NotificationCenterDialogFragment
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
@@ -31,7 +32,7 @@ class PushNotificationActivity : AppCompatActivity()  {
         private const val LOG_TAG = "PushNotificationActivity"
     }
     private lateinit var binding: ActivityPushNotificationBinding
-    private lateinit var activity: Activity
+    private lateinit var activity: AppCompatActivity
     private var isFirstResume = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,11 +65,24 @@ class PushNotificationActivity : AppCompatActivity()  {
     private fun deletefromGpm() {
 
         binding.btnTextDeletePushWithIdFromGpm.setOnClickListener {
-            RelatedDigital.deletePushMessageByIdFromLSPM(this,"75d7ed18-0bac-433d-a1ff-21395a5c5679")
+            RelatedDigital.deletePushMessageByIdFromLSPM(activity, "75d7ed18-0bac-433d-a1ff-21395a5c5679") { isSuccess ->
+                if (isSuccess) {
+                    // Silme başarılı oldu
+                } else {
+                    // Mesaj bulunamadı veya hata oluştu
+                }
+            }
+
         }
 
         binding.btnTextDeleteAllPushFromGpm.setOnClickListener {
-            RelatedDigital.deleteAllPushMessagesFromLSPM(this)
+            RelatedDigital.deleteAllPushMessagesFromLSPM(this) { isSuccess ->
+                if (isSuccess) {
+                    // Tüm mesajlar başarıyla silindi
+                } else {
+                    // Hata oluştu veya mesajlar bulunamadı
+                }
+            }
         }
 
     }
@@ -101,6 +115,12 @@ class PushNotificationActivity : AppCompatActivity()  {
 
     private fun setupPayloadButton() {
         binding.btnPayload.setOnClickListener {
+            binding.btnPayload.setOnClickListener {
+                val dialog = NotificationCenterDialogFragment()
+                dialog.show(supportFragmentManager, "NotificationCenterDialog")
+            }
+        }
+            /*
             val pushMessageInterface: PushMessageInterface = object : PushMessageInterface {
                 override fun success(pushMessages: List<Message>) {
                     Toast.makeText(
@@ -131,6 +151,8 @@ class PushNotificationActivity : AppCompatActivity()  {
                 RelatedDigital.getPushMessagesWithID(activity, pushMessageInterface)
             }
         }
+        */
+
     }
 
     private fun setupTemplatePushButtons() {

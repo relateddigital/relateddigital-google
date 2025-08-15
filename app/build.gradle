@@ -1,21 +1,19 @@
-// app/build.gradle (Uygulama modülü)
-
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android' // Sürüm bilgisi artık proje seviyesinden geliyor
+    id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
 }
 
 android {
-    namespace 'com.relateddigital.googleexampleapp' // namespace zaten vardı, doğru yerde
-    compileSdk 35
+    namespace 'com.relateddigital.googleexampleapp'
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.relateddigital.googleexampleapp"
         minSdkVersion 21
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode 1
-        versionName "1.6.5"
+        versionName "1.6.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -26,9 +24,9 @@ android {
         }
     }
     compileOptions {
-        // Java 17 modern Android geliştirme için standarttır
-        sourceCompatibility JavaVersion.VERSION_17 // GÜNCELLENDİ
-        targetCompatibility JavaVersion.VERSION_17 // GÜNCELLENDİ
+
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
         jvmTarget = '17' // GÜNCELLENDİ
@@ -44,15 +42,14 @@ android {
 }
 
 dependencies {
-    // Tüm kütüphaneler en güncel stabil sürümlere yükseltildi
+
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1' // Bu zaten son sürüm
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.preference:preference-ktx:1.2.1'
 
-    // Kütüphane modülünüz
     implementation project(path: ':relateddigital-google')
-    // Test kütüphaneleri güncellendi
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'

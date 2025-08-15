@@ -1,17 +1,17 @@
 package com.relateddigital.googleexampleapp
 
+
+import NotificationCenterDialogFragment
 import android.content.Intent
 import android.os.Bundle
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.relateddigital.googleexampleapp.databinding.ActivityMainBinding
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -57,6 +57,11 @@ class MainActivity : AppCompatActivity() {
     private fun setupUi() {
         binding.inAppNotificationPage.setOnClickListener {
             val intent = Intent(this@MainActivity, InAppNotificationActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.notificationCenterPage.setOnClickListener {
+            val intent = Intent(this@MainActivity, NotificationCenterDialogFragment::class.java)
             startActivity(intent)
         }
 

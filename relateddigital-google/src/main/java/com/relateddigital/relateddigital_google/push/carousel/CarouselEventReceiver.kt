@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
 import com.relateddigital.relateddigital_google.network.requestHandler.RetentionRequest
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.model.Carousel
@@ -11,6 +12,8 @@ import com.relateddigital.relateddigital_google.model.Message
 import com.relateddigital.relateddigital_google.network.RequestHandler
 import com.relateddigital.relateddigital_google.push.RetentionType
 import com.relateddigital.relateddigital_google.util.PayloadUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CarouselEventReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -40,7 +43,9 @@ class CarouselEventReceiver : BroadcastReceiver() {
             context, RetentionType.OPEN,
             message.pushId, message.emPushSp
         )
-        PayloadUtils.updatePayload(context, message.pushId)
+        (context as? androidx.lifecycle.LifecycleOwner)?.lifecycleScope?.launch(Dispatchers.IO) {
+            PayloadUtils.updatePayload(context, message.pushId)
+        }
     }
 
     companion object {
