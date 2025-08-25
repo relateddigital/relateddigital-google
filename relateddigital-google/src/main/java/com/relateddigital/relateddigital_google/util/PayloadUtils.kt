@@ -19,7 +19,7 @@ object PayloadUtils {
     suspend fun addPushMessage(context: Context, message: Message) {
         Log.d(LOG_TAG, "addPushMessage işlemi başlatıldı. Push ID: ${message.pushId}")
 
-        DataStoreManager.updatePayloads(context) { currentPayload ->
+        DataStoreManager.updatePayloads() { currentPayload ->
             var finalPayloadString: String
 
             try {
@@ -70,7 +70,7 @@ object PayloadUtils {
     }
 
     suspend fun addPushMessageWithId(context: Context, message: Message, loginID: String) {
-        DataStoreManager.updatePayloadsById(context) { currentPayload ->
+        DataStoreManager.updatePayloadsById() { currentPayload ->
             var finalPayloadString: String
             try {
                 if (currentPayload.isNotEmpty()) {
@@ -233,9 +233,9 @@ object PayloadUtils {
         }
     }
 
-    suspend fun updatePayload(context: Context, pushId: String?) {
+    suspend fun updatePayload(pushId: String?) {
         pushId ?: return
-        DataStoreManager.updatePayloads(context) { currentPayload ->
+        DataStoreManager.updatePayloads() { currentPayload ->
             try {
                 val jsonObject = JSONObject(currentPayload)
                 val payloadsArray = jsonObject.optJSONArray(Constants.PAYLOAD_SP_ARRAY_KEY)
@@ -256,8 +256,8 @@ object PayloadUtils {
         }
     }
 
-    suspend fun readAllPushMessages(context: Context, pushId: String? = null) {
-        DataStoreManager.updatePayloads(context) { currentPayload ->
+    suspend fun readAllPushMessages(pushId: String? = null) {
+        DataStoreManager.updatePayloads() { currentPayload ->
             try {
                 val jsonObject = JSONObject(currentPayload)
                 val payloadsArray = jsonObject.optJSONArray(Constants.PAYLOAD_SP_ARRAY_KEY)

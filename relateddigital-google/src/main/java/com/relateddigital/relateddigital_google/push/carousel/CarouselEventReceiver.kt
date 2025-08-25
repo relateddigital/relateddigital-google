@@ -44,7 +44,7 @@ class CarouselEventReceiver : BroadcastReceiver() {
             message.pushId, message.emPushSp
         )
         (context as? androidx.lifecycle.LifecycleOwner)?.lifecycleScope?.launch(Dispatchers.IO) {
-            PayloadUtils.updatePayload(context, message.pushId)
+            PayloadUtils.updatePayload(message.pushId)
         }
     }
 
