@@ -150,7 +150,6 @@ object RelatedDigital {
         notificationColor: String = "",
         notificationPriority: RDNotificationPriority = RDNotificationPriority.NORMAL
     ) {
-        DataStoreManager.createDataStore(context)
         if (model != null) {
             model!!.setIsPushNotificationEnabled(context, isPushNotificationEnabled)
             model!!.setGoogleAppAlias(context, googleAppAlias)
@@ -1150,10 +1149,11 @@ object RelatedDigital {
     }
 
     @JvmStatic
-    fun deleteAllPushNotifications(context: Context){
+    fun deleteAllPushNotifications(context: Context) {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-            notificationManager?.cancelAll()
+
+        notificationManager?.cancelAll()
     }
 
     @JvmStatic
@@ -1184,12 +1184,12 @@ object RelatedDigital {
                 message.pushId, message.emPushSp
             )
             (context as? androidx.appcompat.app.AppCompatActivity)?.lifecycleScope?.launch(Dispatchers.IO) {
-                PayloadUtils.updatePayload(message.pushId)
+                PayloadUtils.updatePayload(context, message.pushId)
             } ?: run {
                 // Eğer context bir Activity değilse (örn. Application context), GlobalScope kullanabiliriz.
                 // Bu genellikle son çaredir.
                 GlobalScope.launch(Dispatchers.IO) {
-                    PayloadUtils.updatePayload(message.pushId)
+                    PayloadUtils.updatePayload(context, message.pushId)
                 }
                 Log.w(LOG_TAG, "Context bir Activity değil. GlobalScope kullanıldı.")
             }
@@ -1493,7 +1493,7 @@ object RelatedDigital {
                 // withContext(Dispatchers.IO) ile disk okuma/yazma gibi işlemleri
                 // arka plan thread'ine taşıyoruz. Bu, UI'ın donmasını engeller.
                 val orderedPushMessages = withContext(Dispatchers.IO) {
-                    val payloads = DataStoreManager.getPayloads()
+                    val payloads = DataStoreManager.getPayloads(activity.applicationContext)
                     if (payloads.isEmpty()) {
                         // Arka plan thread'inden hata fırlatabiliriz.
                         throw Exception("Kaydedilmiş bir push bildirimi bulunamadı.")
@@ -1536,12 +1536,12 @@ object RelatedDigital {
         activity.lifecycleScope.launch {
             try {
                 val orderedPushMessages = withContext(Dispatchers.IO) {
-                    val loginID = DataStoreManager.getLoginId()
+                    val loginID = DataStoreManager.getLoginId(activity.applicationContext)
                     if (loginID.isEmpty()) {
                         throw Exception("Login ID bulunamadı.")
                     }
 
-                    val payloads = DataStoreManager.getPayloadsById()
+                    val payloads = DataStoreManager.getPayloadsById(activity.applicationContext)
                     if (payloads.isEmpty()) {
                         throw Exception("Kaydedilmiş bir push bildirimi bulunamadı.")
                     }
@@ -1586,7 +1586,7 @@ object RelatedDigital {
         }
         activity.lifecycleScope.launch(Dispatchers.IO) { // İşi doğrudan arka planda başlat
             var messageFound = false
-            DataStoreManager.updatePayloads() { currentPayload ->
+            DataStoreManager.updatePayloads(activity.applicationContext) { currentPayload ->
                 if (currentPayload.isEmpty()) return@updatePayloads ""
 
                 try {
@@ -1624,7 +1624,7 @@ object RelatedDigital {
         activity.lifecycleScope.launch(Dispatchers.IO) {
             var success = true
             try {
-                DataStoreManager.updatePayloads() { currentPayload ->
+                DataStoreManager.updatePayloads(activity.applicationContext) { currentPayload ->
                     if (currentPayload.isEmpty()) return@updatePayloads ""
                     try {
                         val jsonObject = JSONObject(currentPayload)

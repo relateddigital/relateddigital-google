@@ -13,16 +13,12 @@ import kotlinx.coroutines.flow.map
  * İki ayrı dosyayı yönetir: 'push_payloads' ve 'notification_settings'.
  */
 object DataStoreManager {
-    
-    private lateinit var payloadsDataStore: DataStore<Preferences>
-    private lateinit var settingsDataStore: DataStore<Preferences>
-    
-    fun createDataStore(context: Context) {
-        if (!this::payloadsDataStore.isInitialized && !this::settingsDataStore.isInitialized) {
-            payloadsDataStore = context.createDataStore("push_payloads")
-            settingsDataStore = context.createDataStore("notification_settings")
-        }
-    }
+
+    private val Context.payloadsDataStore: DataStore<Preferences>
+        get() = CustomDataStoreFactory.create(this, name = "push_payloads")
+
+    private val Context.settingsDataStore: DataStore<Preferences>
+        get() = CustomDataStoreFactory.create(this, name = "notification_settings")
 
     
     /**
@@ -53,8 +49,8 @@ object DataStoreManager {
     /**
      * Ana payload listesini atomik olarak günceller.
      */
-    suspend fun updatePayloads(updateAction: (currentPayload: String) -> String) {
-        payloadsDataStore.edit { settings ->
+    suspend fun updatePayloads(context: Context, updateAction: (currentPayload: String) -> String) {
+        context.payloadsDataStore.edit { settings ->
             val currentPayload = settings[Keys.PAYLOADS] ?: ""
             val newPayload = updateAction(currentPayload)
             settings[Keys.PAYLOADS] = newPayload
@@ -64,8 +60,8 @@ object DataStoreManager {
     /**
      * Kullanıcı ID'sine özel payload listesini atomik olarak günceller.
      */
-    suspend fun updatePayloadsById(updateAction: (currentPayload: String) -> String) {
-        payloadsDataStore.edit { settings ->
+    suspend fun updatePayloadsById(context: Context, updateAction: (currentPayload: String) -> String) {
+        context.payloadsDataStore.edit { settings ->
             val currentPayload = settings[Keys.PAYLOADS_BY_ID] ?: ""
             val newPayload = updateAction(currentPayload)
             settings[Keys.PAYLOADS_BY_ID] = newPayload
@@ -74,20 +70,20 @@ object DataStoreManager {
 
     // ... Diğer payload okuma/yazma fonksiyonları (getPayloads, getLoginId vb.)
     // Not: Bu fonksiyonlar artık payloadsDataStore kullanmalı.
-    suspend fun getPayloads(): String {
-        return payloadsDataStore.data.map { it[Keys.PAYLOADS] ?: "" }.first()
+    suspend fun getPayloads(context: Context): String {
+        return context.payloadsDataStore.data.map { it[Keys.PAYLOADS] ?: "" }.first()
     }
 
-    suspend fun getPayloadsById(): String {
-        return payloadsDataStore.data.map { it[Keys.PAYLOADS_BY_ID] ?: "" }.first()
+    suspend fun getPayloadsById(context: Context): String {
+        return context.payloadsDataStore.data.map { it[Keys.PAYLOADS_BY_ID] ?: "" }.first()
     }
 
-    suspend fun getLoginId(): String {
-        return payloadsDataStore.data.map { it[Keys.LOGIN_ID] ?: "" }.first()
+    suspend fun getLoginId(context: Context): String {
+        return context.payloadsDataStore.data.map { it[Keys.LOGIN_ID] ?: "" }.first()
     }
 
-    suspend fun saveLoginId(loginId: String) {
-        payloadsDataStore.edit { it[Keys.LOGIN_ID] = loginId }
+    suspend fun saveLoginId(context: Context, loginId: String) {
+        context.payloadsDataStore.edit { it[Keys.LOGIN_ID] = loginId }
     }
 
 
@@ -97,6 +93,7 @@ object DataStoreManager {
      * Verilen tüm bildirim ayarlarını 'notification_settings' dosyasına tek bir atomik işlemde kaydeder.
      */
     suspend fun saveNotificationPreferences(
+        context: Context,
         modelJson: String,
         smallIcon: Int?,
         smallIconDarkMode: Int?,
@@ -108,7 +105,7 @@ object DataStoreManager {
         color: String?,
         priority: String
     ) {
-        settingsDataStore.edit { settings ->
+        context.settingsDataStore.edit { settings ->
             settings[Keys.RELATED_DIGITAL_MODEL] = modelJson
             smallIcon?.let { settings[Keys.NOTIFICATION_SMALL_ICON] = it }
             smallIconDarkMode?.let { settings[Keys.NOTIFICATION_SMALL_ICON_DARK_MODE] = it }
@@ -125,14 +122,14 @@ object DataStoreManager {
     /**
      * Ayarlar dosyasından belirtilen anahtara ait string veriyi okur.
      */
-    suspend fun readStringFromSettings(key: Preferences.Key<String>): String {
-        return settingsDataStore.data.map { it[key] ?: "" }.first()
+    suspend fun readStringFromSettings(context: Context, key: Preferences.Key<String>): String {
+        return context.settingsDataStore.data.map { it[key] ?: "" }.first()
     }
 
     /**
      * Ayarlar dosyasına belirtilen anahtara ait string veriyi yazar.
      */
-    suspend fun writeStringToSettings(key: Preferences.Key<String>, value: String) {
-        settingsDataStore.edit { it[key] = value }
+    suspend fun writeStringToSettings(context: Context, key: Preferences.Key<String>, value: String) {
+        context.settingsDataStore.edit { it[key] = value }
     }
 }
