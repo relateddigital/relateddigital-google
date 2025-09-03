@@ -20,51 +20,44 @@ object PayloadUtils {
         Log.d(LOG_TAG, "addPushMessage işlemi başlatıldı. Push ID: ${message.pushId}")
 
         DataStoreManager.updatePayloads(context) { currentPayload ->
-            var finalPayloadString: String
+            var finalPayloadString = currentPayload
 
             try {
-                if (currentPayload.isNotEmpty()) {
-                    Log.d(LOG_TAG, "Mevcut bir payload bulundu, içerik işlenecek.")
-                    var jsonArray: JSONArray?
-
-                    if (currentPayload.trim().startsWith("[")) {
-                        Log.w(LOG_TAG, "Payload doğrudan bir JSONArray olarak algılandı.")
-                        jsonArray = JSONArray(currentPayload)
-                    } else {
-                        Log.d(LOG_TAG, "Payload bir JSONObject olarak algılandı.")
-                        val jsonObject = JSONObject(currentPayload)
-                        jsonArray = jsonObject.optJSONArray(Constants.PAYLOAD_SP_ARRAY_KEY)
-                    }
-
-                    if (jsonArray == null) {
-                        Log.w(LOG_TAG, "Payload içinden mesaj dizisi alınamadı. Yeni bir dizi oluşturuluyor.")
-                        jsonArray = JSONArray()
-                    }
-
-                    if (isPushIdAvailable(jsonArray, message)) {
-                        Log.w(LOG_TAG, "Bu Push ID (${message.pushId}) zaten kayıtlı. İşlem durduruldu.")
-                        return@updatePayloads currentPayload
-                    }
-
-                    jsonArray = addNewOne(context, jsonArray, message)
-                    Log.d(LOG_TAG, "Yeni mesaj başarıyla eklendi.")
-
-                    jsonArray = removeOldOnes(jsonArray)
-                    Log.d(LOG_TAG, "Eski mesajlar temizlendi.")
-
-                    val finalObject = JSONObject()
-                    finalObject.put(Constants.PAYLOAD_SP_ARRAY_KEY, jsonArray)
-                    finalPayloadString = finalObject.toString()
-                    Log.i(LOG_TAG, "Push mesajı başarıyla kaydedildi. Push ID: ${message.pushId}.")
-
+                // Her zaman JSONObject formatı bekleniyor
+                val jsonObject = if (currentPayload.isNotEmpty()) {
+                    JSONObject(currentPayload)
                 } else {
-                    Log.d(LOG_TAG, "Mevcut payload bulunamadı. Yeni bir payload oluşturuluyor.")
-                    finalPayloadString = createNewPayloadString(context, message)
+                    JSONObject()
                 }
+
+                var jsonArray = jsonObject.optJSONArray(Constants.PAYLOAD_SP_ARRAY_KEY)
+                if (jsonArray == null) {
+                    jsonArray = JSONArray()
+                }
+
+                // Aynı pushId varsa ekleme
+                if (isPushIdAvailable(jsonArray, message)) {
+                    Log.w(LOG_TAG, "Bu Push ID (${message.pushId}) zaten kayıtlı. İşlem durduruldu.")
+                    return@updatePayloads currentPayload
+                }
+
+                // Yeni mesajı ekle
+                jsonArray = addNewOne(context, jsonArray, message)
+                Log.d(LOG_TAG, "Yeni mesaj başarıyla eklendi.")
+
+                // Eski mesajları temizle (30 günden eski olanları)
+                jsonArray = removeOldOnes(jsonArray)
+
+                // Güncellenmiş array’i tekrar JSONObject içine koy
+                jsonObject.put(Constants.PAYLOAD_SP_ARRAY_KEY, jsonArray)
+
+                finalPayloadString = jsonObject.toString()
+                Log.i(LOG_TAG, "Push mesajı başarıyla kaydedildi. Push ID: ${message.pushId}")
+
             } catch (e: Exception) {
                 Log.e(LOG_TAG, "Push mesajı işlenirken KRİTİK BİR HATA oluştu!", e)
-                finalPayloadString = currentPayload
             }
+
             finalPayloadString
         }
     }

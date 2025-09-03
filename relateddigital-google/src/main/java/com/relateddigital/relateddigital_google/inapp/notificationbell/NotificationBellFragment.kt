@@ -10,15 +10,18 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.JavascriptInterface
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.databinding.FragmentNotificationBellBinding
 import com.relateddigital.relateddigital_google.inapp.FontFamily
+import com.relateddigital.relateddigital_google.model.MailSubReport
 import com.relateddigital.relateddigital_google.model.NotificationBell // YENİ: Doğru modeli import ettiğinizden emin olun
 import com.relateddigital.relateddigital_google.model.NotificationBellExtendedProps // YENİ: Doğru modeli import ettiğinizden emin olun
 import com.relateddigital.relateddigital_google.model.NotificationBellTexts // YENİ: Doğru modeli import ettiğinizden emin olun
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
 import java.net.URI
 import java.util.*
 
@@ -130,7 +133,7 @@ class NotificationBellFragment : Fragment() {
                     try {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
                         startActivity(intent)
-                        // TODO: Raporlama kodunu buraya ekle (click report)
+                        sendReport()
                     } catch (e: Exception) {
                         Log.e(LOG_TAG, "Could not open the link: $it", e)
                     }
@@ -138,6 +141,22 @@ class NotificationBellFragment : Fragment() {
                 hideDialog() // Linke tıklanınca diyaloğu kapat
             }
             binding.rvNotifications.adapter = adapter
+        }
+    }
+
+
+    private fun sendReport() {
+        var report: MailSubReport?
+        try {
+            report = MailSubReport()
+            report.click = notificationBell?.actiondata?.report?.click
+        } catch (e: Exception) {
+            Log.e("Spin to Win : ", "There is no click report to send!")
+            e.printStackTrace()
+            report = null
+        }
+        if (report != null) {
+            InAppActionClickRequest.createInAppActionClickRequest(requireContext(), report)
         }
     }
 

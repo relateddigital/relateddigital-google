@@ -86,15 +86,30 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
         var report: MailSubReport?
         try {
             report = MailSubReport()
-            report.impression = spinToWinModel.actiondata!!.report!!.impression
             report.click = spinToWinModel.actiondata!!.report!!.click
         } catch (e: Exception) {
-            Log.e("Spin to Win : ", "There is no report to send!")
+            Log.e("Spin to Win : ", "There is no click report to send!")
             e.printStackTrace()
             report = null
         }
         if (report != null) {
             InAppActionClickRequest.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
+        }
+    }
+
+    @JavascriptInterface
+    fun sendReportImpression() {
+        var report: MailSubReport?
+        try {
+            report = MailSubReport()
+            report.impression = spinToWinModel.actiondata!!.report!!.impression
+        } catch (e: Exception) {
+            Log.e("Spin to Win : ", "There is no impression report to send!")
+            e.printStackTrace()
+            report = null
+        }
+        if (report != null) {
+            InAppActionClickRequest.createInAppActionImressionRequest(mWebViewDialogFragment.requireContext(), report)
         }
     }
 
@@ -269,6 +284,7 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
         mListener = listener
         mCopyToClipboardInterface = copyToClipboardInterface
         mSpinToWinShowCodeInterface = spinToWinShowCodeInterface
+        sendReportImpression()
     }
 
     private fun sendPromotionCodeInfo(promotionCode: String, sliceText: String) {
