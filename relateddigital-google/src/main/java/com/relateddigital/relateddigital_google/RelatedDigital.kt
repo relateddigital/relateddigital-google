@@ -36,6 +36,7 @@ import org.json.JSONObject
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -47,6 +48,7 @@ object RelatedDigital {
     private var mHandler: Handler? = null
     private var mRunnable: Runnable? = null
     private const val LOG_TAG: String = "RelatedDigital"
+    private const val PUSH_LOG_TAG: String = "GetPushMessages"
     private var previousModel: RelatedDigitalModel? = null
     var actionButtonCallback: NotificationActionListener? = null
 
@@ -1486,43 +1488,55 @@ object RelatedDigital {
      */
     @JvmStatic
     fun getPushMessages(activity: AppCompatActivity, callback: PushMessageInterface) {
-        // Coroutine'i Activity'nin yaşam döngüsüne bağlı başlatıyoruz.
-        // Activity yok olduğunda işlem otomatik olarak iptal edilir, bu da memory leak'leri önler.
-        activity.lifecycleScope.launch {
-            try {
-                // withContext(Dispatchers.IO) ile disk okuma/yazma gibi işlemleri
-                // arka plan thread'ine taşıyoruz. Bu, UI'ın donmasını engeller.
-                val orderedPushMessages = withContext(Dispatchers.IO) {
-                    val payloads = DataStoreManager.getPayloads(activity.applicationContext)
-                    if (payloads.isEmpty()) {
-                        // Arka plan thread'inden hata fırlatabiliriz.
-                        throw Exception("Kaydedilmiş bir push bildirimi bulunamadı.")
-                    }
+        Log.d(PUSH_LOG_TAG, "getPushMessages (Flow) fonksiyonu başlatıldı.")
 
+        activity.lifecycleScope.launch {
+            Log.d(PUSH_LOG_TAG, "getPushMessages için yaşam döngüsüne bağlı coroutine başlatıldı.")
+            try {
+                Log.d(PUSH_LOG_TAG, "DataStore'dan payload verisi akışı bekleniyor...")
+                // Flow'un ilk değerini toplayana kadar coroutine askıya alınacak.
+                // Bu, verinin hazır olmasını beklemek için en güvenilir yoldur.
+                val payloads = DataStoreManager.getPayloadsFlow(activity.applicationContext).first()
+                Log.d(PUSH_LOG_TAG, "DataStore akışından veri alındı. Boyut: ${payloads.length} karakter.")
+
+                if (payloads.isEmpty()) {
+                    Log.w(PUSH_LOG_TAG, "Alınan payload verisi boş. Hiçbir push bildirimi kaydedilmemiş olabilir.")
+                    callback.fail("Kaydedilmiş bir push bildirimi bulunamadı.")
+                    return@launch
+                }
+
+                Log.d(PUSH_LOG_TAG, "Arka plan thread'ine geçiliyor (Dispatchers.IO) ve mesajlar işleniyor.")
+                val orderedPushMessages = withContext(Dispatchers.IO) {
                     try {
                         val pushMessages = mutableListOf<Message>()
                         val jsonObject = JSONObject(payloads)
                         val jsonArray = jsonObject.getJSONArray(Constants.PAYLOAD_SP_ARRAY_KEY)
+                        Log.d(PUSH_LOG_TAG, "JSON array boyutu: ${jsonArray.length()}. Her bir öğe işleniyor.")
+
                         for (i in 0 until jsonArray.length()) {
                             val currentObject = jsonArray.getJSONObject(i)
                             try {
                                 val currentMessage = Gson().fromJson(currentObject.toString(), Message::class.java)
                                 pushMessages.add(currentMessage)
+                                Log.d(PUSH_LOG_TAG, "Mesaj başarıyla dönüştürüldü. Push ID: ${currentMessage.pushId}")
                             } catch (e: JsonSyntaxException) {
-                                Log.e(LOG_TAG, "JSON parse hatası: ${e.message}")
+                                Log.e(PUSH_LOG_TAG, "JSON parse hatası: ${e.message}. Geçersiz mesaj atlanıyor.")
                             }
                         }
-                        // orderPushMessages CPU yoğun bir iş olabilir, IO'da kalması iyidir.
+                        Log.i(PUSH_LOG_TAG, "Tüm mesajlar işlendi. Toplam mesaj sayısı: ${pushMessages.size}")
+
+                        Log.d(PUSH_LOG_TAG, "Mesajlar tarihe göre sıralanıyor.")
                         PayloadUtils.orderPushMessages(pushMessages)
                     } catch (e: Exception) {
+                        Log.e(PUSH_LOG_TAG, "Veri işleme sırasında bir hata oluştu: ${e.message}")
                         // Hatalı/bozuk veriyi temizleyelim.
                         throw Exception("Push mesajları işlenirken hata: ${e.message}")
                     }
                 }
-                // Sonuç başarılıysa, callback otomatik olarak Main thread'de çağrılır.
+                Log.i(PUSH_LOG_TAG, "İşlem başarıyla tamamlandı. Callback'in success metodu çağrılıyor.")
                 callback.success(orderedPushMessages)
             } catch (e: Exception) {
-                // Hata yakalanırsa, callback'in fail metodu Main thread'de çağrılır.
+                Log.e(PUSH_LOG_TAG, "getPushMessages (Flow) coroutine'de genel bir hata yakalandı: ${e.message}")
                 callback.fail(e.message ?: "Bilinmeyen bir hata oluştu.")
             }
         }

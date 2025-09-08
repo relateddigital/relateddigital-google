@@ -22,17 +22,23 @@ object PayloadUtils {
         DataStoreManager.updatePayloads(context) { currentPayload ->
             var finalPayloadString = currentPayload
 
+            Log.d(LOG_TAG, "updatePayloads lambda'sı çalıştırıldı.")
             try {
                 // Her zaman JSONObject formatı bekleniyor
+                Log.d(LOG_TAG, "Mevcut payload verisi kontrol ediliyor. Boyut: ${currentPayload.length}")
                 val jsonObject = if (currentPayload.isNotEmpty()) {
                     JSONObject(currentPayload)
                 } else {
                     JSONObject()
                 }
+                Log.d(LOG_TAG, "Payload JSONObject'e dönüştürüldü veya yeni bir obje oluşturuldu.")
 
                 var jsonArray = jsonObject.optJSONArray(Constants.PAYLOAD_SP_ARRAY_KEY)
                 if (jsonArray == null) {
                     jsonArray = JSONArray()
+                    Log.d(LOG_TAG, "Payload içinde array bulunamadı, yeni bir JSONArray oluşturuldu.")
+                } else {
+                    Log.d(LOG_TAG, "Mevcut JSONArray bulundu, boyutu: ${jsonArray.length()}")
                 }
 
                 // Aynı pushId varsa ekleme
@@ -40,16 +46,20 @@ object PayloadUtils {
                     Log.w(LOG_TAG, "Bu Push ID (${message.pushId}) zaten kayıtlı. İşlem durduruldu.")
                     return@updatePayloads currentPayload
                 }
+                Log.d(LOG_TAG, "Yeni bir mesaj olduğu onaylandı.")
 
                 // Yeni mesajı ekle
                 jsonArray = addNewOne(context, jsonArray, message)
                 Log.d(LOG_TAG, "Yeni mesaj başarıyla eklendi.")
 
                 // Eski mesajları temizle (30 günden eski olanları)
+                Log.d(LOG_TAG, "Eski mesajlar temizleniyor...")
                 jsonArray = removeOldOnes(jsonArray)
+                Log.d(LOG_TAG, "Eski mesajları temizleme işlemi tamamlandı. Yeni array boyutu: ${jsonArray.length()}")
 
                 // Güncellenmiş array’i tekrar JSONObject içine koy
                 jsonObject.put(Constants.PAYLOAD_SP_ARRAY_KEY, jsonArray)
+                Log.d(LOG_TAG, "Güncellenmiş array JSONObject içine eklendi.")
 
                 finalPayloadString = jsonObject.toString()
                 Log.i(LOG_TAG, "Push mesajı başarıyla kaydedildi. Push ID: ${message.pushId}")
