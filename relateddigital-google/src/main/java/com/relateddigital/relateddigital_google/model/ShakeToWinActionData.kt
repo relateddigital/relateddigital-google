@@ -24,6 +24,9 @@ class ShakeToWinActionData : Serializable {
     @SerializedName("img"                    ) var img                  : String?               = null
     @SerializedName("content_title"          ) var contentTitle         : String?               = null
     @SerializedName("content_body"           ) var contentBody          : String?               = null
+    @SerializedName("report")
+    var report: ShakeToWinReport? = null
+
     @SerializedName("auth")
     var auth: String? = null
 

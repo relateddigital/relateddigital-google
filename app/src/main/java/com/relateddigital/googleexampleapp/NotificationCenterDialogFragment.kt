@@ -1,4 +1,5 @@
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.relateddigital.googleexampleapp.R // TODO: Kendi R sınıfınızın yolunu yazın
 import com.relateddigital.relateddigital_google.RelatedDigital // TODO: Kendi RelatedDigital sınıfınızın yolunu yazın
 import com.relateddigital.relateddigital_google.push.PushMessageInterface
 import com.relateddigital.relateddigital_google.model.Message
 import com.relateddigital.relateddigital_google.util.SharedPref // TODO: Kendi SharedPref sınıfınızın yolunu yazın
+import org.json.JSONArray
 
 class NotificationCenterDialogFragment : DialogFragment() {
 
@@ -56,6 +59,11 @@ class NotificationCenterDialogFragment : DialogFragment() {
             override fun success(messages: List<Message>) {
                 if (messages.isNotEmpty()) {
                     showContent(messages)
+                    val gson = Gson()
+                    messages.forEachIndexed { index, msg ->
+                        val json = gson.toJson(msg)  // tek objeyi JSON string'e çevir
+                        Log.d("GetPushMessage", "[$index] $json")
+                    }
                 } else {
                     showMessage("Gösterilecek bildirim bulunmuyor.")
                 }

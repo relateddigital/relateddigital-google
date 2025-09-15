@@ -52,10 +52,11 @@ object PayloadUtils {
                 jsonArray = addNewOne(context, jsonArray, message)
                 Log.d(LOG_TAG, "Yeni mesaj başarıyla eklendi.")
 
-                // Eski mesajları temizle (30 günden eski olanları)
+                /* Eski mesajları temizle (30 günden eski olanları)
                 Log.d(LOG_TAG, "Eski mesajlar temizleniyor...")
                 jsonArray = removeOldOnes(jsonArray)
                 Log.d(LOG_TAG, "Eski mesajları temizleme işlemi tamamlandı. Yeni array boyutu: ${jsonArray.length()}")
+                */
 
                 // Güncellenmiş array’i tekrar JSONObject içine koy
                 jsonObject.put(Constants.PAYLOAD_SP_ARRAY_KEY, jsonArray)
@@ -83,7 +84,7 @@ object PayloadUtils {
                         return@updatePayloadsById currentPayload
                     }
                     jsonArray = addNewOneWithID(context, jsonArray, message, loginID)
-                    jsonArray = removeOldOnes(jsonArray)
+                    //jsonArray = removeOldOnes(jsonArray)
                     val finalObject = JSONObject()
                     finalObject.put(Constants.PAYLOAD_SP_ARRAY_ID_KEY, jsonArray)
                     finalPayloadString = finalObject.toString()

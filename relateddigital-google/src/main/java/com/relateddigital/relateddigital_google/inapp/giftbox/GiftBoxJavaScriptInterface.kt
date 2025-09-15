@@ -4,8 +4,10 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
 import com.relateddigital.relateddigital_google.model.GiftBox
+import com.relateddigital.relateddigital_google.model.MailSubReport
 import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.network.RequestHandler
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
 
 
 class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: GiftBoxWebDialogFragment,
@@ -37,6 +39,7 @@ class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: Gif
     fun copyToClipboard(couponCode: String?, link: String?) {
         mWebViewDialogFragment.dismiss()
         mCopyToClipboardInterface.copyToClipboard(couponCode, link)
+        sendReport()
     }
 
     /**
@@ -59,13 +62,12 @@ class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: Gif
     /**
      * This method sends the report to the server
      */
-    /*
+
     @JavascriptInterface
     fun sendReport() {
         var report: MailSubReport?
         try {
             report = MailSubReport()
-            report.impression = giftboxModel.actiondata!!.!!.impression
             report.click = giftboxModel.actiondata!!.report!!.click
         } catch (e: Exception) {
             Log.e("GiftBox : ", "There is no report to send!")
@@ -73,11 +75,27 @@ class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: Gif
             report = null
         }
         if (report != null) {
-            RequestHandler.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
+            InAppActionClickRequest.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
         }
     }
 
-    */
+
+
+    @JavascriptInterface
+    fun sendReportImpression() {
+        var report: MailSubReport?
+        try {
+            report = MailSubReport()
+            report.impression = giftboxModel.actiondata!!.report!!.impression
+        } catch (e: Exception) {
+            Log.e("GiftBox : ", "There is no impression report to send!")
+            e.printStackTrace()
+            report = null
+        }
+        if (report != null) {
+            InAppActionClickRequest.createInAppActionImressionRequest(mWebViewDialogFragment.requireContext(), report)
+        }
+    }
 
     /**
      * This method saves the promotion code shown
@@ -92,8 +110,10 @@ class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: Gif
         copyToClipboardInterface: GiftBoxCopyToClipboardInterface,
         showCodeInterface: GiftBoxShowCodeInterface
     ) {
+
         mListener = listener
         mCopyToClipboardInterface = copyToClipboardInterface
         mShowCodeInterface = showCodeInterface
+        sendReportImpression()
     }
 }

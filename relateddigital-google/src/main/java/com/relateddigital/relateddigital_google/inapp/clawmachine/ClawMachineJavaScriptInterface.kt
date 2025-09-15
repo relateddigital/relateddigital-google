@@ -68,7 +68,6 @@ class ClawMachineJavaScriptInterface internal constructor(webViewDialogFragment:
         var report: MailSubReport?
         try {
             report = MailSubReport()
-            report.impression = clawmachineModel.actiondata!!.report!!.impression
             report.click = clawmachineModel.actiondata!!.report!!.click
         } catch (e: Exception) {
             Log.e("ClawMachine : ", "There is no report to send!")
@@ -77,6 +76,22 @@ class ClawMachineJavaScriptInterface internal constructor(webViewDialogFragment:
         }
         if (report != null) {
             InAppActionClickRequest.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
+        }
+    }
+
+    @JavascriptInterface
+    fun sendReportImpression() {
+        var report: MailSubReport?
+        try {
+            report = MailSubReport()
+            report.impression = clawmachineModel.actiondata!!.report!!.impression
+        } catch (e: Exception) {
+            Log.e("ClawMachine : ", "There is no impression report to send!")
+            e.printStackTrace()
+            report = null
+        }
+        if (report != null) {
+            InAppActionClickRequest.createInAppActionImressionRequest(mWebViewDialogFragment.requireContext(), report)
         }
     }
 
@@ -98,5 +113,6 @@ class ClawMachineJavaScriptInterface internal constructor(webViewDialogFragment:
         mListener = listener
         mCopyToClipboardInterface = copyToClipboardInterface
         mShowCodeInterface = showCodeInterface
+        sendReportImpression()
     }
 }

@@ -41,6 +41,7 @@ import com.relateddigital.relateddigital_google.databinding.ActivityShakeToWinSt
 import com.relateddigital.relateddigital_google.databinding.ActivityShakeToWinStep2Binding
 import com.relateddigital.relateddigital_google.databinding.ActivityShakeToWinStep3Binding
 import com.relateddigital.relateddigital_google.model.*
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
 import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.util.ActivityUtils
 import com.relateddigital.relateddigital_google.util.StringUtils
@@ -555,11 +556,27 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
 
     }
 
+    private fun sendReportImpression() {
+        var report: MailSubReport?
+        try {
+            report = MailSubReport()
+            report.impression = mShakeToWinMessage!!.actiondata!!.report!!.impression
+        } catch (e: Exception) {
+            Log.e("Shake to Win : ", "There is no impression report to send!")
+            e.printStackTrace()
+            report = null
+        }
+        if (report != null) {
+            InAppActionClickRequest.createInAppActionImressionRequest(applicationContext, report)
+        }
+    }
+
     private fun initializePlayer() {
         player = ExoPlayer.Builder(this).build()
 
         // Video URL'si varsa kontrol ediyoruz
         if (!mShakeToWinMessage!!.actiondata!!.gameElements!!.videoUrl.toString().isNullOrEmpty()) {
+            sendReportImpression()
             val url = mShakeToWinMessage!!.actiondata!!.gameElements!!.videoUrl.toString()
 
             if (url.endsWith(".mp4")) {

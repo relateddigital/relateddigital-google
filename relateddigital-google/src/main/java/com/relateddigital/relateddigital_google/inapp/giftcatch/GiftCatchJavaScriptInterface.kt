@@ -81,6 +81,22 @@ class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: G
         }
     }
 
+    @JavascriptInterface
+    fun sendReportImpression() {
+        var report: MailSubReport?
+        try {
+            report = MailSubReport()
+            report.impression = giftRainModel.actiondata!!.report!!.impression
+        } catch (e: Exception) {
+            Log.e("GiftRain : ", "There is no impression report to send!")
+            e.printStackTrace()
+            report = null
+        }
+        if (report != null) {
+            InAppActionClickRequest.createInAppActionImressionRequest(mWebViewDialogFragment.requireContext(), report)
+        }
+    }
+
     /**
      * This method saves the promotion code shown
      */
@@ -98,6 +114,7 @@ class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: G
         mListener = listener
         mCopyToClipboardInterface = copyToClipboardInterface
         mShowCodeInterface = showCodeInterface
+        sendReportImpression()
     }
 
     private fun sendPromotionCodeInfo(email: String, promotionCode: String) {
