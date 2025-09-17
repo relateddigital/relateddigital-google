@@ -16,6 +16,10 @@ object PayloadUtils {
     private const val LOG_TAG = "PayloadUtils"
     private const val DATE_THRESHOLD: Long = 30
 
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).apply {
+        timeZone = TimeZone.getDefault() // cihaz saat dilimi
+    }
+
     suspend fun addPushMessage(context: Context, message: Message) {
         Log.d(LOG_TAG, "addPushMessage işlemi başlatıldı. Push ID: ${message.pushId}")
 
@@ -52,11 +56,11 @@ object PayloadUtils {
                 jsonArray = addNewOne(context, jsonArray, message)
                 Log.d(LOG_TAG, "Yeni mesaj başarıyla eklendi.")
 
-                /* Eski mesajları temizle (30 günden eski olanları)
+                // Eski mesajları temizle (30 günden eski olanları)
                 Log.d(LOG_TAG, "Eski mesajlar temizleniyor...")
                 jsonArray = removeOldOnes(jsonArray)
                 Log.d(LOG_TAG, "Eski mesajları temizleme işlemi tamamlandı. Yeni array boyutu: ${jsonArray.length()}")
-                */
+
 
                 // Güncellenmiş array’i tekrar JSONObject içine koy
                 jsonObject.put(Constants.PAYLOAD_SP_ARRAY_KEY, jsonArray)
@@ -138,7 +142,7 @@ object PayloadUtils {
 
     private fun addNewOne(context: Context, jsonArray: JSONArray, message: Message): JSONArray {
         try {
-            message.date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+            message.date = dateFormat.format(Date())
             message.status = "D"
             message.openDate = ""
             val userExVid: Map<String, Any?> = RelatedDigital.getRelatedDigitalModel(context).getExtra()
@@ -155,7 +159,7 @@ object PayloadUtils {
         val finalJsonArray = jsonArray ?: JSONArray()
         try {
             message.loginID = loginID
-            message.date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+            message.date = dateFormat.format(Date())
             message.status = "D"
             message.openDate = ""
             val userExVid: Map<String, Any?> = RelatedDigital.getRelatedDigitalModel(context).getExtra()
@@ -186,7 +190,6 @@ object PayloadUtils {
     }
 
     private fun isOld(date: String): Boolean {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         try {
             val messageDate = dateFormat.parse(date) ?: return true
             val now = Date()
@@ -202,7 +205,7 @@ object PayloadUtils {
         return try {
             val jsonObject = JSONObject()
             val jsonArray = JSONArray()
-            message.date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+            message.date = dateFormat.format(Date())
             message.status = "D"
             message.openDate = ""
             val userExVid: Map<String, Any?> = RelatedDigital.getRelatedDigitalModel(context).getExtra()
@@ -222,7 +225,7 @@ object PayloadUtils {
             val jsonObject = JSONObject()
             val jsonArray = JSONArray()
             message.loginID = loginID
-            message.date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+            message.date = dateFormat.format(Date())
             message.status = "D"
             message.openDate = ""
             val userExVid: Map<String, Any?> = RelatedDigital.getRelatedDigitalModel(context).getExtra()
@@ -248,7 +251,7 @@ object PayloadUtils {
                         val payloadObject = it.getJSONObject(i)
                         if (payloadObject.optString("pushId") == pushId) {
                             payloadObject.put("status", "O")
-                            payloadObject.put("openDate", SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()))
+                            payloadObject.put("openDate", dateFormat.format(Date()))
                             return@updatePayloads jsonObject.toString()
                         }
                     }
@@ -268,7 +271,7 @@ object PayloadUtils {
                 payloadsArray?.let {
                     for (i in 0 until it.length()) {
                         val payloadObject = it.getJSONObject(i)
-                        val updateTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+                        val updateTime = dateFormat.format(Date())
                         if (pushId.isNullOrEmpty() || payloadObject.optString("pushId") == pushId) {
                             payloadObject.put("status", "O")
                             payloadObject.put("openDate", updateTime)
@@ -289,11 +292,10 @@ object PayloadUtils {
     }
 
     private fun compareDates(str1: String, str2: String): Int {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         return try {
             val date1 = dateFormat.parse(str1)
             val date2 = dateFormat.parse(str2)
-            date2.compareTo(date1) // En yeni tarih en başta olacak şekilde sıralama
+            date2!!.compareTo(date1)
         } catch (e: Exception) {
             Log.e(LOG_TAG, "Tarih karşılaştırılamadı!", e)
             0
