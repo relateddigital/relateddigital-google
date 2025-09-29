@@ -21,7 +21,7 @@ object PayloadUtils {
     }
 
     suspend fun addPushMessage(context: Context, message: Message) {
-        Log.d(LOG_TAG, "addPushMessage işlemi başlatıldı. Push ID: ${message.pushId}")
+        Log.w(LOG_TAG, "addPushMessage işlemi başlatıldı. Push ID: ${message.pushId}")
 
         DataStoreManager.updatePayloads(context) { currentPayload ->
             var finalPayloadString = currentPayload
@@ -29,20 +29,20 @@ object PayloadUtils {
             Log.d(LOG_TAG, "updatePayloads lambda'sı çalıştırıldı.")
             try {
                 // Her zaman JSONObject formatı bekleniyor
-                Log.d(LOG_TAG, "Mevcut payload verisi kontrol ediliyor. Boyut: ${currentPayload.length}")
+                Log.w(LOG_TAG, "Mevcut payload verisi kontrol ediliyor. Boyut: ${currentPayload.length}")
                 val jsonObject = if (currentPayload.isNotEmpty()) {
                     JSONObject(currentPayload)
                 } else {
                     JSONObject()
                 }
-                Log.d(LOG_TAG, "Payload JSONObject'e dönüştürüldü veya yeni bir obje oluşturuldu.")
+                Log.w(LOG_TAG, "Payload JSONObject'e dönüştürüldü veya yeni bir obje oluşturuldu.")
 
                 var jsonArray = jsonObject.optJSONArray(Constants.PAYLOAD_SP_ARRAY_KEY)
                 if (jsonArray == null) {
                     jsonArray = JSONArray()
-                    Log.d(LOG_TAG, "Payload içinde array bulunamadı, yeni bir JSONArray oluşturuldu.")
+                    Log.w(LOG_TAG, "Payload içinde array bulunamadı, yeni bir JSONArray oluşturuldu.")
                 } else {
-                    Log.d(LOG_TAG, "Mevcut JSONArray bulundu, boyutu: ${jsonArray.length()}")
+                    Log.w(LOG_TAG, "Mevcut JSONArray bulundu, boyutu: ${jsonArray.length()}")
                 }
 
                 // Aynı pushId varsa ekleme
@@ -50,24 +50,24 @@ object PayloadUtils {
                     Log.w(LOG_TAG, "Bu Push ID (${message.pushId}) zaten kayıtlı. İşlem durduruldu.")
                     return@updatePayloads currentPayload
                 }
-                Log.d(LOG_TAG, "Yeni bir mesaj olduğu onaylandı.")
+                Log.w(LOG_TAG, "Yeni bir mesaj olduğu onaylandı.")
 
                 // Yeni mesajı ekle
                 jsonArray = addNewOne(context, jsonArray, message)
-                Log.d(LOG_TAG, "Yeni mesaj başarıyla eklendi.")
+                Log.w(LOG_TAG, "Yeni mesaj başarıyla eklendi.")
 
                 // Eski mesajları temizle (30 günden eski olanları)
-                Log.d(LOG_TAG, "Eski mesajlar temizleniyor...")
+                Log.w(LOG_TAG, "Eski mesajlar temizleniyor...")
                 jsonArray = removeOldOnes(jsonArray)
-                Log.d(LOG_TAG, "Eski mesajları temizleme işlemi tamamlandı. Yeni array boyutu: ${jsonArray.length()}")
+                Log.w(LOG_TAG, "Eski mesajları temizleme işlemi tamamlandı. Yeni array boyutu: ${jsonArray.length()}")
 
 
                 // Güncellenmiş array’i tekrar JSONObject içine koy
                 jsonObject.put(Constants.PAYLOAD_SP_ARRAY_KEY, jsonArray)
-                Log.d(LOG_TAG, "Güncellenmiş array JSONObject içine eklendi.")
+                Log.w(LOG_TAG, "Güncellenmiş array JSONObject içine eklendi.")
 
                 finalPayloadString = jsonObject.toString()
-                Log.i(LOG_TAG, "Push mesajı başarıyla kaydedildi. Push ID: ${message.pushId}")
+                Log.w(LOG_TAG, "Push mesajı başarıyla kaydedildi. Push ID: ${message.pushId}")
 
             } catch (e: Exception) {
                 Log.e(LOG_TAG, "Push mesajı işlenirken KRİTİK BİR HATA oluştu!", e)
@@ -174,18 +174,45 @@ object PayloadUtils {
 
     private fun removeOldOnes(jsonArray: JSONArray): JSONArray {
         val newJsonArray = JSONArray()
+        var discardedCount = 0
+
         for (i in 0 until jsonArray.length()) {
             try {
                 val jsonObject = jsonArray.getJSONObject(i)
-                val hasValidDate = jsonObject.has("date") && !isOld(jsonObject.getString("date"))
+
+                val hasDate = jsonObject.has("date")
+                val isDateValid = hasDate && !isOld(jsonObject.getString("date"))
                 val hasPushId = jsonObject.has("pushId")
-                if (hasValidDate && hasPushId) {
+
+                if (isDateValid && hasPushId) {
                     newJsonArray.put(jsonObject)
+                } else {
+                    discardedCount++
+                    when {
+                        !hasDate -> {
+                            Log.w(LOG_TAG, "Mesaj atıldı (date yok): $jsonObject")
+                        }
+                        hasDate && !isDateValid -> {
+                            Log.w(LOG_TAG, "Mesaj atıldı (eski tarih): $jsonObject")
+                        }
+                        !hasPushId -> {
+                            Log.w(LOG_TAG, "Mesaj atıldı (pushId yok): $jsonObject")
+                        }
+                    }
                 }
+
             } catch (e: Exception) {
-                Log.e(LOG_TAG, "Eski mesajlar temizlenirken bir öğe işlenemedi", e)
+                discardedCount++
+                Log.e(LOG_TAG, "JSON işlenirken hata oluştu, öğe atıldı", e)
             }
         }
+
+        // Özet log
+        Log.i(
+            LOG_TAG,
+            "removeOldOnes özeti -> toplam: ${jsonArray.length()}, tutuldu: ${newJsonArray.length()}, atıldı: $discardedCount"
+        )
+
         return newJsonArray
     }
 
