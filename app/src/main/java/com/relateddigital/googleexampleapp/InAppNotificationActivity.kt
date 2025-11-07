@@ -15,7 +15,6 @@ import com.relateddigital.relateddigital_google.inapp.InAppButtonInterface
 import com.relateddigital.relateddigital_google.inapp.VisilabsCallback
 import com.relateddigital.relateddigital_google.inapp.VisilabsResponse
 import com.relateddigital.relateddigital_google.inapp.countdowntimer.CountdownTimerFragment
-import com.relateddigital.relateddigital_google.inapp.countdowntimerbanner.CountdownTimerBannerFragment
 import com.relateddigital.relateddigital_google.model.FavsResponse
 import java.util.*
 
@@ -259,13 +258,8 @@ class InAppNotificationActivity : AppCompatActivity() {
         binding.countDownTimerBannerButton.setOnClickListener {
 
 
-            val countdownTimerBannerFragment: CountdownTimerBannerFragment = CountdownTimerBannerFragment.newInstance(0, null)
-
-            val transaction = supportFragmentManager.beginTransaction()
-            transaction.replace(android.R.id.content, countdownTimerBannerFragment)
-            transaction.commit()
             //TODO when backend side gets ready, check below
-            //sendInAppRequest("countdowntimerbanner");
+            sendInAppRequest("CountdownTimerBanner");
         }
 
         binding.inlineNps.setOnClickListener{
@@ -280,7 +274,7 @@ class InAppNotificationActivity : AppCompatActivity() {
         } */
 
         binding.notificationBellButton.setOnClickListener {
-            sendInAppRequest("notification_bell")
+            sendInAppRequest("NotificationBell")
 
         }
 

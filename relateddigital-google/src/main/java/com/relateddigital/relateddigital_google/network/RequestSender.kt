@@ -13,6 +13,7 @@ import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.api.*
 import com.relateddigital.relateddigital_google.inapp.choosefavorite.ChooseFavoriteActivity
 import com.relateddigital.relateddigital_google.constants.Constants
+import com.relateddigital.relateddigital_google.inapp.countdowntimerbanner.CountdownTimerBannerFragment
 import com.relateddigital.relateddigital_google.inapp.InAppManager
 import com.relateddigital.relateddigital_google.inapp.VisilabsResponse
 import com.relateddigital.relateddigital_google.inapp.clawmachine.ClawMachineActivity
@@ -487,7 +488,6 @@ object RequestSender {
                                         !actionsResponse.mSurveyList.isNullOrEmpty() -> {
                                             val surveyModel: SurveyModel =
                                                 actionsResponse.mSurveyList!![0]
-                                            var waitTime = 0L
                                             ActivityUtils.parentActivity = currentRequest.parent
                                             val intent =
                                                 Intent(
@@ -496,10 +496,25 @@ object RequestSender {
                                                 )
 
                                             intent.putExtra("survey-data", surveyModel)
-                                            Handler(Looper.getMainLooper()).postDelayed({
-                                                currentRequest.parent!!.startActivity(intent)
-                                            }, waitTime)
+                                            currentRequest.parent!!.startActivity(intent)
                                         }
+
+                                        !actionsResponse.mCountdownTimerBanner.isNullOrEmpty() -> {
+                                            var waitTime = 0L
+
+
+                                            if (!actionsResponse.mCountdownTimerBanner!!.get(0).actiondata!!.waiting_time.toString().isNullOrEmpty()) {
+                                                waitTime = actionsResponse.mCountdownTimerBanner!!.get(0).actiondata!!.waiting_time!!.toLong()
+                                            }
+
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                val countdownTimerBannerFragment: CountdownTimerBannerFragment = CountdownTimerBannerFragment.newInstance(actionsResponse.mCountdownTimerBanner!![0])
+                                                val transaction : FragmentTransaction= (currentRequest.parent!! as FragmentActivity).supportFragmentManager.beginTransaction()
+                                                transaction.replace(android.R.id.content, countdownTimerBannerFragment)
+                                                transaction.commit()
+                                            }, waitTime * 1000L)
+                                        }
+
                                         else -> {
                                             Log.e(
                                                     LOG_TAG,

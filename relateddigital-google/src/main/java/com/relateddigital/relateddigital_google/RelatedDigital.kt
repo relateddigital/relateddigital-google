@@ -34,6 +34,8 @@ import com.relateddigital.relateddigital_google.util.*
 import org.json.JSONArray
 import org.json.JSONObject
 import androidx.lifecycle.lifecycleScope
+import com.relateddigital.relateddigital_google.inapp.countdowntimerbanner.CountdownTimerBannerClickCallback
+import com.relateddigital.relateddigital_google.inapp.notificationbell.NotificationBellClickCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
@@ -51,6 +53,8 @@ object RelatedDigital {
     private const val PUSH_LOG_TAG: String = "GetPushMessages"
     private var previousModel: RelatedDigitalModel? = null
     var actionButtonCallback: NotificationActionListener? = null
+    private var countdownCallback: CountdownTimerBannerClickCallback? = null
+    private var notificationBellCallback: NotificationBellClickCallback? = null
 
     @JvmStatic
     fun init(context: Context,
@@ -1775,6 +1779,23 @@ object RelatedDigital {
             context.startActivity(intent)
         }
     }
+
+    fun getCountdownTimerBannerClickCallback(callback: CountdownTimerBannerClickCallback) {
+        this.countdownCallback = callback
+    }
+
+    fun setCountdownTimerBannerClickCallback(): CountdownTimerBannerClickCallback? {
+        return this.countdownCallback
+    }
+
+    fun getNotificationBellClickCallback(callback: NotificationBellClickCallback) {
+        this.notificationBellCallback = callback
+    }
+
+    fun setNotificationBellClickCallback(): NotificationBellClickCallback? {
+        return this.notificationBellCallback
+    }
+
 
     private fun initVisilabsParameters() {
         val visilabsParameters = ArrayList<VisilabsParameter>()

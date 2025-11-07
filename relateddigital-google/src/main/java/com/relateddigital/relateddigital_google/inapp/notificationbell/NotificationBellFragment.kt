@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.relateddigital.relateddigital_google.R
+import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.databinding.FragmentNotificationBellBinding
 import com.relateddigital.relateddigital_google.inapp.FontFamily
 import com.relateddigital.relateddigital_google.model.MailSubReport
@@ -96,10 +97,9 @@ class NotificationBellFragment : Fragment() {
             Glide.with(this)
                 .asGif()
                 .load(animationUrl)
-                .placeholder(R.drawable.ic_close_black_24dp) // Varsayılan bir ikon belirleyebilirsiniz
+                .placeholder(R.drawable.ic_close_black_24dp)
                 .into(binding.fabBell)
         } else {
-            // Animasyon URL'si yoksa statik ikonu yüklemeyi dene
             loadStaticBellIcon()
         }
     }
@@ -117,7 +117,7 @@ class NotificationBellFragment : Fragment() {
 
         binding.tvTitle.text = notificationBell?.actiondata?.title
         binding.ivClose.setOnClickListener {
-            hideDialog()
+            endFragment()
         }
 
         // Tıklama dışındaki alanların tıklanabilir olmasını engelle
@@ -128,17 +128,19 @@ class NotificationBellFragment : Fragment() {
         val notificationTexts = notificationBell?.actiondata?.notification_texts ?: emptyList()
         if (notificationTexts.isNotEmpty()) {
             val adapter = NotificationBellAdapter(requireContext(), notificationTexts, extendedProps) { link ->
-                // Linke tıklama olayı
-                link?.let {
-                    try {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
-                        startActivity(intent)
-                        sendReport()
-                    } catch (e: Exception) {
-                        Log.e(LOG_TAG, "Could not open the link: $it", e)
+                if (link != null) {
+                    val callback = RelatedDigital.setNotificationBellClickCallback()
+                    callback?.onNotificationBellClickCallbackClick(link)
+                    link.let {
+                        try {
+                            sendReport()
+                        } catch (e: Exception) {
+                            Log.e(LOG_TAG, "Could not open the link: $it", e)
+                        }
                     }
+                    hideDialog()
                 }
-                hideDialog() // Linke tıklanınca diyaloğu kapat
+
             }
             binding.rvNotifications.adapter = adapter
         }
@@ -151,7 +153,7 @@ class NotificationBellFragment : Fragment() {
             report = MailSubReport()
             report.click = notificationBell?.actiondata?.report?.click
         } catch (e: Exception) {
-            Log.e("Spin to Win : ", "There is no click report to send!")
+            Log.e("Notification Bell : ", "There is no click report to send!")
             e.printStackTrace()
             report = null
         }

@@ -2,16 +2,18 @@ package com.relateddigital.googleexampleapp
 
 
 import NotificationCenterDialogFragment
-import android.content.Intent
-import android.os.Bundle
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.relateddigital.googleexampleapp.databinding.ActivityMainBinding
+import com.relateddigital.relateddigital_google.RelatedDigital
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,7 +46,19 @@ class MainActivity : AppCompatActivity() {
             registerReceiver(broad, intentFilter)
         }
 
+        RelatedDigital.getCountdownTimerBannerClickCallback { link ->
+            // Bu kod bloğu, kullanıcı banner'a tıkladığında çalışacak.
 
+            Log.d("RDExampleAndroid", "Countdown Banner tıklandı! Yönlendirilen link: $link")
+
+        }
+
+        RelatedDigital.getNotificationBellClickCallback { link ->
+            // Bu kod bloğu, kullanıcı banner'a tıkladığında çalışacak.
+
+            Log.d("RDExampleAndroid", "Notification Bell tıklandı! Yönlendirilen link: $link")
+
+        }
 
     }
 
@@ -90,4 +104,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
+
 }

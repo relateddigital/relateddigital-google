@@ -59,6 +59,12 @@ class ActionResponse : Serializable {
     @SerializedName("NotificationBell")
     var mNotificationBell: List<NotificationBell>? = null
 
+    @SerializedName("MultipleChoiceSurvey")
+    var mSurveyList: List<SurveyModel>? = null
+
+    @SerializedName("CountdownTimerBanner")
+    var mCountdownTimerBanner: List<CountdownTimerBanner>? = null
+
     @SerializedName("VERSION")
     var version: Int? = null
 
@@ -124,6 +130,12 @@ class ActionResponse : Serializable {
         set(notificationBell) {
             mNotificationBell = notificationBell
         }
-    @SerializedName("MultipleChoiceSurvey")
-    var mSurveyList: List<SurveyModel>? = null
+
+    var countdownTimerBanner: List<CountdownTimerBanner>?
+        get() = mCountdownTimerBanner
+        set(notificationBell) {
+            mCountdownTimerBanner = countdownTimerBanner
+        }
+
+
 }

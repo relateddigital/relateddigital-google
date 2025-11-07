@@ -1146,6 +1146,11 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                         getString(R.string.copied_to_clipboard),
                         Toast.LENGTH_LONG
                     ).show()
+                    InAppNotificationClickRequest.createInAppNotificationClickRequest(
+                        applicationContext,
+                        mInAppMessage,
+                        rateReport
+                    )
                     if(mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonFunction?.isNotEmpty() == true)
                     {
                         if(mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonFunction.equals("copy_close")) {

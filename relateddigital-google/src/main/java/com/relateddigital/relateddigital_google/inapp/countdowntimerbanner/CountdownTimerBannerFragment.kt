@@ -1,189 +1,320 @@
 package com.relateddigital.relateddigital_google.inapp.countdowntimerbanner
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.content.ContextCompat
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
-import com.relateddigital.relateddigital_google.R
+import com.bumptech.glide.Glide
+import com.google.gson.Gson
+import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.databinding.FragmentCountdownTimerBannerBinding
-import com.relateddigital.relateddigital_google.inapp.InAppNotificationState
-import java.util.Timer
-import java.util.TimerTask
+import com.relateddigital.relateddigital_google.model.CountdownTimerBanner
+import com.relateddigital.relateddigital_google.model.CountdownTimerBannerActionData
+import com.relateddigital.relateddigital_google.model.CountdownTimerBannerExtendedProps
+import com.relateddigital.relateddigital_google.model.MailSubReport
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
+import java.net.URI
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 
-/**
- * A simple [Fragment] subclass.
- * Use the [CountdownTimerFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class CountdownTimerBannerFragment : Fragment()  {
+class CountdownTimerBannerFragment : Fragment() {
+
+    // binding null olabileceği için (onDestroyView'da temizleniyor) nullable.
+    private var binding: FragmentCountdownTimerBannerBinding? = null
+    private var bannerModel: CountdownTimerBanner? = null
+    private var actionData: CountdownTimerBannerActionData? = null
+    private var extendedProps: CountdownTimerBannerExtendedProps? = null
+    private var timer: CountDownTimer? = null
 
     companion object {
+        private const val LOG_TAG = "CountdownTimerBanner"
+        private const val ARG_PARAM1 = "dataKey"
 
-        private const val LOG_TAG = "CountdownTimerBannerFragment"
-        fun newInstance(stateId: Int, inAppState: InAppNotificationState?): CountdownTimerBannerFragment {
-            val fragment = CountdownTimerBannerFragment()
-            val args = Bundle()
-            args.putInt("stateIdKey", stateId)
-            args.putParcelable("inAppStateKey", inAppState)
-            fragment.arguments = args
-            return fragment
-        }
-        private const val ARG_PARAM1 = "stateIdKey"
-        private const val ARG_PARAM2 = "inAppStateKey"
-        private const val TIMER_SCHEDULE: Short = 1000
-        private const val TIMER_PERIOD: Short = 1000
-    }
-    private var mWeekNum: Short = 0
-    private var mDayNum: Short = 0
-    private var mHourNum: Short = 0
-    private var mMinuteNum: Short = 0
-    private var mSecondNum: Short = 0
-    private var mTimer: Timer? = null
-    private var mIsTop = false
-    private lateinit var binding: FragmentCountdownTimerBannerBinding
-    private val ARG_PARAM1 = "stateIdKey"
-    private val ARG_PARAM2 = "inAppStateKey"
-    private var mStateId = 0
-    private var mInAppState: InAppNotificationState? = null
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            mStateId = it.getInt(ARG_PARAM1)
-            mInAppState = it.getParcelable(ARG_PARAM2)
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (mTimer != null) {
-            mTimer!!.cancel()
-        }
-        //TODO: save the remaining time according to the format here
-        //TODO: save the json string here
+        /**
+         * Fabrika metodu.
+         */
+        @JvmStatic
+        fun newInstance(model: CountdownTimerBanner) =
+            CountdownTimerBannerFragment().apply {
+                arguments = Bundle().apply {
+                    putSerializable(ARG_PARAM1, model)
+                }
+            }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         binding = FragmentCountdownTimerBannerBinding.inflate(inflater, container, false)
 
-        adjustTimerViewBot()
-
-        return binding.root
-    }
-
-    private fun adjustTimerViewBot() {
-        setTimerValues()
-        //TODO check the format here and set the visibilities of the views accordingly
-        //TODO: convert bigger part like week to smaller parts like day if necessary according to the format
-        binding.dayNumBottom.text = mDayNum.toString()
-        binding.dayNumBottom.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-        binding.hourNumBottom.text = mHourNum.toString()
-        binding.hourNumBottom.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-        binding.minuteNumBottom.text = mMinuteNum.toString()
-        binding.minuteNumBottom.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-        binding.secNumBottom.text = mSecondNum.toString()
-        binding.secNumBottom.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-        startTimer()
-    }
-
-
-    private fun setTimerValues() {
-        //TODO: When real data came, adjust here accordingly
-        mWeekNum = 3
-        mDayNum = 5
-        mHourNum = 17
-        mMinuteNum = 0
-        mSecondNum = 6
-    }
-
-    private fun startTimer() {
-        mTimer = Timer("CountDownTimer", false)
-        val task: TimerTask = object : TimerTask() {
-            override fun run() {
-                reAdjustTimerViews()
+        arguments?.let {
+            bannerModel = it.getSerializable(ARG_PARAM1) as? CountdownTimerBanner
+            bannerModel?.let { model ->
+                actionData = model.actiondata
             }
         }
-        mTimer!!.schedule(task, TIMER_SCHEDULE.toLong(), TIMER_PERIOD.toLong())
+
+        if (bannerModel == null || actionData == null) {
+            Log.e(LOG_TAG, "CountdownTimerBanner data or actionData is null. Closing fragment.")
+            endFragment() // onViewCreated'e gitmeden kapat
+            return binding?.root
+        }
+        parseExtendedProps()
+        positionBanner()
+
+        return binding?.root
     }
 
+    private fun positionBanner() {
+        val data = actionData ?: return
+        val binding = this.binding ?: return
 
-    private fun reAdjustTimerViews() {
-        calculateTimeFields()
-        requireActivity().runOnUiThread {
-            try {
+        val position = extendedProps!!.position_on_page
 
-                    if (binding.dayNumBottom.visibility != View.GONE) {
-                        binding.dayNumBottom.text = mDayNum.toString()
-                    }
-                    if (binding.hourNumBottom.visibility != View.GONE) {
-                        binding.hourNumBottom.text = mHourNum.toString()
-                    }
-                    if (binding.minuteNumBottom.visibility != View.GONE) {
-                        binding.minuteNumBottom.text = mMinuteNum.toString()
-                    }
-                    if (binding.secNumBottom.visibility != View.GONE) {
-                        binding.secNumBottom.text = mSecondNum.toString()
-                    }
+        // Sadece "DownPosition" ise pozisyonu değiştir.
+        if ("DownPosition".equals(position?.trim(), ignoreCase = true)) {
+            // CardView'ın layout parametrelerini al
+            val params = binding.bannerCardView.layoutParams as? ConstraintLayout.LayoutParams
 
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e(LOG_TAG, "The fields for countdown timer could not be set!")
+            params?.let {
+                // Varsayılan üst bağlantısını temizle
+                it.topToTop = ConstraintLayout.LayoutParams.UNSET
+                // Yeni alt bağlantısını ayarla
+                it.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+                // Yeni parametreleri CardView'a uygula
+                binding.bannerCardView.layoutParams = it
             }
         }
+        // "UpPosition" ise hiçbir şey yapmaya gerek yok, XML'deki varsayılanı kullanır.
     }
 
-    private fun calculateTimeFields() {
-        //TODO: Adjust the logic here for each format. For example, if there is no week field
-        //in the format do not set day to max 6 below.
-        if (mSecondNum > 0) {
-            mSecondNum--
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        if (actionData != null) {
+
+            setupInitialView()
+            startCountdown()
+
+            if (actionData!!.waiting_time!! > 0) {
+                var report: MailSubReport?
+                try {
+                    report = MailSubReport()
+                    report.impression = actionData?.report?.impression
+                    context?.let { InAppActionClickRequest.createInAppActionImressionRequest(it, report) }
+                } catch (e: Exception) {
+                    Log.e("CountdownTimer Report", "There is no impression report to send!")
+                    e.printStackTrace()
+                    report = null
+                }
+            }
         } else {
-            mSecondNum = 59
-            if (mMinuteNum > 0) {
-                mMinuteNum--
-            } else {
-                mMinuteNum = 59
-                if (mHourNum > 0) {
-                    mHourNum--
+            endFragment() // Ekstra güvenlik
+        }
+    }
+
+    /**
+     * URI-decoding yöntemini kullanır.
+     */
+    private fun parseExtendedProps() {
+        try {
+            actionData?.extendedProps?.let {
+                val decodedString = URI(it).path
+                extendedProps = Gson().fromJson(
+                    decodedString,
+                    CountdownTimerBannerExtendedProps::class.java
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, "Error parsing ExtendedProps. Using default values.", e)
+        }
+    }
+
+    /**
+     * Görünümü ayarlar ve click listener'ları bağlar.
+     */
+    private fun setupInitialView() {
+        val data = actionData ?: run {
+            Log.e(LOG_TAG, "ActionData is null, cannot setup view.")
+            return
+        }
+        val binding = this.binding ?: return
+
+        binding.tvBannerText.text = data.content_body
+
+        if (isAdded) {
+            Glide.with(this)
+                .load(data.img)
+                .into(binding.ivBannerIcon)
+        }
+
+        // Renkleri ExtendedProps'tan uygula
+        extendedProps?.let { props ->
+
+            // 1. Ana CardView arkaplan rengi
+            try {
+                if (!props.background_color.isNullOrEmpty()) {
+                    binding.bannerCardView.setCardBackgroundColor(Color.parseColor(props.background_color))
+                }
+            } catch (e: Exception) {
+                Log.e(LOG_TAG, "Invalid background_color. JSON'da '#RRGGBB' formatı kullanın. Gelen: ${props.background_color}", e)
+            }
+
+            // 2. Kampanya metni rengi
+            try {
+                if (!props.content_body_text_color.isNullOrEmpty()) {
+                    binding.tvBannerText.setTextColor(Color.parseColor(props.content_body_text_color))
+                }
+            } catch (e: Exception) {
+                Log.e(LOG_TAG, "Invalid content_body_text_color: ${props.content_body_text_color}", e)
+            }
+
+            // 3. Kapatma butonu rengi
+            try {
+                val closeColor = data.close_button_color
+                if (!closeColor.isNullOrEmpty()) {
+                    val closeButtonColor = Color.parseColor(closeColor)
+                    DrawableCompat.setTint(binding.ibClose.drawable, closeButtonColor)
+                }
+            } catch (e: Exception) {
+                Log.e(LOG_TAG, "Invalid close_button_color: ${data.close_button_color}", e)
+            }
+
+            // 4. Zamanlayıcı Arka Plan Rengi
+            try {
+                if (!data.scratch_color.isNullOrEmpty()) {
+                    val timerBackground =
+                        binding.layoutTimer.background.mutate() as? GradientDrawable
+                    timerBackground?.setColor(Color.parseColor(data.scratch_color))
+                }
+            } catch (e: Exception) {
+                Log.e(LOG_TAG, "Failed to set timer background color (scratch_color). Gelen: ${data.scratch_color}", e)
+            }
+
+            // 5. Zamanlayıcı METİN Rengi
+            try {
+                if (!props.counter_color.isNullOrEmpty()) {
+                    val timerTextColor = Color.parseColor(props.counter_color)
+                    binding.tvTimerDays.setTextColor(timerTextColor)
+                    binding.tvTimerHours.setTextColor(timerTextColor)
+                    binding.tvTimerMinutes.setTextColor(timerTextColor)
+                    binding.tvTimerSubDays.setTextColor(timerTextColor)
+                    binding.tvTimerSubHours.setTextColor(timerTextColor)
+                    binding.tvTimerSubMinutes.setTextColor(timerTextColor)
                 } else {
-                    mHourNum = 23
-                    if (mDayNum > 0) {
-                        mDayNum--
-                    } else {
-                        mDayNum = 6
-                        if (mWeekNum > 0) {
-                            mWeekNum--
-                        } else {
-                            expireTime()
+                    Log.e(LOG_TAG, "Invalid timer text color (counter_color). Gelen: ${props.counter_color}")
+                }
+            } catch (e: Exception) {
+                Log.e(LOG_TAG, "Invalid timer text color (counter_color). Gelen: ${props.counter_color}", e)
+            }
+        }
+
+        // --- Click listener'lar ---
+        binding.ibClose.setOnClickListener { endFragment() }
+
+        binding.root.setOnClickListener {
+            val link = data.android_lnk
+            if (!link.isNullOrEmpty()) {
+                val callback = RelatedDigital.setCountdownTimerBannerClickCallback()
+                callback?.let {
+                    var report: MailSubReport?
+                    try {
+
+                        try {
+                            report = MailSubReport()
+                            report.click = actionData?.report?.click
+                            context?.let { InAppActionClickRequest.createInAppActionClickRequest(it, report) }
+                            callback.onCountdownTimerBannerClick(link)
+                        } catch (e: Exception) {
+                            Log.e("CountdownTimer Report", "There is no click report to send!")
+                            e.printStackTrace()
+                            report = null
                         }
+                    } catch (e: Exception) {
+                        Log.e(LOG_TAG, "Error firing CountdownTimerBannerClickCallback", e)
                     }
+
+                    endFragment()
                 }
             }
         }
     }
 
+    /**
+     * Geri sayım sayacını başlatır.
+     */
+    private fun startCountdown() {
+        val data = actionData ?: return
+        try {
+            val targetDateString = "${data.counter_Date} ${data.counter_Time}"
+            val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+            val targetDate = sdf.parse(targetDateString) ?: Date()
+            val now = System.currentTimeMillis()
+            val millisInFuture = targetDate.time - now
 
-    private fun expireTime() {
-        mSecondNum = 0
-        mMinuteNum = 0
-        mHourNum = 0
-        mDayNum = 0
-        mWeekNum = 0
-        if (mTimer != null) {
-            mTimer!!.cancel()
+            if (millisInFuture <= 0) {
+                showCampaignFinished()
+                return
+            }
+
+            timer = object : CountDownTimer(millisInFuture, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    // binding null ise (onDestroyView çağrıldıysa) devam etme
+                    binding ?: return
+
+                    val days = TimeUnit.MILLISECONDS.toDays(millisUntilFinished)
+                    val hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished) % 24
+                    val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % 60
+
+                    binding?.tvTimerDays?.text = String.format(Locale.getDefault(), "%02d", days)
+                    binding?.tvTimerHours?.text = String.format(Locale.getDefault(), "%02d", hours)
+                    binding?.tvTimerMinutes?.text = String.format(Locale.getDefault(), "%02d", minutes)
+                }
+
+                override fun onFinish() {
+                    binding?.let {
+                        showCampaignFinished()
+                    }
+                }
+            }.start()
+
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, "Failed to parse countdown date.", e)
+            showCampaignFinished()
         }
-        requireActivity().runOnUiThread { Toast.makeText(activity, getString(R.string.time_is_over), Toast.LENGTH_LONG).show() }
     }
 
+    /**
+     * Kampanya bittiğinde UI'ı günceller.
+     */
+    private fun showCampaignFinished() {
+        binding ?: return // Null kontrolü
+        binding?.tvBannerText?.text = "Kampanya sona erdi!"
+        binding?.layoutTimer?.visibility = View.GONE
+    }
 
+    /**
+     * Fragment'ı kaldırır.
+     */
+    private fun endFragment() {
+        // activity null değilse VE fragment eklendiyse (isAdded)
+        activity?.takeIf { isAdded }?.supportFragmentManager?.beginTransaction()?.remove(this)
+            ?.commit()
+    }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        timer?.cancel() // Sayacı durdur
+        timer = null
+        binding = null // ViewBinding referansını temizle (çok önemli)
+    }
 }
