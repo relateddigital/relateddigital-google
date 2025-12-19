@@ -121,6 +121,17 @@ class ScratchToWinActivity : Activity(), ScratchToWinInterface {
         binding.copyToClipboard.visibility = View.GONE
         binding.viewToBeScratched.setContainer(binding.scratchToWinContainer)
         binding.viewToBeScratched.setListener(this)
+
+        if (mScratchToWinMessage!!.actiondata!!.downContentBody.isNullOrEmpty()) {
+            binding.downContentBody.visibility = View.GONE
+        } else {
+            binding.downContentBody.text = mScratchToWinMessage!!.actiondata!!.downContentBody!!.replace("\\n", "\n")
+            binding.downContentBody.setTextColor(Color.parseColor(mExtendedProps!!.downContentBodyTextColor))
+            binding.downContentBody.textSize = mExtendedProps!!.downContentBodyTextSize!!.toFloat() + 8
+            binding.downContentBody.typeface = mExtendedProps!!.getDownContentBodyFontFamily(this)
+            binding.downContentBody.visibility = View.VISIBLE
+        }
+
         binding.copyToClipboard.setOnClickListener {
             val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val clipData = ClipData.newPlainText("", mScratchToWinMessage!!.actiondata!!.promotionCode)
