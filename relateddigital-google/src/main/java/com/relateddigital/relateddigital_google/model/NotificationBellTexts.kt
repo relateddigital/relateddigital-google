@@ -2,8 +2,9 @@ package com.relateddigital.relateddigital_google.model
 
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-class NotificationBellTexts {
+class NotificationBellTexts : Serializable {
     @SerializedName("text")
     var text: String? = null
 

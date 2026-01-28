@@ -194,14 +194,8 @@ class PushNotificationActivity : AppCompatActivity()  {
 
     private fun setupSyncButton() {
         binding.btnSync.setOnClickListener {
-            if(binding.autotext.text.toString().isNotEmpty()) {
-                RelatedDigital.setGsmPermit(this, GsmPermit.ACTIVE)
-                RelatedDigital.setTwitterId(this, "testTwitterId")
                 RelatedDigital.setEmail(this, binding.autotext.text.toString())
-                RelatedDigital.setFacebookId(this, "testFacebookId")
-                RelatedDigital.setRelatedDigitalUserId(this,  binding.autotextkey.text.toString())
-                RelatedDigital.setPhoneNumber(this, "testPhoneNumber")
-                RelatedDigital.setUserProperty(this, "instagram", "testInstagramId")
+                RelatedDigital.setRelatedDigitalUserId(this, binding.keyIDText.text.toString())
 
                 val callback: EuromessageCallback = object : EuromessageCallback {
                     override fun success() {
@@ -214,10 +208,6 @@ class PushNotificationActivity : AppCompatActivity()  {
 
                 }
                 RelatedDigital.sync(this, callback)
-            } else {
-                Toast.makeText(this, "Invalid email", Toast.LENGTH_LONG).show()
-            }
-
 
         }
     }
