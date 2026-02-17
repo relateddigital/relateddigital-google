@@ -56,34 +56,37 @@ object RequestSender {
     private var isSendingARequest = false
     private var retryCounter = 0
     fun addToQueue(request: Request, model: RelatedDigitalModel, context: Context) {
-        requestQueue.add(request)
-        send(model, context)
+        synchronized(requestQueue) {
+            requestQueue.add(request)
+            send(model, context)
+        }
     }
 
     private fun send(model: RelatedDigitalModel, context: Context) {
-        if (isSendingARequest || requestQueue.isEmpty()) {
-            return
+        val currentRequest: Request
+        synchronized(requestQueue) {
+            if (isSendingARequest || requestQueue.isEmpty()) {
+                return
+            }
+            isSendingARequest = true
+            currentRequest = requestQueue[0]
         }
-
-        isSendingARequest = true
-
-        val currentRequest = requestQueue[0]
 
         when (currentRequest.domain) {
             Domain.LOG_LOGGER -> {
                 val loggerApiInterface =
-                        LoggerApiClient.getClient(model.getRequestTimeoutInSecond())
-                                ?.create(ApiMethods::class.java)
+                    LoggerApiClient.getClient(model.getRequestTimeoutInSecond())
+                        ?.create(ApiMethods::class.java)
                 val call: Call<Void> = loggerApiInterface?.sendToLogger(
-                        model.getDataSource(),
-                        currentRequest.headerMap, currentRequest.queryMap
+                    model.getDataSource(),
+                    currentRequest.headerMap, currentRequest.queryMap
                 )!!
                 call.enqueue(object : Callback<Void?> {
                     override fun onResponse(call: Call<Void?>, response: Response<Void?>) {
                         if (response.isSuccessful) {
                             applySuccessConditions(
-                                    response.headers(), response.raw().request.url.toString(),
-                                    model, Domain.LOG_LOGGER, context
+                                response.headers(), response.raw().request.url.toString(),
+                                model, Domain.LOG_LOGGER, context
                             )
                         } else {
                             applyFailConditions(call.request().url.toString(), model, context)
@@ -98,18 +101,18 @@ object RequestSender {
 
             Domain.LOG_REAL_TIME -> {
                 val realTimeApiInterface =
-                        RealTimeApiClient.getClient(model.getRequestTimeoutInSecond())
-                                ?.create(ApiMethods::class.java)
+                    RealTimeApiClient.getClient(model.getRequestTimeoutInSecond())
+                        ?.create(ApiMethods::class.java)
                 val call: Call<Void> = realTimeApiInterface?.sendToRealTime(
-                        model.getDataSource(),
-                        currentRequest.headerMap, currentRequest.queryMap
+                    model.getDataSource(),
+                    currentRequest.headerMap, currentRequest.queryMap
                 )!!
                 call.enqueue(object : Callback<Void?> {
                     override fun onResponse(call: Call<Void?>, response: Response<Void?>) {
                         if (response.isSuccessful) {
                             applySuccessConditions(
-                                    response.headers(), response.raw().request.url.toString(),
-                                    model, Domain.LOG_REAL_TIME, context
+                                response.headers(), response.raw().request.url.toString(),
+                                model, Domain.LOG_REAL_TIME, context
                             )
                         } else {
                             applyFailConditions(call.request().url.toString(), model, context)
@@ -124,16 +127,16 @@ object RequestSender {
 
             Domain.LOG_S -> {
                 val sApiInterface = SApiClient.getClient(model.getRequestTimeoutInSecond())
-                        ?.create(ApiMethods::class.java)
+                    ?.create(ApiMethods::class.java)
                 val call: Call<Void> = sApiInterface?.sendSubsJsonRequestToS(
-                        currentRequest.headerMap, currentRequest.queryMap
+                    currentRequest.headerMap, currentRequest.queryMap
                 )!!
                 call.enqueue(object : Callback<Void?> {
                     override fun onResponse(call: Call<Void?>, response: Response<Void?>) {
                         if (response.isSuccessful) {
                             applySuccessConditions(
-                                    response.headers(), response.raw().request.url.toString(),
-                                    model, Domain.LOG_S, context
+                                response.headers(), response.raw().request.url.toString(),
+                                model, Domain.LOG_S, context
                             )
                         } else {
                             applyFailConditions(call.request().url.toString(), model, context)
@@ -145,7 +148,6 @@ object RequestSender {
                     }
                 })
             }
-
 
             Domain.IN_APP_NOTIFICATION_ACT_JSON -> {
                 val actJsonInterface = SApiClient.getClient(model.getRequestTimeoutInSecond())
@@ -225,21 +227,21 @@ object RequestSender {
 
             Domain.IN_APP_ACTION_MOBILE -> {
                 val mobileInterface = SApiClient.getClient(model.getRequestTimeoutInSecond())
-                        ?.create(ApiMethods::class.java)
+                    ?.create(ApiMethods::class.java)
                 val call: Call<ActionResponse> =
-                        mobileInterface?.getActionRequestResponse(
-                                currentRequest.headerMap, currentRequest.queryMap
-                        )!!
+                    mobileInterface?.getActionRequestResponse(
+                        currentRequest.headerMap, currentRequest.queryMap
+                    )!!
                 call.enqueue(object : Callback<ActionResponse> {
                     override fun onResponse(
-                            call: Call<ActionResponse>,
-                            response: Response<ActionResponse>
+                        call: Call<ActionResponse>,
+                        response: Response<ActionResponse>
                     ) {
                         if (response.isSuccessful) {
                             try {
                                 applySuccessConditions(
-                                        response.headers(), response.raw().request.url.toString(),
-                                        model, Domain.IN_APP_ACTION_MOBILE, context
+                                    response.headers(), response.raw().request.url.toString(),
+                                    model, Domain.IN_APP_ACTION_MOBILE, context
                                 )
                                 val actionsResponse = response.body()
                                 if (actionsResponse != null) {
@@ -249,19 +251,35 @@ object RequestSender {
                                                 actionsResponse.mSpinToWinList!![0]
                                             var waitTime = 0L
                                             if(!spinToWinModel!!.actiondata!!.waitingTime.toString().isNullOrEmpty()) {
-                                                 waitTime = spinToWinModel!!.actiondata!!.waitingTime!!.toLong()
+                                                waitTime = spinToWinModel!!.actiondata!!.waitingTime!!.toLong()
                                             }
                                             ActivityUtils.parentActivity = currentRequest.parent
                                             val intent =
-                                                    Intent(
-                                                            currentRequest.parent,
-                                                            SpinToWinActivity::class.java
-                                                    )
+                                                Intent(
+                                                    currentRequest.parent,
+                                                    SpinToWinActivity::class.java
+                                                )
 
                                             intent.putExtra("spin-to-win-data", spinToWinModel)
-                                                Handler(Looper.getMainLooper()).postDelayed({
-                                                    currentRequest.parent!!.startActivity(intent)
-                                                }, waitTime * 1000L)
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                currentRequest.parent!!.startActivity(intent)
+                                            }, waitTime * 1000L)
+                                        }
+                                        !actionsResponse.mSurveyList.isNullOrEmpty() -> {
+                                            val surveyModel: SurveyModel =
+                                                actionsResponse.mSurveyList!![0]
+                                            var waitTime = 0L
+                                            ActivityUtils.parentActivity = currentRequest.parent
+                                            val intent =
+                                                Intent(
+                                                    currentRequest.parent,
+                                                    SurveyActivity::class.java
+                                                )
+
+                                            intent.putExtra("survey-data", surveyModel)
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                currentRequest.parent!!.startActivity(intent)
+                                            }, waitTime)
                                         }
                                         !actionsResponse.mScratchToWinList.isNullOrEmpty() -> {
                                             val scratchToWinModel: ScratchToWin =
@@ -365,7 +383,7 @@ object RequestSender {
                                                 actionsResponse.mGiftRain!![0]
                                             var waitTime = 0L
                                             if(!giftRainModel!!.actiondata!!.waitingTime.toString().isNullOrEmpty()) {
-                                                 waitTime = giftRainModel!!.actiondata!!.waitingTime!!.toLong()
+                                                waitTime = giftRainModel!!.actiondata!!.waitingTime!!.toLong()
                                             }
                                             ActivityUtils.parentActivity = currentRequest.parent
                                             val intent =
@@ -374,9 +392,9 @@ object RequestSender {
                                                     GiftCatchActivity::class.java
                                                 )
                                             intent.putExtra("gift-rain-data", giftRainModel)
-                                                Handler(Looper.getMainLooper()).postDelayed({
-                                                    currentRequest.parent!!.startActivity(intent)
-                                                }, waitTime * 1000L)
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                currentRequest.parent!!.startActivity(intent)
+                                            }, waitTime * 1000L)
 
                                         }
                                         !actionsResponse.mGiftBox.isNullOrEmpty() -> {
@@ -485,20 +503,6 @@ object RequestSender {
                                             transaction.replace(android.R.id.content, notificationBellFragment)
                                             transaction.commit()
                                         }
-                                        !actionsResponse.mSurveyList.isNullOrEmpty() -> {
-                                            val surveyModel: SurveyModel =
-                                                actionsResponse.mSurveyList!![0]
-                                            ActivityUtils.parentActivity = currentRequest.parent
-                                            val intent =
-                                                Intent(
-                                                    currentRequest.parent,
-                                                    SurveyActivity::class.java
-                                                )
-
-                                            intent.putExtra("survey-data", surveyModel)
-                                            currentRequest.parent!!.startActivity(intent)
-                                        }
-
                                         !actionsResponse.mCountdownTimerBanner.isNullOrEmpty() -> {
                                             var waitTime = 0L
 
@@ -514,11 +518,10 @@ object RequestSender {
                                                 transaction.commit()
                                             }, waitTime * 1000L)
                                         }
-
                                         else -> {
                                             Log.e(
-                                                    LOG_TAG,
-                                                    "Response is null : " + response.raw().request.url.toString()
+                                                LOG_TAG,
+                                                "Response is null : " + response.raw().request.url.toString()
                                             )
                                             val visilabsResponse = VisilabsResponse(
                                                 null,
@@ -532,8 +535,8 @@ object RequestSender {
                                     }
                                 } else {
                                     Log.e(
-                                            LOG_TAG,
-                                            "Response is null : " + response.raw().request.url.toString()
+                                        LOG_TAG,
+                                        "Response is null : " + response.raw().request.url.toString()
                                     )
                                     val visilabsResponse = VisilabsResponse(
                                         null,
@@ -547,16 +550,16 @@ object RequestSender {
                             } catch (e: java.lang.Exception) {
                                 e.printStackTrace()
                                 Log.e(
-                                        LOG_TAG,
-                                        "Could not parse the response for the request : " + response.raw().request.url.toString()
+                                    LOG_TAG,
+                                    "Could not parse the response for the request : " + response.raw().request.url.toString()
                                 )
                                 Log.e(
-                                        LOG_TAG,
-                                        "Fail Request : " + call.request().url.toString()
+                                    LOG_TAG,
+                                    "Fail Request : " + call.request().url.toString()
                                 )
                                 Log.e(
-                                        LOG_TAG,
-                                        "Fail Request Message : The response is not in the correct format"
+                                    LOG_TAG,
+                                    "Fail Request Message : The response is not in the correct format"
                                 )
                                 val visilabsResponse = VisilabsResponse(
                                     null,
@@ -570,8 +573,8 @@ object RequestSender {
                         } else {
                             applyFailConditions(call.request().url.toString(), model, context)
                             Log.w(
-                                    LOG_TAG,
-                                    "Fail InApp Request : " + call.request().url.toString()
+                                LOG_TAG,
+                                "Fail InApp Request : " + call.request().url.toString()
                             )
                             Log.w(LOG_TAG, "Fail Request Response Code : " + response.code())
                             val visilabsResponse = VisilabsResponse(
@@ -588,8 +591,8 @@ object RequestSender {
                     override fun onFailure(call: Call<ActionResponse>, t: Throwable) {
                         applyFailConditions(call.request().url.toString(), model, context)
                         Log.e(
-                                LOG_TAG,
-                                "Fail Request Message : " + t.message
+                            LOG_TAG,
+                            "Fail Request Message : " + t.message
                         )
                         val visilabsResponse = VisilabsResponse(
                             null,
@@ -605,20 +608,20 @@ object RequestSender {
 
             Domain.IN_APP_SPIN_TO_WIN_PROMO_CODE -> {
                 val sInterface = SApiClient.getClient(model.getRequestTimeoutInSecond())
-                        ?.create(ApiMethods::class.java)
+                    ?.create(ApiMethods::class.java)
                 val call: Call<ResponseBody> = sInterface!!.getPromotionCodeRequestJsonResponse(
-                        currentRequest.headerMap,
-                        currentRequest.queryMap
+                    currentRequest.headerMap,
+                    currentRequest.queryMap
                 )
                 call.enqueue(object : Callback<ResponseBody> {
                     override fun onResponse(
-                            call: Call<ResponseBody?>?,
-                            response: Response<ResponseBody>
+                        call: Call<ResponseBody?>?,
+                        response: Response<ResponseBody>
                     ) {
                         if (response.isSuccessful) {
                             applySuccessConditions(
-                                    response.headers(), response.raw().request.url.toString(),
-                                    model, Domain.IN_APP_SPIN_TO_WIN_PROMO_CODE, context
+                                response.headers(), response.raw().request.url.toString(),
+                                model, Domain.IN_APP_SPIN_TO_WIN_PROMO_CODE, context
                             )
                             var rawJsonResponse = ""
                             try {
@@ -626,70 +629,70 @@ object RequestSender {
                                 if (rawJsonResponse != "") {
                                     val jsonResponse = JSONObject(rawJsonResponse)
                                     if (jsonResponse.getBoolean("success") && !jsonResponse.getString("promocode")
-                                                    .equals(
-                                                            ""
-                                                    )
+                                            .equals(
+                                                ""
+                                            )
                                     ) {
                                         Log.i(
-                                                LOG_TAG,
-                                                "Success Request : " + response.raw().request.url.toString()
+                                            LOG_TAG,
+                                            "Success Request : " + response.raw().request.url.toString()
                                         )
                                         val visilabsResponse = VisilabsResponse(
-                                                jsonResponse,
-                                                null,
-                                                null,
-                                                null,
-                                                null
+                                            jsonResponse,
+                                            null,
+                                            null,
+                                            null,
+                                            null
                                         )
                                         currentRequest.visilabsCallback!!.success(visilabsResponse)
                                     } else {
                                         Log.e(
-                                                LOG_TAG,
-                                                "Empty promotion code - auth issue" + response.raw().request.url.toString()
+                                            LOG_TAG,
+                                            "Empty promotion code - auth issue" + response.raw().request.url.toString()
                                         )
                                         val visilabsResponse = VisilabsResponse(
-                                                null,
-                                                null,
-                                                "Empty promotion code - auth issue",
-                                                null,
-                                                "Empty promotion code - auth issue"
+                                            null,
+                                            null,
+                                            "Empty promotion code - auth issue",
+                                            null,
+                                            "Empty promotion code - auth issue"
                                         )
                                         currentRequest.visilabsCallback!!.fail(visilabsResponse)
                                     }
                                 } else {
                                     Log.e(
-                                            LOG_TAG,
-                                            "Empty response for the request : " + response.raw().request.url.toString()
+                                        LOG_TAG,
+                                        "Empty response for the request : " + response.raw().request.url.toString()
                                     )
                                     val visilabsResponse = VisilabsResponse(
-                                            null,
-                                            null,
-                                            "empty string",
-                                            null,
-                                            "empty string"
+                                        null,
+                                        null,
+                                        "empty string",
+                                        null,
+                                        "empty string"
                                     )
                                     currentRequest.visilabsCallback!!.fail(visilabsResponse)
                                 }
                             } catch (e: java.lang.Exception) {
                                 e.printStackTrace()
                                 Log.e(
-                                        LOG_TAG,
-                                        "Could not parse the response for the request : " + response.raw().request.url.toString()
+                                    LOG_TAG,
+                                    "Could not parse the response for the request : " + response.raw().request.url.toString()
                                 )
                                 val visilabsResponse = VisilabsResponse(
-                                        null,
-                                        null,
-                                        rawJsonResponse,
-                                        null,
-                                        rawJsonResponse
+                                    null,
+                                    null,
+                                    rawJsonResponse,
+                                    null,
+                                    rawJsonResponse
                                 )
                                 currentRequest.visilabsCallback!!.fail(visilabsResponse)
                             }
                         } else {
                             applyFailConditions(call!!.request().url.toString(), model, context)
                             Log.w(
-                                    LOG_TAG,
-                                    "Fail InApp Request : " + call.request().url.toString()
+                                LOG_TAG,
+                                "Fail InApp Request : " + call.request().url.toString()
                             )
                             Log.w(LOG_TAG, "Fail Request Response Code : " + response.code())
                         }
@@ -698,15 +701,15 @@ object RequestSender {
                     override fun onFailure(call: Call<ResponseBody?>?, t: Throwable) {
                         applyFailConditions(call!!.request().url.toString(), model, context)
                         Log.e(
-                                LOG_TAG,
-                                "Fail Request Message : " + t.message
+                            LOG_TAG,
+                            "Fail Request Message : " + t.message
                         )
                         val visilabsResponse = VisilabsResponse(
-                                null,
-                                null,
-                                t.message,
-                                t,
-                                t.message!!
+                            null,
+                            null,
+                            t.message,
+                            t,
+                            t.message!!
                         )
                         currentRequest.visilabsCallback!!.fail(visilabsResponse)
                     }
@@ -715,20 +718,20 @@ object RequestSender {
 
             Domain.IN_APP_STORY_MOBILE -> {
                 val sInterface = SApiClient.getClient(model.getRequestTimeoutInSecond())
-                        ?.create(ApiMethods::class.java)
+                    ?.create(ApiMethods::class.java)
                 val call: Call<ResponseBody> = sInterface!!.getGeneralActionRequestJsonResponse(
-                        currentRequest.headerMap,
-                        currentRequest.queryMap
+                    currentRequest.headerMap,
+                    currentRequest.queryMap
                 )
                 call.enqueue(object : Callback<ResponseBody> {
                     override fun onResponse(
-                            call: Call<ResponseBody?>?,
-                            response: Response<ResponseBody>
+                        call: Call<ResponseBody?>?,
+                        response: Response<ResponseBody>
                     ) {
                         if (response.isSuccessful) {
                             applySuccessConditions(
-                                    response.headers(), response.raw().request.url.toString(),
-                                    model, Domain.IN_APP_STORY_MOBILE, context
+                                response.headers(), response.raw().request.url.toString(),
+                                model, Domain.IN_APP_STORY_MOBILE, context
                             )
                             var rawJsonResponse = ""
                             try {
@@ -738,61 +741,61 @@ object RequestSender {
                                     val storyArray: JSONArray? = mainObject.optJSONArray("Story")
                                     if (storyArray != null && storyArray.length() > 0) {
                                         val visilabsResponse = VisilabsResponse(
-                                                JSONObject(rawJsonResponse),
-                                                null,
-                                                null,
-                                                null,
-                                                null
+                                            JSONObject(rawJsonResponse),
+                                            null,
+                                            null,
+                                            null,
+                                            null
                                         )
                                         currentRequest.visilabsCallback!!.success(visilabsResponse)
                                     } else {
                                         Log.e(
-                                                LOG_TAG,
-                                                "Empty response for the request : " + response.raw().request.url.toString()
-                                        )
-                                        val visilabsResponse = VisilabsResponse(
-                                                null,
-                                                null,
-                                                "empty string",
-                                                null,
-                                                "empty string"
-                                        )
-                                        currentRequest.visilabsCallback!!.fail(visilabsResponse)
-                                    }
-                                } else {
-                                    Log.e(
                                             LOG_TAG,
                                             "Empty response for the request : " + response.raw().request.url.toString()
-                                    )
-                                    val visilabsResponse = VisilabsResponse(
+                                        )
+                                        val visilabsResponse = VisilabsResponse(
                                             null,
                                             null,
                                             "empty string",
                                             null,
                                             "empty string"
+                                        )
+                                        currentRequest.visilabsCallback!!.fail(visilabsResponse)
+                                    }
+                                } else {
+                                    Log.e(
+                                        LOG_TAG,
+                                        "Empty response for the request : " + response.raw().request.url.toString()
+                                    )
+                                    val visilabsResponse = VisilabsResponse(
+                                        null,
+                                        null,
+                                        "empty string",
+                                        null,
+                                        "empty string"
                                     )
                                     currentRequest.visilabsCallback!!.fail(visilabsResponse)
                                 }
                             } catch (e: java.lang.Exception) {
                                 e.printStackTrace()
                                 Log.e(
-                                        LOG_TAG,
-                                        "Could not parse the response for the request : " + response.raw().request.url.toString()
+                                    LOG_TAG,
+                                    "Could not parse the response for the request : " + response.raw().request.url.toString()
                                 )
                                 val visilabsResponse =
-                                        VisilabsResponse(null, null, rawJsonResponse, null, rawJsonResponse)
+                                    VisilabsResponse(null, null, rawJsonResponse, null, rawJsonResponse)
                                 currentRequest.visilabsCallback!!.fail(visilabsResponse)
                             }
                         } else {
                             applyFailConditions(call!!.request().url.toString(), model, context)
                             Log.w(
-                                    LOG_TAG,
-                                    "Fail InApp Request : " + call.request().url.toString()
+                                LOG_TAG,
+                                "Fail InApp Request : " + call.request().url.toString()
                             )
                             Log.w(LOG_TAG, "Fail Request Response Code : " + response.code())
                             val visilabsResponse = VisilabsResponse(null, null,
-                                    "Fail Request Response Code : " + response.code(), null,
-                                    "Fail Request Response Code : " + response.code())
+                                "Fail Request Response Code : " + response.code(), null,
+                                "Fail Request Response Code : " + response.code())
                             currentRequest.visilabsCallback!!.fail(visilabsResponse)
                         }
                     }
@@ -800,8 +803,8 @@ object RequestSender {
                     override fun onFailure(call: Call<ResponseBody?>?, t: Throwable) {
                         applyFailConditions(call!!.request().url.toString(), model, context)
                         Log.e(
-                                LOG_TAG,
-                                "Fail Request Message : " + t.message
+                            LOG_TAG,
+                            "Fail Request Message : " + t.message
                         )
                         val visilabsResponse = VisilabsResponse(null, null, t.message, t, t.message)
                         currentRequest.visilabsCallback!!.fail(visilabsResponse)
@@ -811,67 +814,67 @@ object RequestSender {
 
             Domain.IN_APP_RECOMMENDATION_JSON -> {
                 val sInterface = SApiClient.getClient(model.getRequestTimeoutInSecond())
-                        ?.create(ApiMethods::class.java)
+                    ?.create(ApiMethods::class.java)
                 val call: Call<ResponseBody> = sInterface!!.getGeneralTargetRequestJsonResponse(
-                        currentRequest.headerMap,
-                        currentRequest.queryMap
+                    currentRequest.headerMap,
+                    currentRequest.queryMap
                 )
                 call.enqueue(object : Callback<ResponseBody> {
                     override fun onResponse(
-                            call: Call<ResponseBody?>?,
-                            response: Response<ResponseBody>
+                        call: Call<ResponseBody?>?,
+                        response: Response<ResponseBody>
                     ) {
                         if (response.isSuccessful) {
                             applySuccessConditions(
-                                    response.headers(), response.raw().request.url.toString(),
-                                    model, Domain.IN_APP_RECOMMENDATION_JSON, context
+                                response.headers(), response.raw().request.url.toString(),
+                                model, Domain.IN_APP_RECOMMENDATION_JSON, context
                             )
                             var rawJsonResponse = ""
                             try {
                                 rawJsonResponse = response.body()!!.string()
                                 if (rawJsonResponse != "") {
                                     val visilabsResponse = VisilabsResponse(
-                                            RecommendationUtils.formJsonObject(rawJsonResponse),
-                                            RecommendationUtils.formJsonArray(rawJsonResponse),
-                                            null,
-                                            null,
-                                            null
+                                        RecommendationUtils.formJsonObject(rawJsonResponse),
+                                        RecommendationUtils.formJsonArray(rawJsonResponse),
+                                        null,
+                                        null,
+                                        null
                                     )
                                     currentRequest.visilabsCallback!!.success(visilabsResponse)
                                 } else {
                                     Log.e(
-                                            LOG_TAG,
-                                            "Empty response for the request : " + response.raw().request.url.toString()
+                                        LOG_TAG,
+                                        "Empty response for the request : " + response.raw().request.url.toString()
                                     )
                                     val visilabsResponse = VisilabsResponse(
-                                            null,
-                                            null,
-                                            "empty string",
-                                            null,
-                                            "empty string"
+                                        null,
+                                        null,
+                                        "empty string",
+                                        null,
+                                        "empty string"
                                     )
                                     currentRequest.visilabsCallback!!.fail(visilabsResponse)
                                 }
                             } catch (e: java.lang.Exception) {
                                 e.printStackTrace()
                                 Log.e(
-                                        LOG_TAG,
-                                        "Could not parse the response for the request : " + response.raw().request.url.toString()
+                                    LOG_TAG,
+                                    "Could not parse the response for the request : " + response.raw().request.url.toString()
                                 )
                                 val visilabsResponse =
-                                        VisilabsResponse(null, null, rawJsonResponse, null, rawJsonResponse)
+                                    VisilabsResponse(null, null, rawJsonResponse, null, rawJsonResponse)
                                 currentRequest.visilabsCallback!!.fail(visilabsResponse)
                             }
                         } else {
                             applyFailConditions(call!!.request().url.toString(), model, context)
                             Log.w(
-                                    LOG_TAG,
-                                    "Fail InApp Request : " + call.request().url.toString()
+                                LOG_TAG,
+                                "Fail InApp Request : " + call.request().url.toString()
                             )
                             Log.w(LOG_TAG, "Fail Request Response Code : " + response.code())
                             val visilabsResponse = VisilabsResponse(null, null,
-                                    "Fail Request Response Code : " + response.code(), null,
-                                    "Fail Request Response Code : " + response.code())
+                                "Fail Request Response Code : " + response.code(), null,
+                                "Fail Request Response Code : " + response.code())
                             currentRequest.visilabsCallback!!.fail(visilabsResponse)
                         }
                     }
@@ -879,8 +882,8 @@ object RequestSender {
                     override fun onFailure(call: Call<ResponseBody?>?, t: Throwable) {
                         applyFailConditions(call!!.request().url.toString(), model, context)
                         Log.e(
-                                LOG_TAG,
-                                "Fail Request Message : " + t.message
+                            LOG_TAG,
+                            "Fail Request Message : " + t.message
                         )
                         val visilabsResponse = VisilabsResponse(null, null, t.message, t, t.message)
                         currentRequest.visilabsCallback!!.fail(visilabsResponse)
@@ -890,67 +893,67 @@ object RequestSender {
 
             Domain.IN_APP_FAVS_RESPONSE_MOBILE -> {
                 val sInterface = SApiClient.getClient(model.getRequestTimeoutInSecond())
-                        ?.create(ApiMethods::class.java)
+                    ?.create(ApiMethods::class.java)
                 val call: Call<ResponseBody> = sInterface!!.getGeneralActionRequestJsonResponse(
-                        currentRequest.headerMap,
-                        currentRequest.queryMap
+                    currentRequest.headerMap,
+                    currentRequest.queryMap
                 )
                 call.enqueue(object : Callback<ResponseBody> {
                     override fun onResponse(
-                            call: Call<ResponseBody?>?,
-                            response: Response<ResponseBody>
+                        call: Call<ResponseBody?>?,
+                        response: Response<ResponseBody>
                     ) {
                         if (response.isSuccessful) {
                             applySuccessConditions(
-                                    response.headers(), response.raw().request.url.toString(),
-                                    model, Domain.IN_APP_FAVS_RESPONSE_MOBILE, context
+                                response.headers(), response.raw().request.url.toString(),
+                                model, Domain.IN_APP_FAVS_RESPONSE_MOBILE, context
                             )
                             var rawJsonResponse = ""
                             try {
                                 rawJsonResponse = response.body()!!.string()
                                 if (rawJsonResponse != "") {
                                     val visilabsResponse = VisilabsResponse(
-                                            JSONObject(rawJsonResponse),
-                                            null,
-                                            null,
-                                            null,
-                                            null
+                                        JSONObject(rawJsonResponse),
+                                        null,
+                                        null,
+                                        null,
+                                        null
                                     )
                                     currentRequest.visilabsCallback!!.success(visilabsResponse)
                                 } else {
                                     Log.e(
-                                            LOG_TAG,
-                                            "Empty response for the request : " + response.raw().request.url.toString()
+                                        LOG_TAG,
+                                        "Empty response for the request : " + response.raw().request.url.toString()
                                     )
                                     val visilabsResponse = VisilabsResponse(
-                                            null,
-                                            null,
-                                            "empty string",
-                                            null,
-                                            "empty string"
+                                        null,
+                                        null,
+                                        "empty string",
+                                        null,
+                                        "empty string"
                                     )
                                     currentRequest.visilabsCallback!!.fail(visilabsResponse)
                                 }
                             } catch (e: java.lang.Exception) {
                                 e.printStackTrace()
                                 Log.e(
-                                        LOG_TAG,
-                                        "Could not parse the response for the request : " + response.raw().request.url.toString()
+                                    LOG_TAG,
+                                    "Could not parse the response for the request : " + response.raw().request.url.toString()
                                 )
                                 val visilabsResponse =
-                                        VisilabsResponse(null, null, rawJsonResponse, null, rawJsonResponse)
+                                    VisilabsResponse(null, null, rawJsonResponse, null, rawJsonResponse)
                                 currentRequest.visilabsCallback!!.fail(visilabsResponse)
                             }
                         } else {
                             applyFailConditions(call!!.request().url.toString(), model, context)
                             Log.w(
-                                    LOG_TAG,
-                                    "Fail InApp Request : " + call.request().url.toString()
+                                LOG_TAG,
+                                "Fail InApp Request : " + call.request().url.toString()
                             )
                             Log.w(LOG_TAG, "Fail Request Response Code : " + response.code())
                             val visilabsResponse = VisilabsResponse(null, null,
-                                    "Fail Request Response Code : " + response.code(), null,
-                                    "Fail Request Response Code : " + response.code())
+                                "Fail Request Response Code : " + response.code(), null,
+                                "Fail Request Response Code : " + response.code())
                             currentRequest.visilabsCallback!!.fail(visilabsResponse)
                         }
                     }
@@ -958,8 +961,8 @@ object RequestSender {
                     override fun onFailure(call: Call<ResponseBody?>?, t: Throwable) {
                         applyFailConditions(call!!.request().url.toString(), model, context)
                         Log.e(
-                                LOG_TAG,
-                                "Fail Request Message : " + t.message
+                            LOG_TAG,
+                            "Fail Request Message : " + t.message
                         )
                         val visilabsResponse = VisilabsResponse(null, null, t.message, t, t.message)
                         currentRequest.visilabsCallback!!.fail(visilabsResponse)
@@ -1050,17 +1053,17 @@ object RequestSender {
                                         LOG_TAG,
                                         "Success Request : " + response.raw().request.url.toString()
                                     )
-                                        if (rawJsonResponse == "ok" || rawJsonResponse == "\"ok\"") {
-                                            Log.i(
-                                                LOG_TAG,
-                                                "Successful Request : Sent the info of Geofence trigger"
-                                            )
-                                        } else {
-                                            Log.e(
-                                                LOG_TAG,
-                                                "Fail Request : Could not send the info of Geofence trigger"
-                                            )
-                                        }
+                                    if (rawJsonResponse == "ok" || rawJsonResponse == "\"ok\"") {
+                                        Log.i(
+                                            LOG_TAG,
+                                            "Successful Request : Sent the info of Geofence trigger"
+                                        )
+                                    } else {
+                                        Log.e(
+                                            LOG_TAG,
+                                            "Fail Request : Could not send the info of Geofence trigger"
+                                        )
+                                    }
                                 } else {
                                     Log.e(
                                         LOG_TAG,
@@ -1132,7 +1135,7 @@ object RequestSender {
                         RetryCounterManager.clearCounter(counterId)
                         saveSubscription(context, model)
                         Log.i(
-                           LOG_TAG,
+                            LOG_TAG,
                             "Sending the subscription is success"
                         )
                         callback?.success()
@@ -1322,8 +1325,8 @@ object RequestSender {
     }
 
     private fun parseAndSetResponseHeaders(
-            responseHeaders: Headers, type: Domain,
-            model: RelatedDigitalModel
+        responseHeaders: Headers, type: Domain,
+        model: RelatedDigitalModel
     ) {
         val names = responseHeaders.names()
         if (names.isNotEmpty()) {
@@ -1341,7 +1344,7 @@ object RequestSender {
                             Constants.LOAD_BALANCE_PREFIX.lowercase(
                                 Locale.ROOT
                             )
-                            )) {
+                        )) {
                         val cookieKeyValue = fields[0].split("=").toTypedArray()
                         if (cookieKeyValue.size > 1) {
                             val cookieKey = cookieKeyValue[0]
@@ -1359,7 +1362,7 @@ object RequestSender {
                             Constants.OM_3_KEY.lowercase(
                                 Locale.ROOT
                             )
-                            )) {
+                        )) {
                         val cookieKeyValue = fields[0].split("=").toTypedArray()
                         if (cookieKeyValue.size > 1 || model.getCookie() != null) {
                             val cookieValue = cookieKeyValue[1]
@@ -1375,31 +1378,35 @@ object RequestSender {
         }
     }
 
-    private fun removeFromQueue() {
-        requestQueue.removeAt(0)
-    }
-
     private fun applySuccessConditions(
-            headers: Headers, url: String, model: RelatedDigitalModel,
-            type: Domain, context: Context
+        headers: Headers, url: String, model: RelatedDigitalModel,
+        type: Domain, context: Context
     ) {
         Log.i(LOG_TAG, "Successful Request : $url")
         parseAndSetResponseHeaders(headers, type, model)
-        removeFromQueue()
-        isSendingARequest = false
-        retryCounter = 0
-        send(model, context)
+        synchronized(requestQueue) {
+            if (requestQueue.isNotEmpty()) {
+                requestQueue.removeAt(0)
+            }
+            isSendingARequest = false
+            retryCounter = 0
+            send(model, context)
+        }
     }
 
     private fun applyFailConditions(url: String, model: RelatedDigitalModel, context: Context) {
         Log.e(LOG_TAG, "Fail Request : $url")
-        isSendingARequest = false
-        retryCounter++
-        if (retryCounter >= 3) {
-            Log.w(LOG_TAG, "Could not send the request after 3 attempts!!!")
-            removeFromQueue()
-            retryCounter = 0
+        synchronized(requestQueue) {
+            isSendingARequest = false
+            retryCounter++
+            if (retryCounter >= 3) {
+                Log.w(LOG_TAG, "Could not send the request after 3 attempts!!!")
+                if (requestQueue.isNotEmpty()) {
+                    requestQueue.removeAt(0)
+                }
+                retryCounter = 0
+            }
+            send(model, context)
         }
-        send(model, context)
     }
 }
