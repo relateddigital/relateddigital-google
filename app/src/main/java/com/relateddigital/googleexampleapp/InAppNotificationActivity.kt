@@ -280,6 +280,11 @@ class InAppNotificationActivity : AppCompatActivity() {
 
         }
 
+        binding.npsWithMultiplePopup.setOnClickListener {
+            sendInAppRequest("nps_with_multiple_popup")
+
+        }
+
     }
 
     private fun sendInAppRequest(type: String) {

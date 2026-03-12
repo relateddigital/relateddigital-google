@@ -110,6 +110,7 @@ class PushNotificationActivity : AppCompatActivity()  {
     private fun setupPermissionButton() {
         binding.btnPermission.setOnClickListener {
             RelatedDigital.requestNotificationPermission(activity)
+            RelatedDigital.setPushPermission(applicationContext, false)
         }
     }
 
