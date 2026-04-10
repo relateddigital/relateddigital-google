@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">googleexampleapp</string>
-    <string name="main_page_label">Related Digital Google Demo</string>
+    <string name="main_page_label">Related Digital Google Test</string>
     <string name="in_app_notification_page_label">In-App Notification</string>
     <string name="push_notification_page_label">Push Notification</string>
     <string name="event_page_label">Event</string>
@@ -51,6 +51,7 @@
     <string name="notification_bell">NOTIFICATION BELL</string>
     <string name="multiple_choice_survey">MULTIPLE CHOICE SURVEY</string>
     <string name="nps_with_multiple_popup">NPS WITH MULTIPLE POPUP</string>
+    <string name="fullscreen_carousel">FULLSCREEN CAROUSEL</string>
 
     <string name="custom_actions">CUSTOM ACTIONS</string>
     <string name="inapp_review">INAPP REVIEW</string>
@@ -79,6 +80,8 @@
     <string name="register_email_iys">REGISTER EMAIL (İYS)</string>
     <string name="register">REGISTER</string>
     <string name="push_notification_parameters">PUSH NOTIFICATION PARAMETERS</string>
+    <string name="euro_msg_requests_title">testpushs.euromsg.com İstekleri</string>
+    <string name="copy_all_requests">Tümünü Kopyala</string>
     <string name="last_push_time">Last Push Time</string>
     <string name="key">Key</string>
     <string name="value">Value</string>

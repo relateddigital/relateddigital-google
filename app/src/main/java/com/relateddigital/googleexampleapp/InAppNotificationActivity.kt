@@ -285,6 +285,11 @@ class InAppNotificationActivity : AppCompatActivity() {
 
         }
 
+        binding.fullscreenCarousel.setOnClickListener {
+            sendInAppRequest("fullscreen_carousel")
+
+        }
+
     }
 
     private fun sendInAppRequest(type: String) {
