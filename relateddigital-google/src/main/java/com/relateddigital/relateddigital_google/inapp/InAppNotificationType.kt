@@ -76,4 +76,9 @@ enum class InAppNotificationType {
             return "carousel_fullscreen"
         }
     },
+    FULLSCREEN_POPUP {
+        override fun toString(): String {
+            return "fullscreen_popup"
+        }
+    },
 }

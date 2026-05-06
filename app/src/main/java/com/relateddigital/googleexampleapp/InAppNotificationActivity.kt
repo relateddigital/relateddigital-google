@@ -290,6 +290,10 @@ class InAppNotificationActivity : AppCompatActivity() {
 
         }
 
+        binding.fullscreenPopup.setOnClickListener {
+            sendInAppRequest("fullscreen_popup")
+        }
+
     }
 
     private fun sendInAppRequest(type: String) {

@@ -52,6 +52,7 @@
     <string name="multiple_choice_survey">MULTIPLE CHOICE SURVEY</string>
     <string name="nps_with_multiple_popup">NPS WITH MULTIPLE POPUP</string>
     <string name="fullscreen_carousel">FULLSCREEN CAROUSEL</string>
+    <string name="fullscreen_popup">FULLSCREEN POPUP</string>
 
     <string name="custom_actions">CUSTOM ACTIONS</string>
     <string name="inapp_review">INAPP REVIEW</string>
