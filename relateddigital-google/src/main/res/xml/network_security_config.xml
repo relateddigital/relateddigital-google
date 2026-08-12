@@ -6,5 +6,8 @@
             <certificates src="system" />
         </trust-anchors>
     </base-config>
-
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">tests.visilabs.net</domain>
+        <domain includeSubdomains="true">testpushs.euromsg.com</domain>
+    </domain-config>
 </network-security-config>
