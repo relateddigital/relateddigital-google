@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.AudioAttributes
 import android.media.RingtoneManager
@@ -27,8 +26,8 @@ import com.relateddigital.relateddigital_google.model.Element
 import com.relateddigital.relateddigital_google.model.Message
 import com.relateddigital.relateddigital_google.push.carousel.CarouselBuilder
 import com.relateddigital.relateddigital_google.util.AppUtils
-import com.relateddigital.relateddigital_google.util.ImageUtils
 import com.relateddigital.relateddigital_google.util.LogUtils
+import com.relateddigital.relateddigital_google.util.NotificationIconResolver
 import com.relateddigital.relateddigital_google.util.SharedPref
 
 class PushNotificationManager {
@@ -128,35 +127,7 @@ class PushNotificationManager {
         notificationId: Int
     ): NotificationCompat.Builder {
         val title = if (TextUtils.isEmpty(contentTitle)) " " else contentTitle!!
-        val largeIconBitmap: Bitmap?
-        val willLargeIconBeUsed: Boolean =
-            SharedPref.readBoolean(context, Constants.NOTIFICATION_USE_LARGE_ICON)
-        if (willLargeIconBeUsed) {
-            var largeIcon: Int
-            if (isInDarkMode(context)) {
-                largeIcon =
-                    SharedPref.readInt(context, Constants.NOTIFICATION_LARGE_ICON_DARK_MODE)
-                if (largeIcon == 0 || !AppUtils.isResourceAvailable(context, largeIcon)) {
-                    largeIcon = SharedPref.readInt(context, Constants.NOTIFICATION_LARGE_ICON)
-                }
-            } else {
-                largeIcon = SharedPref.readInt(context, Constants.NOTIFICATION_LARGE_ICON)
-            }
-            largeIconBitmap =
-                if (largeIcon == 0 || !AppUtils.isResourceAvailable(context, largeIcon)) {
-                    BitmapFactory.decodeResource(
-                        context.resources,
-                        ImageUtils.getAppIcon(context)
-                    )
-                } else {
-                    BitmapFactory.decodeResource(
-                        context.resources,
-                        largeIcon
-                    )
-                }
-        } else {
-            largeIconBitmap = null
-        }
+        val largeIconBitmap: Bitmap? = resolveLargeIconBitmap(context)
         intent = AppUtils.getStartActivityIntent(context, pushMessage)
         val contentIntent: PendingIntent = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
             PendingIntent.getActivity(
@@ -201,35 +172,7 @@ class PushNotificationManager {
     ): NotificationCompat.Builder {
         val title: String = pushMessage.title.toString()
 
-        val largeIconBitmap: Bitmap?
-        val willLargeIconBeUsed: Boolean =
-            SharedPref.readBoolean(context, Constants.NOTIFICATION_USE_LARGE_ICON)
-        if (willLargeIconBeUsed) {
-            var largeIcon: Int
-            if (isInDarkMode(context)) {
-                largeIcon =
-                    SharedPref.readInt(context, Constants.NOTIFICATION_LARGE_ICON_DARK_MODE)
-                if (largeIcon == 0 || !AppUtils.isResourceAvailable(context, largeIcon)) {
-                    largeIcon = SharedPref.readInt(context, Constants.NOTIFICATION_LARGE_ICON)
-                }
-            } else {
-                largeIcon = SharedPref.readInt(context, Constants.NOTIFICATION_LARGE_ICON)
-            }
-            largeIconBitmap =
-                if (largeIcon == 0 || !AppUtils.isResourceAvailable(context, largeIcon)) {
-                    BitmapFactory.decodeResource(
-                        context.resources,
-                        ImageUtils.getAppIcon(context)
-                    )
-                } else {
-                    BitmapFactory.decodeResource(
-                        context.resources,
-                        largeIcon
-                    )
-                }
-        } else {
-            largeIconBitmap = null
-        }
+        val largeIconBitmap: Bitmap? = resolveLargeIconBitmap(context)
 
         val priority: String =
             SharedPref.readString(context, Constants.NOTIFICATION_PRIORITY_KEY)
@@ -361,36 +304,27 @@ class PushNotificationManager {
    */
 
     private fun setNotificationSmallIcon(builder: NotificationCompat.Builder, context: Context) {
-        var transparentSmallIcon: Int
-        if (isInDarkMode(context)) {
-            transparentSmallIcon = SharedPref.readInt(
-                context,
-                Constants.NOTIFICATION_TRANSPARENT_SMALL_ICON_DARK_MODE
-            )
-            if (transparentSmallIcon == 0 || !AppUtils.isResourceAvailable(
-                    context,
-                    transparentSmallIcon
-                )
-            ) {
-                transparentSmallIcon =
-                    SharedPref.readInt(context, Constants.NOTIFICATION_TRANSPARENT_SMALL_ICON)
+        builder.setSmallIcon(
+            NotificationIconResolver.resolveSmallIconWithFallback(context, isInDarkMode(context))
+        )
+        val color: String = SharedPref.readString(context, Constants.NOTIFICATION_COLOR)
+        if (color.isNotEmpty()) {
+            try {
+                builder.color = Color.parseColor(color)
+            } catch (e: IllegalArgumentException) {
+                Log.e(LOG_TAG, "Notification color '$color' could not be parsed : ${e.message}")
             }
-        } else {
-            transparentSmallIcon =
-                SharedPref.readInt(context, Constants.NOTIFICATION_TRANSPARENT_SMALL_ICON)
         }
-        if (transparentSmallIcon == 0 || !AppUtils.isResourceAvailable(
-                context,
-                transparentSmallIcon
-            )
-        ) {
-            transparentSmallIcon = ImageUtils.getAppIcon(context)
+    }
+
+    /**
+     * The large icon is optional; it stays null unless the host app asked for it.
+     */
+    private fun resolveLargeIconBitmap(context: Context): Bitmap? {
+        if (!SharedPref.readBoolean(context, Constants.NOTIFICATION_USE_LARGE_ICON)) {
+            return null
         }
-        builder.setSmallIcon(transparentSmallIcon)
-        if (!SharedPref.readString(context, Constants.NOTIFICATION_COLOR).equals("")) {
-            val color: String = SharedPref.readString(context, Constants.NOTIFICATION_COLOR)
-            builder.color = Color.parseColor(color)
-        }
+        return NotificationIconResolver.resolveLargeIconBitmap(context, isInDarkMode(context))
     }
 
     private fun isInDarkMode(context: Context): Boolean {

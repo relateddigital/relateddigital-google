@@ -6,6 +6,7 @@ import android.util.Log
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.model.RelatedDigitalModel
 import com.relateddigital.relateddigital_google.network.RequestSender
+import com.relateddigital.relateddigital_google.util.PushDiagnostics
 import com.relateddigital.relateddigital_google.util.RetryCounterManager
 
 object RegisterEmailRequest {
@@ -17,11 +18,33 @@ object RegisterEmailRequest {
             return
         }
 
-        if (registerEmailModel.getToken().isEmpty() || (registerEmailModel.getGoogleAppAlias().isEmpty() && registerEmailModel.getHuaweiAppAlias().isEmpty()) ) {
-            Log.e(LOG_TAG, "token or appKey cannot be null!")
+        val tokenMissing = registerEmailModel.getToken().isEmpty()
+        val appAliasMissing = registerEmailModel.getGoogleAppAlias().isEmpty() &&
+                registerEmailModel.getHuaweiAppAlias().isEmpty()
+
+        if (tokenMissing || appAliasMissing) {
+            val reason = when {
+                tokenMissing && appAliasMissing ->
+                    "both the push token and the appAlias (appKey) are empty"
+                tokenMissing -> "the push token is empty"
+                else -> "the appAlias (appKey) is empty"
+            }
+            PushDiagnostics.logBlocked(
+                context,
+                registerEmailModel,
+                "cannot register the email address because $reason",
+                "Call RelatedDigital.setIsPushNotificationEnabled(context, true, " +
+                        "googleAppAlias, token) with a valid token and appAlias before " +
+                        "registering an email address."
+            )
             return
         }
 
-        RequestSender.sendSubscriptionRequest(context, registerEmailModel, RetryCounterManager.counterId, null)
+        RequestSender.sendSubscriptionRequest(
+            context,
+            registerEmailModel,
+            RetryCounterManager.counterId,
+            null
+        )
     }
 }

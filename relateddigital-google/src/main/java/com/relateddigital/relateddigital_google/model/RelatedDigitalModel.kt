@@ -8,6 +8,7 @@ import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.util.AppUtils
 import com.relateddigital.relateddigital_google.util.GoogleUtils
 import com.relateddigital.relateddigital_google.util.PersistentTargetManager
+import com.relateddigital.relateddigital_google.util.PushDiagnostics
 import com.relateddigital.relateddigital_google.util.SharedPref
 import java.io.Serializable
 import java.lang.Exception
@@ -242,6 +243,16 @@ class RelatedDigitalModel(
 
     fun setToken(context: Context, token: String) {
         synchronized(this) {
+            if (token.isEmpty() && this.token.isNotEmpty()) {
+                Log.w(
+                    PushDiagnostics.LOG_TAG,
+                    "Ignoring an empty token because a valid one is already stored " +
+                            "(${PushDiagnostics.maskToken(this.token)}). An empty token usually " +
+                            "means the FCM token request failed; the stored token stays in use so " +
+                            "the device keeps receiving push notifications."
+                )
+                return
+            }
             this.token = token
             saveToSharedPrefs(context)
         }
@@ -674,37 +685,58 @@ class RelatedDigitalModel(
 
     fun isValid(context: Context): Boolean {
         synchronized(this) {
-            var appAlias = ""
-            appAlias = googleAppAlias
-            val res1 = !(TextUtils.isEmpty(getToken()) && TextUtils.isEmpty(appAlias))
-            var res2 = true
-            val dateFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
-            val dateNow = dateFormat.format(Calendar.getInstance().time)
-            val lastSubsTime: String =
-                SharedPref.readString(context, Constants.LAST_SUBS_DATE_KEY)
-            if (lastSubsTime.isNotEmpty()) {
-                if (!AppUtils.isDateDifferenceGreaterThan(dateNow, lastSubsTime, 3)) {
-                    val lastSubStr: String =
-                        SharedPref.readString(context, Constants.LAST_SUBS_KEY)
-                    if (lastSubStr.isNotEmpty()) {
-                        try {
-                            val lastSubscription: RelatedDigitalModel =
-                                Gson().fromJson(
-                                    lastSubStr,
-                                    RelatedDigitalModel::class.java
-                                )
-                            if (isEqual(lastSubscription)) {
-                                res2 = false
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            SharedPref.writeString(context, Constants.LAST_SUBS_KEY, "")
-                        }
-                    }
-                }
-            }
-            return res1 and res2
+            val appAlias = googleAppAlias
+            val hasCredentials = !(TextUtils.isEmpty(getToken()) && TextUtils.isEmpty(appAlias))
+
+            return hasCredentials && !isDuplicateOfLastAcceptedSubscription(context)
         }
+    }
+
+    /**
+     * True when the server already holds this exact state and it was accepted less than
+     * [Constants.SUBSCRIPTION_DEDUPE_DAYS] days ago, so re-sending it would be a no-op.
+     */
+    fun isDuplicateOfLastAcceptedSubscription(context: Context): Boolean {
+        synchronized(this) {
+            val lastSubsTime = SharedPref.readString(context, Constants.LAST_SUBS_DATE_KEY)
+            if (lastSubsTime.isEmpty()) {
+                return false
+            }
+
+            val dateFormat: DateFormat = SimpleDateFormat(Constants.SUBSCRIPTION_DATE_FORMAT)
+            val dateNow = dateFormat.format(Calendar.getInstance().time)
+            if (AppUtils.isDateDifferenceGreaterThan(
+                    dateNow,
+                    lastSubsTime,
+                    Constants.SUBSCRIPTION_DEDUPE_DAYS
+                )
+            ) {
+                return false
+            }
+
+            val lastSubStr = SharedPref.readString(context, Constants.LAST_SUBS_KEY)
+            if (lastSubStr.isEmpty()) {
+                return false
+            }
+
+            return try {
+                val lastSubscription =
+                    Gson().fromJson(lastSubStr, RelatedDigitalModel::class.java)
+                isEqual(lastSubscription)
+            } catch (e: Exception) {
+                Log.w(
+                    PushDiagnostics.LOG_TAG,
+                    "Could not read the last accepted subscription, it will be re-sent: " +
+                            "${e.message}"
+                )
+                SharedPref.writeString(context, Constants.LAST_SUBS_KEY, "")
+                false
+            }
+        }
+    }
+
+    fun getLastAcceptedSubscriptionDate(context: Context): String {
+        return SharedPref.readString(context, Constants.LAST_SUBS_DATE_KEY)
     }
 
     fun isEqual(previousModel: RelatedDigitalModel?): Boolean {
