@@ -1,6 +1,9 @@
 package com.relateddigital.googleexampleapp
 
 object Constants {
+
+    const val CAPTURE_API_KEY = ""
+
     const val GOOGLE_APP_ALIAS = "relateddigital-google-test"
 
     const val EURO_RECIPIENT_TYPE_BIREYSEL = "BIREYSEL"

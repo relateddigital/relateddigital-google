@@ -10,4 +10,5 @@ class NotificationBellExtendedProps : Serializable {
     val title_text_size: String? = null
     val text_text_color: String? = null
     val text_text_size: String? = null
+    val close_button_color: String? = null
 }
