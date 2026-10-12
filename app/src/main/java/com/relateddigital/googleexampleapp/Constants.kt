@@ -2,7 +2,7 @@ package com.relateddigital.googleexampleapp
 
 object Constants {
 
-    const val CAPTURE_API_KEY = ""
+    const val CAPTURE_API_KEY = "phc_hMbCDB4GWbGncpc7pJ2LXzO4t5o3BCO2fFzsyBkx9LM"
 
     const val GOOGLE_APP_ALIAS = "relateddigital-google-test"
 
