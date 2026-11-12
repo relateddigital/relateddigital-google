@@ -189,10 +189,14 @@ open class RelatedDigitalFirebaseMessagingService : FirebaseMessagingService() {
                             SharedPref.readString(context, Constants.NOTIFICATION_LOGIN_ID_KEY)
 
                         LibraryCoroutineScope.scope.launch {
-                            if (notificationLoginId.isEmpty()) {
-                                PayloadUtils.addPushMessage(context, pushMessage)
-                            } else {
-                                PayloadUtils.addPushMessageWithId(context, pushMessage, notificationLoginId)
+                            try {
+                                if (notificationLoginId.isEmpty()) {
+                                    PayloadUtils.addPushMessage(context, pushMessage)
+                                } else {
+                                    PayloadUtils.addPushMessageWithId(context, pushMessage, notificationLoginId)
+                                }
+                            } catch (e: Exception) {
+                                Log.e(LOG_TAG, "Push message could not be saved: ${e.localizedMessage}")
                             }
                         }
                     } else {

@@ -2,6 +2,7 @@ package com.relateddigital.relateddigital_google.inapp.story
 
 import android.content.Context
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.LayoutInflater
@@ -77,7 +78,7 @@ class StoryLookingBannerAdapter(var mContext: Context, var mStoryItemClickListen
         } catch (e: URISyntaxException) {
             e.printStackTrace()
         }
-        storyHolder.tvStoryName.setTextColor(Color.parseColor(bannerExtendedProps?.storylb_label_color))
+        storyHolder.tvStoryName.setTextColor(SafeColor.parse(bannerExtendedProps?.storylb_label_color, Color.BLACK))
         storyHolder.tvStoryName.typeface = getFontFamily(
             mContext,
             bannerExtendedProps?.font_family,
@@ -90,7 +91,7 @@ class StoryLookingBannerAdapter(var mContext: Context, var mStoryItemClickListen
         if (bannerExtendedProps!!.storylb_img_boxShadow.equals("")) {
             storyHolder.flCircleShadow.visibility = View.VISIBLE
         }
-        storyHolder.tvStoryName.setTextColor(Color.parseColor(bannerExtendedProps.storylb_label_color))
+        storyHolder.tvStoryName.setTextColor(SafeColor.parse(bannerExtendedProps.storylb_label_color, Color.BLACK))
         val borderRadius: String? = bannerExtendedProps.storylb_img_borderRadius
         if (borderRadius != null || bannerExtendedProps.shape != null) {
             if (bannerExtendedProps.shape.equals("rectangle", ignoreCase = true)) {
@@ -178,7 +179,7 @@ class StoryLookingBannerAdapter(var mContext: Context, var mStoryItemClickListen
         var flCircleShadow: FrameLayout = itemView.findViewById(R.id.fl_circle)
         var flRectangleShadow: FrameLayout = itemView.findViewById(R.id.fl_rect)
         fun setRectangleViewProperties(borderRadius: FloatArray, shown: Boolean) {
-            val borderColor = if (shown) Color.rgb(127, 127, 127) else Color.parseColor(bannerExtendedProps!!.storylb_img_borderColor)
+            val borderColor = if (shown) Color.rgb(127, 127, 127) else SafeColor.parse(bannerExtendedProps!!.storylb_img_borderColor, Color.BLACK)
             ivStory.visibility = View.VISIBLE
             if (bannerExtendedProps!!.storylb_img_boxShadow.equals("")) {
                 flRectangleShadow.background = null
@@ -192,7 +193,7 @@ class StoryLookingBannerAdapter(var mContext: Context, var mStoryItemClickListen
         }
 
         fun setCircleViewProperties(shown: Boolean) {
-            val borderColor = if (shown) Color.rgb(127, 127, 127) else Color.parseColor(bannerExtendedProps!!.storylb_img_borderColor)
+            val borderColor = if (shown) Color.rgb(127, 127, 127) else SafeColor.parse(bannerExtendedProps!!.storylb_img_borderColor, Color.BLACK)
             if (bannerExtendedProps!!.storylb_img_boxShadow.equals("")) {
                 flCircleShadow.background = null
             }

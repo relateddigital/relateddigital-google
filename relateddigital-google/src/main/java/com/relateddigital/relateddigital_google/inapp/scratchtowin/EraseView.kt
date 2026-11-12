@@ -1,12 +1,14 @@
 package com.relateddigital.relateddigital_google.inapp.scratchtowin
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import com.relateddigital.relateddigital_google.R
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 
 class EraseView(private val mContext: Context, attrs: AttributeSet?) : View(mContext, attrs) {
     private val mSourceBitmap: Bitmap
@@ -143,7 +145,7 @@ class EraseView(private val mContext: Context, attrs: AttributeSet?) : View(mCon
     }
 
     init {
-        mColor = Color.parseColor("#000000") //Default black
+        mColor = SafeColor.parse("#000000", Color.BLACK) //Default black
 
         //convert drawable file into bitmap
         val rawBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)

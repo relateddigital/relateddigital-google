@@ -1,5 +1,7 @@
 package com.relateddigital.relateddigital_google.inapp.giftbox
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
@@ -9,13 +11,13 @@ import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonR
 import com.relateddigital.relateddigital_google.network.RequestHandler
 import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
 
-
 class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: GiftBoxWebDialogFragment,
                                                       @get:JavascriptInterface val response: String) {
     var mWebViewDialogFragment: GiftBoxWebDialogFragment = webViewDialogFragment
+    private val mMainHandler = Handler(Looper.getMainLooper())
     private var mListener: GiftBoxCompleteInterface? = null
-    private lateinit var mCopyToClipboardInterface: GiftBoxCopyToClipboardInterface
-    private lateinit var mShowCodeInterface: GiftBoxShowCodeInterface
+    private var mCopyToClipboardInterface: GiftBoxCopyToClipboardInterface? = null
+    private var mShowCodeInterface: GiftBoxShowCodeInterface? = null
     private val giftboxModel: GiftBox = Gson().fromJson(this.response, GiftBox::class.java)
 
     private var subEmail = ""
@@ -25,8 +27,10 @@ class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: Gif
      */
     @JavascriptInterface
     fun close() {
-        mWebViewDialogFragment.dismiss()
-        mListener?.onCompleted()
+        runOnMain {
+            mWebViewDialogFragment.dismissAllowingStateLoss()
+            mListener?.onCompleted()
+        }
     }
 
     /**
@@ -37,9 +41,11 @@ class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: Gif
      */
     @JavascriptInterface
     fun copyToClipboard(couponCode: String?, link: String?) {
-        mWebViewDialogFragment.dismiss()
-        mCopyToClipboardInterface.copyToClipboard(couponCode, link)
-        sendReport()
+        runOnMain {
+            mWebViewDialogFragment.dismissAllowingStateLoss()
+            mCopyToClipboardInterface?.copyToClipboard(couponCode, link)
+            sendReport()
+        }
     }
 
     /**
@@ -51,8 +57,10 @@ class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: Gif
     fun subscribeEmail(email: String?) {
         if (!email.isNullOrEmpty()) {
             subEmail = email
-            SubsJsonRequest.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), giftboxModel.actiondata!!.type!!,
-                giftboxModel.actid.toString(), giftboxModel.actiondata!!.auth!!,
+            val context = mWebViewDialogFragment.context ?: return
+            val actionData = giftboxModel.actiondata ?: return
+            SubsJsonRequest.createSubsJsonRequest(context, actionData.type.orEmpty(),
+                giftboxModel.actid.toString(), actionData.auth.orEmpty(),
                 email)
         } else {
             Log.e("GiftBox : ", "Email entered is not valid!")
@@ -62,38 +70,37 @@ class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: Gif
     /**
      * This method sends the report to the server
      */
-
     @JavascriptInterface
     fun sendReport() {
         var report: MailSubReport?
         try {
             report = MailSubReport()
-            report.click = giftboxModel.actiondata!!.report!!.click
+            report.click = giftboxModel.actiondata?.report?.click
         } catch (e: Exception) {
             Log.e("GiftBox : ", "There is no report to send!")
             e.printStackTrace()
             report = null
         }
-        if (report != null) {
-            InAppActionClickRequest.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
+        val context = mWebViewDialogFragment.context
+        if (report != null && context != null) {
+            InAppActionClickRequest.createInAppActionClickRequest(context, report)
         }
     }
-
-
 
     @JavascriptInterface
     fun sendReportImpression() {
         var report: MailSubReport?
         try {
             report = MailSubReport()
-            report.impression = giftboxModel.actiondata!!.report!!.impression
+            report.impression = giftboxModel.actiondata?.report?.impression
         } catch (e: Exception) {
             Log.e("GiftBox : ", "There is no impression report to send!")
             e.printStackTrace()
             report = null
         }
-        if (report != null) {
-            InAppActionClickRequest.createInAppActionImressionRequest(mWebViewDialogFragment.requireContext(), report)
+        val context = mWebViewDialogFragment.context
+        if (report != null && context != null) {
+            InAppActionClickRequest.createInAppActionImressionRequest(context, report)
         }
     }
 
@@ -102,7 +109,9 @@ class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: Gif
      */
     @JavascriptInterface
     fun saveCodeGotten(code: String, email: String?, report: String?) {
-        mShowCodeInterface.onCodeShown(code)
+        runOnMain {
+            mShowCodeInterface?.onCodeShown(code)
+        }
     }
 
     fun setGiftBoxListeners(
@@ -110,10 +119,22 @@ class GiftBoxJavaScriptInterface internal constructor(webViewDialogFragment: Gif
         copyToClipboardInterface: GiftBoxCopyToClipboardInterface,
         showCodeInterface: GiftBoxShowCodeInterface
     ) {
-
         mListener = listener
         mCopyToClipboardInterface = copyToClipboardInterface
         mShowCodeInterface = showCodeInterface
         sendReportImpression()
+    }
+
+    private fun runOnMain(block: () -> Unit) {
+        mMainHandler.post {
+            if (!mWebViewDialogFragment.isAdded) {
+                return@post
+            }
+            try {
+                block()
+            } catch (e: Exception) {
+                Log.e("JavaScriptInterface", "Could not handle the web view call!", e)
+            }
+        }
     }
 }

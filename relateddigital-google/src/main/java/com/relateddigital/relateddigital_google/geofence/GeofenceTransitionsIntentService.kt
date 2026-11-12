@@ -29,9 +29,14 @@ class GeofenceTransitionsIntentService : JobIntentService() {
     }
 
     private fun setGeofenceEvent(intent: Intent) {
-        mGeoFenceEvent = GeofencingEvent.fromIntent(intent)
-        if (mGeoFenceEvent!!.hasError()) {
-            val errorCode = mGeoFenceEvent!!.errorCode
+        val geofenceEvent = GeofencingEvent.fromIntent(intent)
+        mGeoFenceEvent = geofenceEvent
+        if (geofenceEvent == null) {
+            Log.e(TAG, "Geofencing event could not be read from the intent!")
+            return
+        }
+        if (geofenceEvent.hasError()) {
+            val errorCode = geofenceEvent.errorCode
             Log.e(
                 TAG,
                 "Location Services error: $errorCode"
@@ -39,8 +44,8 @@ class GeofenceTransitionsIntentService : JobIntentService() {
         } else {
             mGpsManager = Injector.INSTANCE.gpsManager
             if (mGpsManager == null) return
-            mTriggerList = mGeoFenceEvent!!.triggeringGeofences
-            if (Looper.myLooper() == null) Looper.prepare()
+            mTriggerList = geofenceEvent.triggeringGeofences
+            if (mTriggerList == null) return
             val mainHandler = Handler(Looper.getMainLooper())
             val myRunnable = Runnable {
                 try {
@@ -60,7 +65,6 @@ class GeofenceTransitionsIntentService : JobIntentService() {
                 }
             }
             mainHandler.post(myRunnable)
-            if (Looper.myLooper() == null) Looper.loop()
         }
     }
 

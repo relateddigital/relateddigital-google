@@ -3,6 +3,7 @@ package com.relateddigital.relateddigital_google.inapp.slotmachine
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -92,7 +93,7 @@ class SlotMachineCodeBannerFragment : Fragment() {
 
     private fun setupUi() {
         if (!mExtendedProps!!.promocodeBannerBackgroundColor.isNullOrEmpty()) {
-            binding.container.setBackgroundColor(Color.parseColor(mExtendedProps!!.promocodeBannerBackgroundColor))
+            binding.container.setBackgroundColor(SafeColor.parse(mExtendedProps!!.promocodeBannerBackgroundColor, Color.BLACK))
         } else {
             binding.container.setBackgroundColor(
                 ContextCompat.getColor(
@@ -107,9 +108,9 @@ class SlotMachineCodeBannerFragment : Fragment() {
         binding.bannerCode.text = bannerCode
 
         if (!mExtendedProps!!.promocodeBannerTextColor.isNullOrEmpty()) {
-            binding.bannerText.setTextColor(Color.parseColor(mExtendedProps!!.promocodeBannerTextColor))
-            binding.bannerLabel.setTextColor(Color.parseColor(mExtendedProps!!.promocodeBannerTextColor))
-            binding.bannerCode.setTextColor(Color.parseColor(mExtendedProps!!.promocodeBannerTextColor))
+            binding.bannerText.setTextColor(SafeColor.parse(mExtendedProps!!.promocodeBannerTextColor, Color.BLACK))
+            binding.bannerLabel.setTextColor(SafeColor.parse(mExtendedProps!!.promocodeBannerTextColor, Color.BLACK))
+            binding.bannerCode.setTextColor(SafeColor.parse(mExtendedProps!!.promocodeBannerTextColor, Color.BLACK))
         } else {
             binding.bannerText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
             binding.bannerLabel.setTextColor(
@@ -197,7 +198,7 @@ class SlotMachineCodeBannerFragment : Fragment() {
     private fun endFragment() {
         if (activity != null) {
             requireActivity().supportFragmentManager.beginTransaction()
-                .remove(this@SlotMachineCodeBannerFragment).commit()
+                .remove(this@SlotMachineCodeBannerFragment).commitAllowingStateLoss()
         }
     }
 

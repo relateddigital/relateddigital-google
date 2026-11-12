@@ -48,26 +48,22 @@ class PushNotificationManager {
         val actions: ArrayList<Actions>? = pushMessage.getActions()
 
         if (actions != null && actions.isNotEmpty()) {
-            actions.forEach { actionItem ->
-                val linkUri = Uri.parse(actionItem?.Url)
+            actions.forEachIndexed { index, actionItem ->
                 val actionIntent = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R){
                 PendingIntent.getBroadcast(
                     context,
-                    0,
-                    Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM",linkUri),
+                    index,
+                    Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM", actionItem.Url),
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             } else {
                 PendingIntent.getBroadcast(
                     context,
-                    0,
-                    Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM", linkUri),
+                    index,
+                    Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM", actionItem.Url),
                     PendingIntent.FLAG_UPDATE_CURRENT
                 )
             }
-                var actionIcon = R.drawable.ic_carousel_icon
-                if (!actionItem.Icon.isNullOrEmpty()){
-                    actionIcon = actionItem.Icon!!.toInt()
-                }
+                val actionIcon = resolveActionIcon(context, actionItem.Icon)
                 var actionTitle = actionItem.Title ?: "Default Title"
                 if (!actionItem.Title.isNullOrEmpty()){
                     actionTitle = actionItem.Title!!
@@ -80,11 +76,7 @@ class PushNotificationManager {
                 ).build()
 
                 actionList.add(action)
-                if (actions != null && actions.isNotEmpty()) {
-                for (action in actionList) {
-                    carouselBuilder.addAction(action)
-                }
-                }
+                carouselBuilder.addAction(action)
             }
         }
         carouselBuilder.buildCarousel(pushMessage)
@@ -188,19 +180,18 @@ class PushNotificationManager {
         val actions: ArrayList<Actions>? = pushMessage.getActions()
         intent = AppUtils.getStartActivityIntent(context, pushMessage)
         if (actions != null && actions.isNotEmpty()) {
-            actions.forEach { actionItem ->
-                val linkUri = Uri.parse(actionItem?.Url)
+            actions.forEachIndexed { index, actionItem ->
 
                 val actionCallbackIntent = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R){
                     PendingIntent.getBroadcast(
-                        context, 0,
-                        Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM",linkUri),
+                        context, index,
+                        Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM", actionItem.Url),
                          PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                 } else {
                     PendingIntent.getBroadcast(
                         context,
-                        0,
-                        Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM",linkUri),
+                        index,
+                        Intent(context,NotificationActionBroadcastReceiver::class.java).setAction("ACTION_CLICK").putExtra("KEY_ACTION_ITEM", actionItem.Url),
                         PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 }
@@ -331,8 +322,22 @@ class PushNotificationManager {
         return context.resources.getString(R.string.mode) == "Night"
     }
 
+    private fun resolveActionIcon(context: Context, icon: String?): Int {
+        val iconId = parseActionIconId(icon)
+        return if (iconId != null && AppUtils.isResourceAvailable(context, iconId)) {
+            iconId
+        } else {
+            R.drawable.ic_carousel_icon
+        }
+    }
+
     companion object {
         private const val LOG_TAG = "PushNManager"
+
+        internal fun parseActionIconId(icon: String?): Int? {
+            return icon?.trim()?.toIntOrNull()?.takeIf { it != 0 }
+        }
+
         @TargetApi(Build.VERSION_CODES.O)
         fun createNotificationChannel(
             notificationManager: NotificationManager,

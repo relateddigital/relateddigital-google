@@ -14,5 +14,6 @@ class ChooseFavoriteActionData : Serializable {
     @SerializedName("ExtendedProps"          ) var ExtendedProps        : String?               = null
     @SerializedName("auth"                   ) var auth                 : String?               = null
     @SerializedName("type"                   ) var type                 : String?               = null
-    @SerializedName("report"                 ) var report               : ChooseFavoriteReport? = null
+    @SerializedName("report") var report : ChooseFavoriteReport? = null
+    @SerializedName("waiting_time") var waitingTime: Int? = null
 }

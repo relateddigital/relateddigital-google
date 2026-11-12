@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.media.MediaMetadataRetriever
@@ -213,7 +214,7 @@ class StoryActivity : Activity(), StoriesProgressView.StoriesListener {
         }
         mTvCover.text = mStories!!.title
         if (mExtendedProps != null && !mExtendedProps!!.storyz_label_color.isNullOrEmpty()) {
-            mTvCover.setTextColor(Color.parseColor(mExtendedProps!!.storyz_label_color))
+            mTvCover.setTextColor(SafeColor.parse(mExtendedProps!!.storyz_label_color, Color.BLACK))
         }
 
         mTvCover.typeface = getFontFamily(
@@ -332,8 +333,12 @@ class StoryActivity : Activity(), StoriesProgressView.StoriesListener {
 
                     mCountDownTopText!!.text = mStories!!.getItems()!![mStoryItemPosition]
                         .countdown!!.messageText!!.replace("\\n", "\n")
-                    mCountDownTopText!!.setTextColor(Color.parseColor(mStories!!.getItems()!![mStoryItemPosition]
-                        .countdown!!.messageTextColor))
+                    mCountDownTopText!!.setTextColor(
+                        SafeColor.parse(
+                            mStories!!.getItems()!![mStoryItemPosition].countdown!!.messageTextColor,
+                            Color.BLACK
+                        )
+                    )
                     mCountDownTopText!!.textSize = mStories!!.getItems()!![mStoryItemPosition]
                         .countdown!!.messageTextSize!!.toFloat() + 16
                     mCountDownTopText!!.typeface = Typeface.DEFAULT
@@ -343,8 +348,12 @@ class StoryActivity : Activity(), StoriesProgressView.StoriesListener {
 
                     mCountDownBotText!!.text = mStories!!.getItems()!![mStoryItemPosition]
                         .countdown!!.messageText!!.replace("\\n", "\n")
-                    mCountDownBotText!!.setTextColor(Color.parseColor(mStories!!.getItems()!![mStoryItemPosition]
-                        .countdown!!.messageTextColor))
+                    mCountDownBotText!!.setTextColor(
+                        SafeColor.parse(
+                            mStories!!.getItems()!![mStoryItemPosition].countdown!!.messageTextColor,
+                            Color.BLACK
+                        )
+                    )
                     mCountDownBotText!!.textSize = mStories!!.getItems()!![mStoryItemPosition]
                         .countdown!!.messageTextSize!!.toFloat() + 16
                     mCountDownBotText!!.typeface = Typeface.DEFAULT
@@ -355,7 +364,7 @@ class StoryActivity : Activity(), StoriesProgressView.StoriesListener {
                 if(mWeekNum!!.visibility != View.GONE) {
                     mWeekNum!!.setBackgroundResource(R.drawable.rounded_corners_full_small_edge)
                     val gdWeek = mWeekNum!!.background as GradientDrawable
-                    gdWeek.setColor(Color.parseColor("#E5E4E2"))
+                    gdWeek.setColor(SafeColor.parse("#E5E4E2", Color.BLACK))
                     mWeekNum!!.text = mWeekNumber.toString()
                     mWeekNum!!.setTextColor(ContextCompat.getColor(this, R.color.black))
                 }
@@ -363,7 +372,7 @@ class StoryActivity : Activity(), StoriesProgressView.StoriesListener {
                 if(mDayNum!!.visibility != View.GONE) {
                     mDayNum!!.setBackgroundResource(R.drawable.rounded_corners_full_small_edge)
                     val gdDay = mDayNum!!.background as GradientDrawable
-                    gdDay.setColor(Color.parseColor("#E5E4E2"))
+                    gdDay.setColor(SafeColor.parse("#E5E4E2", Color.BLACK))
                     mDayNum!!.text = mDayNumber.toString()
                     mDayNum!!.setTextColor(ContextCompat.getColor(this, R.color.black))
                 }
@@ -371,7 +380,7 @@ class StoryActivity : Activity(), StoriesProgressView.StoriesListener {
                 if(mHourNum!!.visibility != View.GONE) {
                     mHourNum!!.setBackgroundResource(R.drawable.rounded_corners_full_small_edge)
                     val gdHour = mHourNum!!.background as GradientDrawable
-                    gdHour.setColor(Color.parseColor("#E5E4E2"))
+                    gdHour.setColor(SafeColor.parse("#E5E4E2", Color.BLACK))
                     mHourNum!!.text = mHourNumber.toString()
                     mHourNum!!.setTextColor(ContextCompat.getColor(this, R.color.black))
                 }
@@ -379,7 +388,7 @@ class StoryActivity : Activity(), StoriesProgressView.StoriesListener {
                 if(mMinuteNum!!.visibility != View.GONE) {
                     mMinuteNum!!.setBackgroundResource(R.drawable.rounded_corners_full_small_edge)
                     val gdMinute = mMinuteNum!!.background as GradientDrawable
-                    gdMinute.setColor(Color.parseColor("#E5E4E2"))
+                    gdMinute.setColor(SafeColor.parse("#E5E4E2", Color.BLACK))
                     mMinuteNum!!.text = mMinuteNumber.toString()
                     mMinuteNum!!.setTextColor(ContextCompat.getColor(this, R.color.black))
                 }
@@ -387,7 +396,7 @@ class StoryActivity : Activity(), StoriesProgressView.StoriesListener {
                 if(mSecNum!!.visibility != View.GONE) {
                     mSecNum!!.setBackgroundResource(R.drawable.rounded_corners_full_small_edge)
                     val gdSec = mSecNum!!.background as GradientDrawable
-                    gdSec.setColor(Color.parseColor("#E5E4E2"))
+                    gdSec.setColor(SafeColor.parse("#E5E4E2", Color.BLACK))
                     mSecNum!!.text = mSecondNumber.toString()
                     mSecNum!!.setTextColor(ContextCompat.getColor(this, R.color.black))
                 }
@@ -417,8 +426,8 @@ class StoryActivity : Activity(), StoriesProgressView.StoriesListener {
         if (!item.buttonText.equals("")) {
             mBtnStory.visibility = View.VISIBLE
             mBtnStory.text = item.buttonText
-            mBtnStory.setTextColor(Color.parseColor(item.buttonTextColor))
-            mBtnStory.setBackgroundColor(Color.parseColor(item.buttonColor))
+            mBtnStory.setTextColor(SafeColor.parse(item.buttonTextColor, Color.BLACK))
+            mBtnStory.setBackgroundColor(SafeColor.parse(item.buttonColor, Color.BLACK))
         } else {
             mBtnStory.visibility = View.GONE
         }

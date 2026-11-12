@@ -1,5 +1,7 @@
 package com.relateddigital.relateddigital_google.inapp.giftcatch
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.webkit.JavascriptInterface
 import com.google.gson.Gson
@@ -16,9 +18,10 @@ import java.util.HashMap
 class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: GiftCatchWebDialogFragment,
                                                         @get:JavascriptInterface val response: String) {
     var mWebViewDialogFragment: GiftCatchWebDialogFragment = webViewDialogFragment
+    private val mMainHandler = Handler(Looper.getMainLooper())
     private var mListener: GiftCatchCompleteInterface? = null
-    private lateinit var mCopyToClipboardInterface: GiftCatchCopyToClipboardInterface
-    private lateinit var mShowCodeInterface: GiftCatchShowCodeInterface
+    private var mCopyToClipboardInterface: GiftCatchCopyToClipboardInterface? = null
+    private var mShowCodeInterface: GiftCatchShowCodeInterface? = null
     private val giftRainModel: GiftRain = Gson().fromJson(this.response, GiftRain::class.java)
 
     private var subEmail = ""
@@ -28,8 +31,10 @@ class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: G
      */
     @JavascriptInterface
     fun close() {
-        mWebViewDialogFragment.dismiss()
-        mListener?.onCompleted()
+        runOnMain {
+            mWebViewDialogFragment.dismissAllowingStateLoss()
+            mListener?.onCompleted()
+        }
     }
 
     /**
@@ -40,8 +45,10 @@ class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: G
      */
     @JavascriptInterface
     fun copyToClipboard(couponCode: String?, link: String?) {
-        mWebViewDialogFragment.dismiss()
-        mCopyToClipboardInterface.copyToClipboard(couponCode, link)
+        runOnMain {
+            mWebViewDialogFragment.dismissAllowingStateLoss()
+            mCopyToClipboardInterface?.copyToClipboard(couponCode, link)
+        }
     }
 
     /**
@@ -53,8 +60,10 @@ class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: G
     fun subscribeEmail(email: String?) {
         if (!email.isNullOrEmpty()) {
             subEmail = email
-            SubsJsonRequest.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), giftRainModel.actiondata!!.type!!,
-                giftRainModel.actid.toString(), giftRainModel.actiondata!!.auth!!,
+            val context = mWebViewDialogFragment.context ?: return
+            val actionData = giftRainModel.actiondata ?: return
+            SubsJsonRequest.createSubsJsonRequest(context, actionData.type.orEmpty(),
+                giftRainModel.actid.toString(), actionData.auth.orEmpty(),
                 email)
         } else {
             Log.e("Gift Rain : ", "Email entered is not valid!")
@@ -69,15 +78,16 @@ class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: G
         var report: MailSubReport?
         try {
             report = MailSubReport()
-            report.impression = giftRainModel.actiondata!!.report!!.impression
-            report.click = giftRainModel.actiondata!!.report!!.click
+            report.impression = giftRainModel.actiondata?.report?.impression
+            report.click = giftRainModel.actiondata?.report?.click
         } catch (e: Exception) {
             Log.e("Gift Rain : ", "There is no report to send!")
             e.printStackTrace()
             report = null
         }
-        if (report != null) {
-            InAppActionClickRequest.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
+        val context = mWebViewDialogFragment.context
+        if (report != null && context != null) {
+            InAppActionClickRequest.createInAppActionClickRequest(context, report)
         }
     }
 
@@ -86,14 +96,15 @@ class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: G
         var report: MailSubReport?
         try {
             report = MailSubReport()
-            report.impression = giftRainModel.actiondata!!.report!!.impression
+            report.impression = giftRainModel.actiondata?.report?.impression
         } catch (e: Exception) {
             Log.e("GiftRain : ", "There is no impression report to send!")
             e.printStackTrace()
             report = null
         }
-        if (report != null) {
-            InAppActionClickRequest.createInAppActionImressionRequest(mWebViewDialogFragment.requireContext(), report)
+        val context = mWebViewDialogFragment.context
+        if (report != null && context != null) {
+            InAppActionClickRequest.createInAppActionImressionRequest(context, report)
         }
     }
 
@@ -103,7 +114,9 @@ class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: G
     @JavascriptInterface
     fun saveCodeGotten(code: String, email: String, report: String) {
         sendPromotionCodeInfo(email = email, promotionCode = code)
-        mShowCodeInterface.onCodeShown(code)
+        runOnMain {
+            mShowCodeInterface?.onCodeShown(code)
+        }
     }
 
     fun setGiftCatchListeners(
@@ -125,9 +138,23 @@ class GiftCatchJavaScriptInterface internal constructor(webViewDialogFragment: G
         if (email.isNotEmpty()) {
             parameters[Constants.PROMOTION_CODE_EMAIL_REQUEST_KEY] = email
         }
+        val context = mWebViewDialogFragment.context ?: return
         RelatedDigital.customEvent(
-            context = mWebViewDialogFragment.requireContext(),
+            context = context,
             pageName = Constants.PAGE_NAME_REQUEST_VAL,
             properties = parameters)
+    }
+
+    private fun runOnMain(block: () -> Unit) {
+        mMainHandler.post {
+            if (!mWebViewDialogFragment.isAdded) {
+                return@post
+            }
+            try {
+                block()
+            } catch (e: Exception) {
+                Log.e("JavaScriptInterface", "Could not handle the web view call!", e)
+            }
+        }
     }
 }

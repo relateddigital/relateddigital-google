@@ -7,6 +7,7 @@ import android.content.ClipboardManager
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
@@ -95,29 +96,29 @@ class ScratchToWinActivity : Activity(), ScratchToWinInterface {
 
     private fun setupScratchToWin() {
         if (!mExtendedProps!!.backgroundColor.isNullOrEmpty()) {
-            binding.scratchToWinContainer.setBackgroundColor(Color.parseColor(mExtendedProps!!.backgroundColor))
+            binding.scratchToWinContainer.setBackgroundColor(SafeColor.parse(mExtendedProps!!.backgroundColor, Color.BLACK))
         }
         if (mScratchToWinMessage!!.actiondata!!.img!!.isNotEmpty()) {
             Picasso.get().load(mScratchToWinMessage!!.actiondata!!.img).into(binding.mainImage)
         }
         binding.titleText.text = mScratchToWinMessage!!.actiondata!!.contentTitle!!.replace("\\n", "\n")
-        binding.titleText.setTextColor(Color.parseColor(mExtendedProps!!.contentTitleTextColor))
+        binding.titleText.setTextColor(SafeColor.parse(mExtendedProps!!.contentTitleTextColor, Color.BLACK))
         binding.titleText.textSize = mExtendedProps!!.contentBodyTextSize!!.toFloat() + 12
         binding.titleText.setTypeface(mExtendedProps!!.getContentTitleFontFamily(this), Typeface.BOLD)
         binding.bodyText.text = mScratchToWinMessage!!.actiondata!!.contentBody!!.replace("\\n", "\n")
-        binding.bodyText.setTextColor(Color.parseColor(mExtendedProps!!.contentBodyTextColor))
+        binding.bodyText.setTextColor(SafeColor.parse(mExtendedProps!!.contentBodyTextColor, Color.BLACK))
         binding.bodyText.textSize = mExtendedProps!!.contentBodyTextSize!!.toFloat() + 8
         binding.bodyText.typeface = mExtendedProps!!.getContentBodyFontFamily(this)
         binding.promotionCodeText.text = mScratchToWinMessage!!.actiondata!!.promotionCode
-        binding.promotionCodeText.setTextColor(Color.parseColor(mExtendedProps!!.promoCodeTextColor))
+        binding.promotionCodeText.setTextColor(SafeColor.parse(mExtendedProps!!.promoCodeTextColor, Color.BLACK))
         binding.promotionCodeText.textSize = mExtendedProps!!.promoCodeTextSize!!.toFloat() + 12
         binding.promotionCodeText.typeface = mExtendedProps!!.getPromoCodeFontFamily(this)
         binding.copyToClipboard.text = mScratchToWinMessage!!.actiondata!!.copybuttonLabel
-        binding.copyToClipboard.setTextColor(Color.parseColor(mExtendedProps!!.copyButtonTextColor))
+        binding.copyToClipboard.setTextColor(SafeColor.parse(mExtendedProps!!.copyButtonTextColor, Color.BLACK))
         binding.copyToClipboard.textSize = mExtendedProps!!.copyButtonTextSize!!.toFloat() + 10
         binding.copyToClipboard.typeface = mExtendedProps!!.getCopyButtonFontFamily(this)
-        binding.copyToClipboard.setBackgroundColor(Color.parseColor(mExtendedProps!!.copyButtonColor))
-        binding.viewToBeScratched.setColor(Color.parseColor(mScratchToWinMessage!!.actiondata!!.scratchColor))
+        binding.copyToClipboard.setBackgroundColor(SafeColor.parse(mExtendedProps!!.copyButtonColor, Color.BLACK))
+        binding.viewToBeScratched.setColor(SafeColor.parse(mScratchToWinMessage!!.actiondata!!.scratchColor, Color.BLACK))
         binding.copyToClipboard.visibility = View.GONE
         binding.viewToBeScratched.setContainer(binding.scratchToWinContainer)
         binding.viewToBeScratched.setListener(this)
@@ -126,7 +127,7 @@ class ScratchToWinActivity : Activity(), ScratchToWinInterface {
             binding.downContentBody.visibility = View.GONE
         } else {
             binding.downContentBody.text = mScratchToWinMessage!!.actiondata!!.downContentBody!!.replace("\\n", "\n")
-            binding.downContentBody.setTextColor(Color.parseColor(mExtendedProps!!.downContentBodyTextColor))
+            binding.downContentBody.setTextColor(SafeColor.parse(mExtendedProps!!.downContentBodyTextColor, Color.BLACK))
             binding.downContentBody.textSize = mExtendedProps!!.downContentBodyTextSize!!.toFloat() + 8
             binding.downContentBody.typeface = mExtendedProps!!.getDownContentBodyFontFamily(this)
             binding.downContentBody.visibility = View.VISIBLE
@@ -200,10 +201,10 @@ class ScratchToWinActivity : Activity(), ScratchToWinInterface {
         }
         binding.emailEdit.hint = mScratchToWinMessage!!.actiondata!!.mailSubscriptionForm!!.placeholder
         binding.saveMail.text = mScratchToWinMessage!!.actiondata!!.mailSubscriptionForm!!.buttonLabel
-        binding.saveMail.setTextColor(Color.parseColor(mExtendedProps!!.buttonTextColor))
+        binding.saveMail.setTextColor(SafeColor.parse(mExtendedProps!!.buttonTextColor, Color.BLACK))
         binding.saveMail.textSize = mExtendedProps!!.buttonTextSize!!.toFloat() + 10
         binding.saveMail.typeface = mExtendedProps!!.getButtonFontFamily(this)
-        binding.saveMail.setBackgroundColor(Color.parseColor(mExtendedProps!!.buttonColor))
+        binding.saveMail.setBackgroundColor(SafeColor.parse(mExtendedProps!!.buttonColor, Color.BLACK))
         binding.emailEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}

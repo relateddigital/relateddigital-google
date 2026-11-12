@@ -7,6 +7,7 @@ import com.relateddigital.relateddigital_google.model.RelatedDigitalModel
 import com.relateddigital.relateddigital_google.util.GoogleUtils
 import com.relateddigital.relateddigital_google.util.PersistentTargetManager
 import com.relateddigital.relateddigital_google.util.SharedPref
+import com.relateddigital.relateddigital_google.util.RelatedDigitalInstallTracker
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -330,6 +331,15 @@ object RequestFormer {
         queryMap[Constants.PVIV_REQUEST_KEY] = mPviv.toString()
         queryMap[Constants.TVC_REQUEST_KEY] = mTvc.toString()
         queryMap[Constants.LVT_REQUEST_KEY] = mLvt.toString()
+        val tracker = RelatedDigitalInstallTracker.getInstance(context)
+        if (tracker != null) {
+            if (!queryMap.containsKey(Constants.IS_FIRST_INSTALL_KEY)) {
+                queryMap[Constants.IS_FIRST_INSTALL_KEY] = tracker.isFirstInstallValue(mTvc)
+            }
+            if (!queryMap.containsKey(Constants.IS_REINSTALL_KEY)) {
+                queryMap[Constants.IS_REINSTALL_KEY] = tracker.isReinstallValue(mTvc)
+            }
+        }
         queryMap[Constants.UTM_CAMPAIGN] = model.getUtmCampaign()!!
         queryMap[Constants.UTM_MEDIUM] = model.getUtmMedium()!!
         queryMap[Constants.UTM_SOURCE] = model.getUtmSource()!!

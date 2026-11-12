@@ -21,9 +21,9 @@ class ClawMachineWebDialogFragment : DialogFragment() {
     private var baseUrl: String? = ""
     private var htmlString: String? = ""
     private var mIsRotation = false
-    private lateinit var mListener: ClawMachineCompleteInterface
-    private lateinit var mCopyToClipboardInterface: ClawMachineCopyToClipboardInterface
-    private lateinit var mShowCodeInterface: ClawMachineShowCodeInterface
+    private var mListener: ClawMachineCompleteInterface? = null
+    private var mCopyToClipboardInterface: ClawMachineCopyToClipboardInterface? = null
+    private var mShowCodeInterface: ClawMachineShowCodeInterface? = null
 
     fun display(fragmentManagerLoc: FragmentManager?): ClawMachineWebDialogFragment {
         val ft = fragmentManagerLoc?.beginTransaction()
@@ -49,8 +49,16 @@ class ClawMachineWebDialogFragment : DialogFragment() {
             baseUrl = requireArguments().getString("baseUrl")
             htmlString = requireArguments().getString("htmlString")
             mResponse = requireArguments().getString("response")
+            val listener = mListener
+            val copyToClipboardInterface = mCopyToClipboardInterface
+            val showCodeInterface = mShowCodeInterface
+            if (listener == null || copyToClipboardInterface == null || showCodeInterface == null) {
+                mIsRotation = true
+                dismissAllowingStateLoss()
+                return
+            }
             mJavaScriptInterface = ClawMachineJavaScriptInterface(this, mResponse!!)
-            mJavaScriptInterface!!.setClawMachineListeners(mListener, mCopyToClipboardInterface, mShowCodeInterface)
+            mJavaScriptInterface!!.setClawMachineListeners(listener, copyToClipboardInterface, showCodeInterface)
         }
     }
 

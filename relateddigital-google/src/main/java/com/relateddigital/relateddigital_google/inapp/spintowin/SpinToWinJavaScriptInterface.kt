@@ -7,9 +7,6 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
-import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
-import com.relateddigital.relateddigital_google.network.requestHandler.SpinToWinPromoCodeRequest
-import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 import com.relateddigital.relateddigital_google.RelatedDigital
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.inapp.VisilabsCallback
@@ -17,13 +14,16 @@ import com.relateddigital.relateddigital_google.inapp.VisilabsResponse
 import com.relateddigital.relateddigital_google.model.MailSubReport
 import com.relateddigital.relateddigital_google.model.Slice
 import com.relateddigital.relateddigital_google.model.SpinToWin
-import com.relateddigital.relateddigital_google.network.RequestHandler
+import com.relateddigital.relateddigital_google.network.requestHandler.InAppActionClickRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.SpinToWinPromoCodeRequest
+import com.relateddigital.relateddigital_google.network.requestHandler.SubsJsonRequest
 import org.json.JSONObject
 import java.util.*
 
 class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: SpinToWinWebDialogFragment,
                                                         @get:JavascriptInterface val response: String) {
     var mWebViewDialogFragment: SpinToWinWebDialogFragment = webViewDialogFragment
+    private val mMainHandler = Handler(Looper.getMainLooper())
     private var mListener: SpinToWinCompleteInterface? = null
     private var mCopyToClipboardInterface: SpinToWinCopyToClipboardInterface? = null
     private var mSpinToWinShowCodeInterface: SpinToWinShowCodeInterface? = null
@@ -37,8 +37,10 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
      */
     @JavascriptInterface
     fun close() {
-        mWebViewDialogFragment.dismiss()
-        mListener?.onCompleted()
+        runOnMain {
+            mWebViewDialogFragment.dismissAllowingStateLoss()
+            mListener?.onCompleted()
+        }
     }
 
     /**
@@ -49,15 +51,18 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
      */
     @JavascriptInterface
     fun copyToClipboard(couponCode: String?, link: String?) {
-        mWebViewDialogFragment.dismiss()
-        if(!spinToWinModel.actiondata!!.slices!![selectedIndex].androidLink.isNullOrEmpty()) {
-            mCopyToClipboardInterface?.copyToClipboard(
-                couponCode,
-                spinToWinModel.actiondata!!.slices!![selectedIndex].androidLink
-            )
-        }
-        else {
-            mCopyToClipboardInterface!!.copyToClipboard(couponCode, link)
+        runOnMain {
+            mWebViewDialogFragment.dismissAllowingStateLoss()
+            val sliceLink = spinToWinModel.actiondata?.slices?.getOrNull(selectedIndex)?.androidLink
+            if(!sliceLink.isNullOrEmpty()) {
+                mCopyToClipboardInterface?.copyToClipboard(
+                    couponCode,
+                    sliceLink
+                )
+            }
+            else {
+                mCopyToClipboardInterface?.copyToClipboard(couponCode, link)
+            }
         }
     }
 
@@ -70,7 +75,8 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
     fun subscribeEmail(email: String?) {
         if (!email.isNullOrEmpty()) {
             subEmail = email
-            SubsJsonRequest.createSubsJsonRequest(mWebViewDialogFragment.requireContext(), spinToWinModel.actiondata!!.type!!,
+            val context = mWebViewDialogFragment.context ?: return
+            SubsJsonRequest.createSubsJsonRequest(context, spinToWinModel.actiondata!!.type!!,
                     spinToWinModel.actid.toString(), spinToWinModel.actiondata!!.auth!!,
                     email)
         } else {
@@ -86,30 +92,16 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
         var report: MailSubReport?
         try {
             report = MailSubReport()
+            report.impression = spinToWinModel.actiondata!!.report!!.impression
             report.click = spinToWinModel.actiondata!!.report!!.click
         } catch (e: Exception) {
-            Log.e("Spin to Win : ", "There is no click report to send!")
+            Log.e("Spin to Win : ", "There is no report to send!")
             e.printStackTrace()
             report = null
         }
         if (report != null) {
-            InAppActionClickRequest.createInAppActionClickRequest(mWebViewDialogFragment.requireContext(), report)
-        }
-    }
-
-    @JavascriptInterface
-    fun sendReportImpression() {
-        var report: MailSubReport?
-        try {
-            report = MailSubReport()
-            report.impression = spinToWinModel.actiondata!!.report!!.impression
-        } catch (e: Exception) {
-            Log.e("Spin to Win : ", "There is no impression report to send!")
-            e.printStackTrace()
-            report = null
-        }
-        if (report != null) {
-            InAppActionClickRequest.createInAppActionImressionRequest(mWebViewDialogFragment.requireContext(), report)
+            val context = mWebViewDialogFragment.context ?: return
+            InAppActionClickRequest.createInAppActionClickRequest(context, report)
         }
     }
 
@@ -125,15 +117,16 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
         val sliceTexts: MutableList<String> = ArrayList()
         val promotionIndexes: MutableList<Int> = ArrayList()
 
-        val promoAuth: String = spinToWinModel.actiondata!!.promoAuth!!
-        val actId: Int = spinToWinModel.actid!!
+        val promoAuth: String = spinToWinModel.actiondata?.promoAuth ?: ""
+        val actId: Int = spinToWinModel.actid ?: 0
 
-        for (i in spinToWinModel.actiondata!!.slices!!.indices) {
-            val slice: Slice = spinToWinModel.actiondata!!.slices!![i]
-            if (slice.type.equals("promotion") && slice.isAvailable!!) {
-                promotionCodes.add(slice.code!!)
+        val slices = spinToWinModel.actiondata?.slices ?: emptyList()
+        for (i in slices.indices) {
+            val slice: Slice = slices[i]
+            if (slice.type.equals("promotion") && slice.isAvailable == true) {
+                slice.code?.let { promotionCodes.add(it) }
                 promotionIndexes.add(i)
-                sliceTexts.add(slice.displayName!!)
+                slice.displayName?.let { sliceTexts.add(it) }
             }
         }
 
@@ -148,9 +141,12 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
                 queryParameters["promotionid"] = selectedCode
                 queryParameters["promoauth"] = promoAuth
                 queryParameters["actionid"] = actId.toString()
-                SpinToWinPromoCodeRequest.createSpinToWinPromoCodeRequest(mWebViewDialogFragment.requireContext(),
-                        getVisilabsCallback(selectedIndex,
-                                selectedSliceText), queryParameters)
+                val context = mWebViewDialogFragment.context
+                if (context != null) {
+                    SpinToWinPromoCodeRequest.createSpinToWinPromoCodeRequest(context,
+                            getVisilabsCallback(selectedIndex,
+                                    selectedSliceText), queryParameters)
+                }
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
                 selectedIndex = -1
@@ -161,12 +157,12 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
             val staticCodes: MutableList<String> = ArrayList()
             val staticSliceTexts: MutableList<String> = ArrayList()
             val staticIndexes: MutableList<Int> = ArrayList()
-            for (i in spinToWinModel.actiondata!!.slices!!.indices) {
-                val slice: Slice = spinToWinModel.actiondata!!.slices!![i]
+            for (i in slices.indices) {
+                val slice: Slice = slices[i]
                 if (slice.type.equals("staticcode")) {
-                    staticCodes.add(slice.code!!)
+                    slice.code?.let { staticCodes.add(it) }
                     staticIndexes.add(i)
-                    staticSliceTexts.add(slice.displayName!!)
+                    slice.displayName?.let { staticSliceTexts.add(it) }
                 }
             }
             if (staticCodes.size > 0) {
@@ -176,18 +172,20 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
                     selectedCode = staticCodes[randomIndex]
                     selectedIndex = staticIndexes[randomIndex]
                     selectedSliceText = staticSliceTexts[randomIndex]
-                    val mainHandler = Handler(Looper.getMainLooper())
                     val finalSelectedCode = selectedCode
                     val finalSelectedSliceText = selectedSliceText
                     val finalSelectedIndex = selectedIndex
                     val myRunnable = Runnable {
+                        if (!mWebViewDialogFragment.isAdded) {
+                            return@Runnable
+                        }
                         mSpinToWinShowCodeInterface?.onCodeShown(finalSelectedCode)
                         sendPromotionCodeInfo(finalSelectedCode, finalSelectedSliceText)
-                        mWebViewDialogFragment.getWebView()!!.evaluateJavascript(
+                        mWebViewDialogFragment.getWebView()?.evaluateJavascript(
                                 "window.chooseSlice($finalSelectedIndex,'$finalSelectedCode');",
                                 null)
                     }
-                    mainHandler.post(myRunnable)
+                    mMainHandler.post(myRunnable)
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                     selectedIndex = -1
@@ -196,12 +194,14 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
         }
 
         if (selectedIndex == -1) {
-            val mainHandler = Handler(Looper.getMainLooper())
             val myRunnable = Runnable {
-                mWebViewDialogFragment.getWebView()!!.evaluateJavascript(
+                if (!mWebViewDialogFragment.isAdded) {
+                    return@Runnable
+                }
+                mWebViewDialogFragment.getWebView()?.evaluateJavascript(
                         "window.chooseSlice(-1, undefined);", null)
             }
-            mainHandler.post(myRunnable)
+            mMainHandler.post(myRunnable)
         }
     }
 
@@ -209,18 +209,20 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
         return object : VisilabsCallback {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             override fun success(response: VisilabsResponse?) {
-                val rawResponse: String = response!!.rawResponse
+                val rawResponse: String = response?.rawResponse ?: return
                 val jsonResponse = JSONObject(rawResponse)
-                val promotionCode: String = jsonResponse.getString("promocode")
-                val mainHandler = Handler(Looper.getMainLooper())
+                val promotionCode: String = jsonResponse.optString("promocode", "")
                 val myRunnable = Runnable {
+                    if (!mWebViewDialogFragment.isAdded) {
+                        return@Runnable
+                    }
                     mSpinToWinShowCodeInterface?.onCodeShown(promotionCode)
                     sendPromotionCodeInfo(promotionCode, sliceText)
-                    mWebViewDialogFragment.getWebView()!!.evaluateJavascript(
+                    mWebViewDialogFragment.getWebView()?.evaluateJavascript(
                             "window.chooseSlice($idx,'$promotionCode');",
                             null)
                 }
-                mainHandler.post(myRunnable)
+                mMainHandler.post(myRunnable)
             }
 
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -230,12 +232,13 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
                 val staticSliceTexts: MutableList<String> = ArrayList()
                 val staticIndexes: MutableList<Int> = ArrayList()
                 var selectedIndex = -1
-                for (i in spinToWinModel.actiondata!!.slices!!.indices) {
-                    val slice: Slice = spinToWinModel.actiondata!!.slices!![i]
+                val slices = spinToWinModel.actiondata?.slices ?: emptyList()
+                for (i in slices.indices) {
+                    val slice: Slice = slices[i]
                     if (slice.type.equals("staticcode")) {
-                        staticCodes.add(slice.code!!)
+                        slice.code?.let { staticCodes.add(it) }
                         staticIndexes.add(i)
-                        staticSliceTexts.add(slice.displayName!!)
+                        slice.displayName?.let { staticSliceTexts.add(it) }
                     }
                 }
 
@@ -248,16 +251,18 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
                         finalSelectedCode = staticCodes[randomIndex]
                         selectedIndex = staticIndexes[randomIndex]
                         finalSelectedSliceText = staticSliceTexts[randomIndex]
-                        val mainHandler = Handler(Looper.getMainLooper())
                         val finalSelectedIndex = selectedIndex
                         val myRunnable = Runnable {
+                            if (!mWebViewDialogFragment.isAdded) {
+                                return@Runnable
+                            }
                             mSpinToWinShowCodeInterface?.onCodeShown(finalSelectedCode)
                             sendPromotionCodeInfo(finalSelectedCode, finalSelectedSliceText)
-                            mWebViewDialogFragment.getWebView()!!.evaluateJavascript(
+                            mWebViewDialogFragment.getWebView()?.evaluateJavascript(
                                     "window.chooseSlice($finalSelectedIndex,'$finalSelectedCode');",
                                     null)
                         }
-                        mainHandler.post(myRunnable)
+                        mMainHandler.post(myRunnable)
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
                         selectedIndex = -1
@@ -265,12 +270,14 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
                 }
 
                 if (selectedIndex == -1) {
-                    val mainHandler = Handler(Looper.getMainLooper())
                     val myRunnable = Runnable {
-                        mWebViewDialogFragment.getWebView()!!.evaluateJavascript(
+                        if (!mWebViewDialogFragment.isAdded) {
+                            return@Runnable
+                        }
+                        mWebViewDialogFragment.getWebView()?.evaluateJavascript(
                                 "window.chooseSlice(-1, undefined);", null)
                     }
-                    mainHandler.post(myRunnable)
+                    mMainHandler.post(myRunnable)
                 }
             }
         }
@@ -284,7 +291,6 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
         mListener = listener
         mCopyToClipboardInterface = copyToClipboardInterface
         mSpinToWinShowCodeInterface = spinToWinShowCodeInterface
-        sendReportImpression()
     }
 
     private fun sendPromotionCodeInfo(promotionCode: String, sliceText: String) {
@@ -294,14 +300,29 @@ class SpinToWinJavaScriptInterface internal constructor(webViewDialogFragment: S
         if (subEmail.isNotEmpty()) {
             parameters[Constants.PROMOTION_CODE_EMAIL_REQUEST_KEY] = subEmail
         }
-        parameters[Constants.PROMOTION_CODE_TITLE_REQUEST_KEY] = spinToWinModel.actiondata!!.promocodeTitle!!
+        spinToWinModel.actiondata?.promocodeTitle?.let {
+            parameters[Constants.PROMOTION_CODE_TITLE_REQUEST_KEY] = it
+        }
         if (sliceText.isNotEmpty()) {
             parameters[Constants.PROMOTION_CODE_SLICE_TEXT_REQUEST_KEY] = sliceText
         }
+        val context = mWebViewDialogFragment.context ?: return
         RelatedDigital.customEvent(
-                context = mWebViewDialogFragment.requireContext(),
+                context = context,
                 pageName = Constants.PAGE_NAME_REQUEST_VAL,
                 properties = parameters)
     }
 
+    private fun runOnMain(block: () -> Unit) {
+        mMainHandler.post {
+            if (!mWebViewDialogFragment.isAdded) {
+                return@post
+            }
+            try {
+                block()
+            } catch (e: Exception) {
+                Log.e("JavaScriptInterface", "Could not handle the web view call!", e)
+            }
+        }
+    }
 }

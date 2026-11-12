@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -17,6 +18,8 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Html
 import android.text.Spanned
 import android.util.Log
@@ -63,8 +66,17 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
     private var mAccelerometer = 0f
     private var mAccelerometerCurrent = 0f
     private var mAccelerometerLast = 0f
-    private var mTimerWithoutShaking: Timer? = null
-    private var mTimerAfterShaking: Timer? = null
+    private val mHandler = Handler(Looper.getMainLooper())
+    private val mStep3Runnable = Runnable {
+        if (!isFinishing && !isDestroyed && !isStep3) {
+            setupStep3View()
+        }
+    }
+    private val mWithoutShakingRunnable = Runnable {
+        if (!isShaken) {
+            mStep3Runnable.run()
+        }
+    }
     private var isShaken = false
     private var isStep3 = false
     private var player: ExoPlayer? = null
@@ -111,38 +123,42 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
         return context.packageManager.hasSystemFeature("android.software.leanback")
     }
 
+    override fun onPause() {
+        super.onPause()
+        mSensorManager?.unregisterListener(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!isStep3 && !isShaken && mSensorManager != null) {
+            mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.let { sensor ->
+                mSensorManager?.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
-        if (mTimerWithoutShaking != null) {
-            mTimerWithoutShaking!!.cancel()
-        }
-        if (mTimerAfterShaking != null) {
-            mTimerAfterShaking!!.cancel()
-        }
-        if (mSensorManager != null) {
-            mSensorManager!!.unregisterListener(
-                this,
-                mSensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-            )
-        }
+        mHandler.removeCallbacksAndMessages(null)
+        mSensorManager?.unregisterListener(this)
         releasePlayer()
-        if (mExtendedProps!!.promocodeBannerText!!.isNotEmpty() && isStep3) {
+        if (!mExtendedProps?.promocodeBannerText.isNullOrEmpty() && isStep3) {
             try {
-                val extendedProps = Gson().fromJson(
-                    URI(mShakeToWinMessage!!.actiondata!!.ExtendedProps).path,
+                val extendedProps = mExtendedProps ?: Gson().fromJson(
+                    URI(mShakeToWinMessage?.actiondata?.ExtendedProps).path,
                     ShakeToWinExtendedProps::class.java
                 )
-                val shakeToWinCodeBannerFragment =
-                    ShakeToWinCodeBannerFragment.newInstance(
-                        extendedProps,
-                        mShakeToWinMessage!!.actiondata!!.promotionCode.toString()
-                    )
+                val promoCode = mShakeToWinMessage?.actiondata?.promotionCode?.toString() ?: ""
+                val parent = ActivityUtils.parentActivity as? FragmentActivity
+                if (parent != null && extendedProps != null && !parent.isFinishing && !parent.isDestroyed) {
+                    val shakeToWinCodeBannerFragment =
+                        ShakeToWinCodeBannerFragment.newInstance(extendedProps, promoCode)
 
-                val transaction: FragmentTransaction =
-                    (ActivityUtils.parentActivity as FragmentActivity).supportFragmentManager.beginTransaction()
-                transaction.replace(android.R.id.content, shakeToWinCodeBannerFragment)
-                transaction.commit()
+                    val transaction: FragmentTransaction = parent.supportFragmentManager.beginTransaction()
+                    transaction.replace(android.R.id.content, shakeToWinCodeBannerFragment)
+                    transaction.commitAllowingStateLoss()
+                }
                 ActivityUtils.parentActivity = null
             } catch (e: Exception) {
                 Log.e(LOG_TAG, "ShakeToWinCodeBanner : " + e.message)
@@ -156,7 +172,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
 
         if (isMailForm) {
             if (mExtendedProps!!.backgroundColor!!.isNotEmpty()) {
-                bindingMailForm.container.setBackgroundColor(Color.parseColor(mExtendedProps!!.backgroundColor))
+                bindingMailForm.container.setBackgroundColor(SafeColor.parse(mExtendedProps!!.backgroundColor, Color.BLACK))
             } else if (mExtendedProps!!.backgroundImage!!.isNotEmpty()) {
 
                 Picasso.get().load(mExtendedProps!!.backgroundImage)
@@ -226,7 +242,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                         "\\n",
                         "\n"
                     )
-                bindingMailForm.titleText.setTextColor(Color.parseColor(mExtendedProps!!.mailSubscriptionForm!!.titleTextColor))
+                bindingMailForm.titleText.setTextColor(SafeColor.parse(mExtendedProps!!.mailSubscriptionForm!!.titleTextColor, Color.BLACK))
                 bindingMailForm.titleText.textSize =
                     mExtendedProps!!.mailSubscriptionForm!!.titleTextSize!!.toFloat() + 12
                 bindingMailForm.titleText.setTypeface(
@@ -241,7 +257,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                         "\\n",
                         "\n"
                     )
-                bindingMailForm.bodyText.setTextColor(Color.parseColor(mExtendedProps!!.mailSubscriptionForm!!.textColor))
+                bindingMailForm.bodyText.setTextColor(SafeColor.parse(mExtendedProps!!.mailSubscriptionForm!!.textColor, Color.BLACK))
                 bindingMailForm.bodyText.textSize =
                     mExtendedProps!!.mailSubscriptionForm!!.textSize!!.toFloat() + 8
                 bindingMailForm.bodyText.typeface = mExtendedProps!!.getContentBodyFontFamily(this)
@@ -251,11 +267,11 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                 mShakeToWinMessage!!.actiondata!!.mailSubscriptionForm!!.placeholder
             bindingMailForm.saveButton.text =
                 mShakeToWinMessage!!.actiondata!!.mailSubscriptionForm!!.buttonLabel
-            bindingMailForm.saveButton.setTextColor(Color.parseColor(mExtendedProps!!.mailSubscriptionForm!!.buttonTextColor))
+            bindingMailForm.saveButton.setTextColor(SafeColor.parse(mExtendedProps!!.mailSubscriptionForm!!.buttonTextColor, Color.BLACK))
             bindingMailForm.saveButton.textSize =
                 mExtendedProps!!.mailSubscriptionForm!!.buttonTextSize!!.toFloat() + 10
             bindingMailForm.saveButton.typeface = mExtendedProps!!.getButtonFontFamily(this)
-            bindingMailForm.saveButton.setBackgroundColor(Color.parseColor(mExtendedProps!!.mailSubscriptionForm!!.buttonColor))
+            bindingMailForm.saveButton.setBackgroundColor(SafeColor.parse(mExtendedProps!!.mailSubscriptionForm!!.buttonColor, Color.BLACK))
             bindingMailForm.emailEdit.setOnFocusChangeListener { v, hasFocus ->
                 if (!hasFocus) {
                     hideKeyboard(v)
@@ -320,7 +336,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                     .into(bindingStep1.imageView, object : com.squareup.picasso.Callback {
                         override fun onSuccess() {
                             if (mExtendedProps!!.backgroundColor!!.isNotEmpty()) {
-                                bindingStep1.container.setBackgroundColor(Color.parseColor(mExtendedProps!!.backgroundColor))
+                                bindingStep1.container.setBackgroundColor(SafeColor.parse(mExtendedProps!!.backgroundColor, Color.BLACK))
                             } else if (mExtendedProps!!.backgroundImage!!.isNotEmpty()) {
                                 Picasso.get()
                                     .load(mExtendedProps!!.backgroundImage)
@@ -328,8 +344,8 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                             }
                             bindingStep1.buttonView.text =
                                 mShakeToWinMessage!!.actiondata!!.gamificationRules!!.buttonLabel
-                            bindingStep1.buttonView.setBackgroundColor(Color.parseColor(mExtendedProps!!.gamificationRules!!.buttonColor))
-                            bindingStep1.buttonView.setTextColor(Color.parseColor(mExtendedProps!!.gamificationRules!!.buttonTextColor))
+                            bindingStep1.buttonView.setBackgroundColor(SafeColor.parse(mExtendedProps!!.gamificationRules!!.buttonColor, Color.BLACK))
+                            bindingStep1.buttonView.setTextColor(SafeColor.parse(mExtendedProps!!.gamificationRules!!.buttonTextColor, Color.BLACK))
                             bindingStep1.buttonView.textSize =
                                 mExtendedProps!!.gamificationRules!!.buttonTextSize!!.toFloat() + 10
 
@@ -393,27 +409,20 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
     }
 
     private fun initAccelerometer() {
-        mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-        mSensorManager!!.registerListener(
-            this, mSensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-            SensorManager.SENSOR_DELAY_NORMAL
-        )
+        mSensorManager = getSystemService(SENSOR_SERVICE) as? SensorManager
+        mSensorManager?.let { sm ->
+            sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.let { sensor ->
+                sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+            }
+        }
         mAccelerometer = 10f
         mAccelerometerCurrent = SensorManager.GRAVITY_EARTH
         mAccelerometerLast = SensorManager.GRAVITY_EARTH
-        mTimerWithoutShaking = Timer("ShakeToWinTimerWithoutShaking", false)
-        val task: TimerTask = object : TimerTask() {
-            override fun run() {
-                if (!isShaken) {
-                    runOnUiThread { setupStep3View() }
-                }
-            }
-        }
-        mTimerWithoutShaking!!.schedule(task, 5000)
+        mHandler.postDelayed(mWithoutShakingRunnable, 5000)
     }
 
     override fun onSensorChanged(event: SensorEvent) {
-        if (!isStep3) {
+        if (!isStep3 && !isShaken) {
             val x = event.values[0]
             val y = event.values[1]
             val z = event.values[2]
@@ -423,15 +432,10 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
             mAccelerometer = mAccelerometer * 0.9f + delta
             if (mAccelerometer > 12) {
                 isShaken = true
-                mTimerAfterShaking = Timer("ShakeToWinTimerAfterShaking", false)
-                val task: TimerTask = object : TimerTask() {
-                    override fun run() {
-                        runOnUiThread { setupStep3View() }
-                    }
-                }
-                mTimerAfterShaking!!.schedule(
-                    task,
-                    mShakeToWinMessage!!.actiondata!!.gameElements!!.shakingTime!!.toLong()
+                mHandler.removeCallbacks(mWithoutShakingRunnable)
+                mHandler.postDelayed(
+                    mStep3Runnable,
+                    mShakeToWinMessage?.actiondata?.gameElements?.shakingTime?.toLong() ?: 3000L
                 )
             }
         }
@@ -440,22 +444,14 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
     private fun setupStep3View() {
         releasePlayer()
-        if (mTimerWithoutShaking != null) {
-            mTimerWithoutShaking!!.cancel()
-        }
-        if (mTimerAfterShaking != null) {
-            mTimerAfterShaking!!.cancel()
-        }
+        mHandler.removeCallbacksAndMessages(null)
         isStep3 = true
-        mSensorManager!!.unregisterListener(
-            this,
-            mSensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        )
+        mSensorManager?.unregisterListener(this)
         setContentView(bindingStep3.root)
 
         setupCloseButtonStep3()
         if (mExtendedProps!!.backgroundColor!!.isNotEmpty()) {
-            bindingStep3.container.setBackgroundColor(Color.parseColor(mExtendedProps!!.backgroundColor))
+            bindingStep3.container.setBackgroundColor(SafeColor.parse(mExtendedProps!!.backgroundColor, Color.BLACK))
         } else if (mExtendedProps!!.backgroundImage!!.isNotEmpty()) {
 
             Picasso.get().load(mExtendedProps!!.backgroundImage)
@@ -478,7 +474,7 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
         if (mShakeToWinMessage!!.actiondata!!.gameResultElements!!.title!!.isNotEmpty()) {
             bindingStep3.titleView.text =
                 mShakeToWinMessage!!.actiondata!!.gameResultElements!!.title!!.replace("\\n", "\n")
-            bindingStep3.titleView.setTextColor(Color.parseColor(mExtendedProps!!.gameResultElements!!.titleTextColor))
+            bindingStep3.titleView.setTextColor(SafeColor.parse(mExtendedProps!!.gameResultElements!!.titleTextColor, Color.BLACK))
             bindingStep3.titleView.textSize =
                 mExtendedProps!!.gameResultElements!!.titleTextSize!!.toFloat() + 12
         }
@@ -488,16 +484,16 @@ class ShakeToWinActivity : Activity(), SensorEventListener {
                     "\\n",
                     "\n"
                 )
-            bindingStep3.bodyTextView.setTextColor(Color.parseColor(mExtendedProps!!.gameResultElements!!.textColor))
+            bindingStep3.bodyTextView.setTextColor(SafeColor.parse(mExtendedProps!!.gameResultElements!!.textColor, Color.BLACK))
             bindingStep3.bodyTextView.textSize =
                 mExtendedProps!!.gameResultElements!!.textSize!!.toFloat() + 8
         }
-        bindingStep3.couponView.setBackgroundColor(Color.parseColor(mExtendedProps!!.promocodeBackgroundColor))
+        bindingStep3.couponView.setBackgroundColor(SafeColor.parse(mExtendedProps!!.promocodeBackgroundColor, Color.BLACK))
         bindingStep3.couponCodeView.text = mShakeToWinMessage!!.actiondata!!.promotionCode
-        bindingStep3.couponCodeView.setTextColor(Color.parseColor(mExtendedProps!!.promocodeTextColor))
+        bindingStep3.couponCodeView.setTextColor(SafeColor.parse(mExtendedProps!!.promocodeTextColor, Color.BLACK))
         bindingStep3.buttonView.text = mShakeToWinMessage!!.actiondata!!.copybuttonLabel
-        bindingStep3.buttonView.setBackgroundColor(Color.parseColor(mExtendedProps!!.copybuttonColor))
-        bindingStep3.buttonView.setTextColor(Color.parseColor(mExtendedProps!!.copybuttonTextColor))
+        bindingStep3.buttonView.setBackgroundColor(SafeColor.parse(mExtendedProps!!.copybuttonColor, Color.BLACK))
+        bindingStep3.buttonView.setTextColor(SafeColor.parse(mExtendedProps!!.copybuttonTextColor, Color.BLACK))
         bindingStep3.buttonView.textSize = mExtendedProps!!.copybuttonTextSize!!.toFloat() + 10
         sendPromotionCodeInfo(email = promoemail, promotionCode = mShakeToWinMessage!!.actiondata!!.promotionCode.toString())
         bindingStep3.buttonView.setOnClickListener {

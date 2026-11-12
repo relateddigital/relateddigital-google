@@ -1,6 +1,7 @@
 package com.relateddigital.relateddigital_google.inapp.mailsubsform
 
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.os.Bundle
 import android.text.Html
 import android.text.Spanned
@@ -143,13 +144,13 @@ class MailSubscriptionFormHalfFragment : Fragment() {
             if(isTextTop) {
                 binding.bodyTextViewBot.visibility = View.GONE
                 binding.bodyTextViewTop.text = mResponse!!.message!!.replace("\\n", "\n")
-                binding.bodyTextViewTop.setTextColor(Color.parseColor(mExtendedProps!!.getTextColor()))
+                binding.bodyTextViewTop.setTextColor(SafeColor.parse(mExtendedProps!!.getTextColor(), Color.BLACK));
                 binding.bodyTextViewTop.textSize = mExtendedProps!!.getTextSize()!!.toFloat() + 6
                 binding.bodyTextViewTop.typeface = mExtendedProps!!.getTextFontFamily(requireContext())
             } else {
                 binding.bodyTextViewTop.visibility = View.GONE
                 binding.bodyTextViewBot.text = mResponse!!.message!!.replace("\\n", "\n")
-                binding.bodyTextViewBot.setTextColor(Color.parseColor(mExtendedProps!!.getTextColor()))
+                binding.bodyTextViewBot.setTextColor(SafeColor.parse(mExtendedProps!!.getTextColor(), Color.BLACK));
                 binding.bodyTextViewBot.textSize = mExtendedProps!!.getTextSize()!!.toFloat() + 6
                 binding.bodyTextViewBot.typeface = mExtendedProps!!.getTextFontFamily(requireContext())
             }
@@ -158,14 +159,14 @@ class MailSubscriptionFormHalfFragment : Fragment() {
             binding.bodyTextViewTop.visibility = View.GONE
         }
 
-        binding.container.setBackgroundColor(Color.parseColor(mExtendedProps!!.getBackgroundColor()))
+        binding.container.setBackgroundColor(SafeColor.parse(mExtendedProps!!.getBackgroundColor(), Color.BLACK));
         binding.titleView.text = mResponse!!.title!!.replace("\\n", "\n")
-        binding.titleView.setTextColor(Color.parseColor(mExtendedProps!!.getTitleTextColor()))
+        binding.titleView.setTextColor(SafeColor.parse(mExtendedProps!!.getTitleTextColor(), Color.BLACK));
         binding.titleView.textSize = mExtendedProps!!.getTitleTextSize()!!.toFloat() + 10
         binding.titleView.typeface = mExtendedProps!!.getTitleFontFamily(requireContext())
         binding.btn.text = mResponse!!.button_label
-        binding.btn.setTextColor(Color.parseColor(mExtendedProps!!.getButtonTextColor()))
-        binding.btn.setBackgroundColor(Color.parseColor(mExtendedProps!!.getButtonColor()))
+        binding.btn.setTextColor(SafeColor.parse(mExtendedProps!!.getButtonTextColor(), Color.BLACK));
+        binding.btn.setBackgroundColor(SafeColor.parse(mExtendedProps!!.getButtonColor(), Color.BLACK));
         binding.btn.textSize = mExtendedProps!!.getButtonTextSize()!!.toFloat() + 10
         binding.btn.typeface = mExtendedProps!!.getButtonFontFamily(requireContext())
         binding.btn.setOnClickListener {
@@ -228,7 +229,7 @@ class MailSubscriptionFormHalfFragment : Fragment() {
     }
 
     private fun endFragment() {
-        requireActivity().supportFragmentManager.beginTransaction().remove(this@MailSubscriptionFormHalfFragment).commit()
+        activity?.supportFragmentManager?.beginTransaction()?.remove(this@MailSubscriptionFormHalfFragment)?.commitAllowingStateLoss()
     }
 
     //Email Permit TextEmail Permit <LINK>TextEmail</LINK> Permit Text

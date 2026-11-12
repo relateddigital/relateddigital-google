@@ -71,5 +71,23 @@ object InAppNotificationClickRequest {
             model,
             context
         )
+
+        if (model.getIsInAppNotificationEnabled()) {
+            val targetParent = com.relateddigital.relateddigital_google.util.ActivityUtils.parentActivity
+            InAppNotificationRequest.createInAppNotificationRequest(
+                context,
+                model,
+                com.relateddigital.relateddigital_google.constants.Constants.PAGE_NAME_REQUEST_VAL,
+                properties,
+                targetParent
+            )
+            InAppActionRequest.createInAppActionRequest(
+                context,
+                model,
+                com.relateddigital.relateddigital_google.constants.Constants.PAGE_NAME_REQUEST_VAL,
+                properties,
+                targetParent
+            )
+        }
     }
 }

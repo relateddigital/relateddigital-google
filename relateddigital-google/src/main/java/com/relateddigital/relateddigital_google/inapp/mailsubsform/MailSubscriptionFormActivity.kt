@@ -2,6 +2,7 @@ package com.relateddigital.relateddigital_google.inapp.mailsubsform
 
 import android.app.Activity
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
@@ -77,7 +78,7 @@ class MailSubscriptionFormActivity : Activity() {
     }
 
     private fun setUpView() {
-        binding.llTextContainer.setBackgroundColor(Color.parseColor(mExtendedProps!!.background_color))
+        binding.llTextContainer.setBackgroundColor(SafeColor.parse(mExtendedProps!!.background_color, Color.BLACK))
         setCloseButton()
         setTitle()
         setBody()
@@ -102,14 +103,14 @@ class MailSubscriptionFormActivity : Activity() {
             Typeface.BOLD
         )
         binding.tvTitle.text = mMailSubscriptionForm!!.actiondata!!.title!!.replace("\\n", "\n")
-        binding.tvTitle.setTextColor(Color.parseColor(mExtendedProps!!.title_text_color))
+        binding.tvTitle.setTextColor(SafeColor.parse(mExtendedProps!!.title_text_color, Color.BLACK))
         binding.tvTitle.textSize = mExtendedProps!!.title_text_size!!.toFloat() + 12
     }
 
     private fun setBody() {
         binding.tvBody.text = mMailSubscriptionForm!!.actiondata!!.message!!.replace("\\n", "\n")
         binding.tvBody.typeface = mExtendedProps!!.getTextFontFamily(this)
-        binding.tvBody.setTextColor(Color.parseColor(mExtendedProps!!.text_color))
+        binding.tvBody.setTextColor(SafeColor.parse(mExtendedProps!!.text_color, Color.BLACK))
         binding.tvBody.textSize = mExtendedProps!!.text_size!!.toFloat() + 8
     }
 
@@ -156,8 +157,8 @@ class MailSubscriptionFormActivity : Activity() {
     private fun setButton() {
         binding.btn.text = mMailSubscriptionForm!!.actiondata!!.button_label
         binding.btn.typeface = mExtendedProps!!.getButtonFontFamily(this)
-        binding.btn.setTextColor(Color.parseColor(mExtendedProps!!.button_text_color))
-        binding.btn.setBackgroundColor(Color.parseColor(mExtendedProps!!.button_color))
+        binding.btn.setTextColor(SafeColor.parse(mExtendedProps!!.button_text_color, Color.BLACK))
+        binding.btn.setBackgroundColor(SafeColor.parse(mExtendedProps!!.button_color, Color.BLACK))
         binding.btn.textSize = mExtendedProps!!.button_text_size!!.toFloat() + 8
         binding.btn.setOnClickListener(View.OnClickListener {
             val email: String = binding.etEmail.text.toString()

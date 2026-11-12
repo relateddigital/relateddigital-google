@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import android.content.Intent
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
 import android.widget.ImageView
@@ -129,13 +130,13 @@ class HalfScreenFragment : Fragment() {
                 binding.topPromotionContainer.visibility = View.VISIBLE
                 try {
                     if (!bgColor.isNullOrEmpty()) {
-                        binding.topPromotionContainer.setBackgroundColor(Color.parseColor(bgColor))
+                        binding.topPromotionContainer.setBackgroundColor(SafeColor.parse(bgColor, Color.BLACK))
                     }
                 } catch (e: Exception) {}
                 binding.topPromotionCodeText.text = promoCode
                 try {
                     if (!textColor.isNullOrEmpty()) {
-                        binding.topPromotionCodeText.setTextColor(Color.parseColor(textColor))
+                        binding.topPromotionCodeText.setTextColor(SafeColor.parse(textColor, Color.BLACK))
                     }
                 } catch (e: Exception) {}
                 binding.topPromotionCodeText.textSize = mInAppMessage!!.mActionData!!.mMsgTitleTextSize!!.toFloat() * 2 + 8
@@ -148,13 +149,13 @@ class HalfScreenFragment : Fragment() {
                 binding.botPromotionContainer.visibility = View.VISIBLE
                 try {
                     if (!bgColor.isNullOrEmpty()) {
-                        binding.botPromotionContainer.setBackgroundColor(Color.parseColor(bgColor))
+                        binding.botPromotionContainer.setBackgroundColor(SafeColor.parse(bgColor, Color.BLACK))
                     }
                 } catch (e: Exception) {}
                 binding.botPromotionCodeText.text = promoCode
                 try {
                     if (!textColor.isNullOrEmpty()) {
-                        binding.botPromotionCodeText.setTextColor(Color.parseColor(textColor))
+                        binding.botPromotionCodeText.setTextColor(SafeColor.parse(textColor, Color.BLACK))
                     }
                 } catch (e: Exception) {}
                 binding.botPromotionCodeText.textSize = mInAppMessage!!.mActionData!!.mMsgTitleTextSize!!.toFloat() * 2 + 8
@@ -205,14 +206,14 @@ class HalfScreenFragment : Fragment() {
         val bg = mInAppMessage!!.mActionData!!.mBackground
         if (!bg.isNullOrEmpty()) {
             try {
-                binding.topContentArea.setBackgroundColor(Color.parseColor(bg))
+                binding.topContentArea.setBackgroundColor(SafeColor.parse(bg, Color.BLACK))
             } catch (e: Exception) {
                 Log.e(LOG_TAG, "Could not parse background color", e)
             }
         }
         if (!mInAppMessage!!.mActionData!!.mMsgTitle.isNullOrEmpty()) {
             binding.topTitleView.text = mInAppMessage!!.mActionData!!.mMsgTitle!!.replace("\\n", "\n")
-            binding.topTitleView.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgTitleColor))
+            binding.topTitleView.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mMsgTitleColor, Color.BLACK))
             binding.topTitleView.textSize = mInAppMessage!!.mActionData!!.mMsgTitleTextSize!!.toFloat() * 2 + 8
             binding.topTitleView.typeface = mInAppMessage!!.mActionData!!.getFontFamily(requireActivity())
         } else {
@@ -267,14 +268,14 @@ class HalfScreenFragment : Fragment() {
         val bg = mInAppMessage!!.mActionData!!.mBackground
         if (!bg.isNullOrEmpty()) {
             try {
-                binding.botContentArea.setBackgroundColor(Color.parseColor(bg))
+                binding.botContentArea.setBackgroundColor(SafeColor.parse(bg, Color.BLACK))
             } catch (e: Exception) {
                 Log.e(LOG_TAG, "Could not parse background color", e)
             }
         }
         if (!mInAppMessage!!.mActionData!!.mMsgTitle.isNullOrEmpty()) {
             binding.botTitleView.text = mInAppMessage!!.mActionData!!.mMsgTitle!!.replace("\\n", "\n")
-            binding.botTitleView.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgTitleColor))
+            binding.botTitleView.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mMsgTitleColor, Color.BLACK))
             binding.botTitleView.textSize = mInAppMessage!!.mActionData!!.mMsgTitleTextSize!!.toFloat() * 2 + 8
             binding.botTitleView.typeface = mInAppMessage!!.mActionData!!.getFontFamily(requireActivity())
         } else {
@@ -311,7 +312,7 @@ class HalfScreenFragment : Fragment() {
         val isWhite = isWhiteColor(closeColor)
 
         val bgColor = if (isWhite) Color.BLACK else Color.WHITE
-        val strokeColor = if (isWhite) Color.parseColor("#33FFFFFF") else Color.parseColor("#26000000")
+        val strokeColor = if (isWhite) SafeColor.parse("#33FFFFFF", Color.BLACK) else SafeColor.parse("#26000000", Color.BLACK)
         val iconRes = if (isWhite) R.drawable.ic_close_white_24dp else R.drawable.ic_close_black_24dp
 
         val circleBg = GradientDrawable().apply {
@@ -347,7 +348,7 @@ class HalfScreenFragment : Fragment() {
         if (activity != null) {
             InAppUpdateDisplayState.releaseDisplayState(mStateId)
             releasePlayer()
-            requireActivity().supportFragmentManager.beginTransaction().remove(this@HalfScreenFragment).commit()
+            requireActivity().supportFragmentManager.beginTransaction().remove(this@HalfScreenFragment).commitAllowingStateLoss()
         }
     }
 

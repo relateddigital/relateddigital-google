@@ -151,16 +151,16 @@ class ChooseFavoriteActivity : FragmentActivity(), ChooseFavoriteCompleteInterfa
                 )
 
                 if (!extendedProps.promocodeBannerButtonLabel.isNullOrEmpty()) {
-                    if(ActivityUtils.parentActivity != null) {
+                    val parent = ActivityUtils.parentActivity as? FragmentActivity
+                    if (parent != null && !parent.isFinishing && !parent.isDestroyed) {
                         val chooseFavoriteCodeBannerFragment =
                             ChooseFavoriteCodeBannerFragment.newInstance(extendedProps, chooseFavoritePromotionCode)
 
-                        val transaction: FragmentTransaction =
-                            (ActivityUtils.parentActivity as FragmentActivity).supportFragmentManager.beginTransaction()
+                        val transaction: FragmentTransaction = parent.supportFragmentManager.beginTransaction()
                         transaction.replace(android.R.id.content, chooseFavoriteCodeBannerFragment)
-                        transaction.commit()
-                        ActivityUtils.parentActivity = null
+                        transaction.commitAllowingStateLoss()
                     }
+                    ActivityUtils.parentActivity = null
                 }
             } catch (e: Exception) {
                 Log.e(ChooseFavoriteActivity.LOG_TAG, "ChooseFavoriteCodeBanner : " + e.message)

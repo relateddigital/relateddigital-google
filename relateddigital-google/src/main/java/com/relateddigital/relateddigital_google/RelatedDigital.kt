@@ -3,9 +3,11 @@ package com.relateddigital.relateddigital_google
 import android.app.Activity
 import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
+import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import com.relateddigital.relateddigital_google.inapp.InAppActionManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -17,6 +19,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.relateddigital.relateddigital_google.appTracker.AppTracker
 import com.relateddigital.relateddigital_google.capture.RDCapture
+import com.relateddigital.relateddigital_google.util.RelatedDigitalInstallTracker
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.geofence.GeofenceStarter
 import com.relateddigital.relateddigital_google.inapp.InAppButtonInterface
@@ -78,9 +81,15 @@ object RelatedDigital {
 
         // createInitialModel cookieId yoksa üretip kaydettiği için kontrol ondan önce yapılıyor:
         // cookieId önceki bir açılıştan kaldıysa SDK bu cihazda daha önce çalışmış demektir.
-        val isExistingInstall = SharedPref.readString(context, Constants.COOKIE_ID_KEY, "").isNotEmpty()
+        val hasCookie = SharedPref.readString(context, Constants.COOKIE_ID_KEY, "").isNotEmpty()
+        RelatedDigitalInstallTracker.getInstance(context)
+        val isExistingInstall = hasCookie || RelatedDigitalInstallTracker.isExistingInstall(context)
 
         model = createInitialModel(context)
+
+        (context.applicationContext as? Application ?: context as? Application)?.let { app ->
+            InAppActionManager.init(app)
+        }
 
         val modelStr = SharedPref.readString(context, Constants.RELATED_DIGITAL_MODEL_KEY, "")
 
@@ -1325,6 +1334,18 @@ object RelatedDigital {
     private fun getCapture(context: Context): RDCapture = RDCapture.shared(context, AppUtils.getSdkVersion())
 
     @JvmStatic
+    val isFirstInstall: Boolean
+        get() = RelatedDigitalInstallTracker.getInstance()?.isFirstInstall ?: true
+
+    @JvmStatic
+    val isReinstall: Boolean
+        get() = RelatedDigitalInstallTracker.getInstance()?.isReinstall ?: false
+
+    @JvmStatic
+    val installType: String
+        get() = RelatedDigitalInstallTracker.getInstance()?.getInstallType() ?: RelatedDigitalInstallTracker.TYPE_FIRST_INSTALL
+
+    @JvmStatic
     fun customEvent(context: Context, pageName: String, properties: HashMap<String, String>?,
                     parent: Activity? = null) {
         if (pageName.isEmpty()) {
@@ -1337,9 +1358,25 @@ object RelatedDigital {
             return
         }
 
+        val eventProperties = if (properties != null) HashMap(properties) else HashMap<String, String>()
+        val tracker = RelatedDigitalInstallTracker.getInstance(context)
+        if (tracker != null) {
+            val tvc = try {
+                SharedPref.readString(context, Constants.TVC_KEY, "1").toInt()
+            } catch (e: Exception) {
+                1
+            }
+            if (!eventProperties.containsKey(Constants.IS_FIRST_INSTALL_KEY)) {
+                eventProperties[Constants.IS_FIRST_INSTALL_KEY] = tracker.isFirstInstallValue(tvc)
+            }
+            if (!eventProperties.containsKey(Constants.IS_REINSTALL_KEY)) {
+                eventProperties[Constants.IS_REINSTALL_KEY] = tracker.isReinstallValue(tvc)
+            }
+        }
+
         // login / signUp / OM.exVisitorID ile gelen kullanıcı capture tarafında da tanıtılır.
         // Sonrasında çağrılan capture'lardan önce sıraya girmesi için burada, senkron çağrılıyor.
-        val exVisitorId = properties?.get(Constants.EXVISITOR_ID_REQUEST_KEY)
+        val exVisitorId = eventProperties[Constants.EXVISITOR_ID_REQUEST_KEY]
         if (!exVisitorId.isNullOrBlank()) {
             getCapture(context).identify(exVisitorId)
         }
@@ -1348,29 +1385,28 @@ object RelatedDigital {
 
         if(model != null) {
             if (model!!.getIsInAppNotificationEnabled()) {
-                if(parent != null) {
-                    InAppNotificationRequest.createInAppNotificationRequest(
-                        context,
-                        model!!,
-                        pageName,
-                        properties,
-                        parent
-                    )
-                    InAppActionRequest.createInAppActionRequest(
-                        context,
-                        model!!,
-                        pageName,
-                        properties,
-                        parent
-                    )
-                }
+                val targetParent = parent ?: ActivityUtils.parentActivity
+                InAppNotificationRequest.createInAppNotificationRequest(
+                    context,
+                    model!!,
+                    pageName,
+                    eventProperties,
+                    targetParent
+                )
+                InAppActionRequest.createInAppActionRequest(
+                    context,
+                    model!!,
+                    pageName,
+                    eventProperties,
+                    targetParent
+                )
             } else {
                 Log.e(
                     LOG_TAG, "In-app notification is not enabled." +
                             "Call RelatedDigital.setIsInAppNotificationEnabled() first"
                 )
             }
-            LoggerRequest.createLoggerRequest(context, model!!, pageName, properties)
+            LoggerRequest.createLoggerRequest(context, model!!, pageName, eventProperties)
         } else {
             Log.e(LOG_TAG, "Call RelatedDigital.init() first")
         }

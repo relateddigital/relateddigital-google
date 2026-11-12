@@ -33,8 +33,8 @@ class CarouselEventReceiver : BroadcastReceiver() {
             if (carouselEvent > 0 && carousel != null) CarouselBuilder.with(
                 context,
                 notificationId
-            )!!
-                .handleClickEvent(carouselEvent, carousel)
+            )
+                ?.handleClickEvent(carouselEvent, carousel, message)
         }
     }
 

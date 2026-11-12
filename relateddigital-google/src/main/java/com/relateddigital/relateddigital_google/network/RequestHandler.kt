@@ -155,6 +155,25 @@ object RequestHandler {
                         null
                 ), RelatedDigital.getRelatedDigitalModel(context), context
         )
+
+        val model = RelatedDigital.getRelatedDigitalModel(context)
+        if (model.getIsInAppNotificationEnabled()) {
+            val targetParent = com.relateddigital.relateddigital_google.util.ActivityUtils.parentActivity
+            InAppNotificationRequest.createInAppNotificationRequest(
+                context,
+                model,
+                Constants.PAGE_NAME_REQUEST_VAL,
+                properties,
+                targetParent
+            )
+            InAppActionRequest.createInAppActionRequest(
+                context,
+                model,
+                Constants.PAGE_NAME_REQUEST_VAL,
+                properties,
+                targetParent
+            )
+        }
     }
 
     fun createInAppNotificationClickRequest(
@@ -191,9 +210,10 @@ object RequestHandler {
 
         val queryMap = HashMap<String, String>()
         val headerMap = HashMap<String, String>()
+        val model = RelatedDigital.getRelatedDigitalModel(context)
         RequestFormer.formInAppNotificationClickRequest(
                 context = context,
-                model = RelatedDigital.getRelatedDigitalModel(context),
+                model = model,
                 pageName = Constants.PAGE_NAME_REQUEST_VAL,
                 properties = properties,
                 queryMap = queryMap,
@@ -204,14 +224,32 @@ object RequestHandler {
                 Request(
                         Domain.LOG_LOGGER, queryMap, headerMap,
                         null
-                ), RelatedDigital.getRelatedDigitalModel(context), context
+                ), model, context
         )
         RequestSender.addToQueue(
                 Request(
                         Domain.LOG_REAL_TIME, queryMap, headerMap,
                         null
-                ), RelatedDigital.getRelatedDigitalModel(context), context
+                ), model, context
         )
+
+        if (model.getIsInAppNotificationEnabled()) {
+            val targetParent = com.relateddigital.relateddigital_google.util.ActivityUtils.parentActivity
+            InAppNotificationRequest.createInAppNotificationRequest(
+                context,
+                model,
+                Constants.PAGE_NAME_REQUEST_VAL,
+                properties,
+                targetParent
+            )
+            InAppActionRequest.createInAppActionRequest(
+                context,
+                model,
+                Constants.PAGE_NAME_REQUEST_VAL,
+                properties,
+                targetParent
+            )
+        }
     }
 
     fun createStoryImpressionClickRequest(context: Context, report: String?) {

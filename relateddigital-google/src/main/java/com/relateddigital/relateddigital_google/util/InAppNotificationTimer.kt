@@ -53,7 +53,8 @@ class InAppNotificationTimer(
     }
 
     override fun run() {
-        if (mParent == null) {
+        val targetParent = mParent ?: ActivityUtils.parentActivity
+        if (targetParent == null) {
             Log.w(LOG_TAG, "Could not display the in-app notification since the user has changed the original page!")
             cancel()
             return
@@ -67,7 +68,7 @@ class InAppNotificationTimer(
                 Log.i("mVisitorData", mMessage!!.mActionData!!.mVisitorData!!)
                 model.setVisitorData(mContext, mMessage!!.mActionData!!.mVisitorData!!)
             }
-            InAppManager(model.getCookieId()!!, model.getDataSource()).showInAppMessage(mMessage!!, mParent)
+            InAppManager(model.getCookieId().orEmpty(), model.getDataSource()).showInAppMessage(mMessage!!, targetParent)
         }
         cancel()
     }

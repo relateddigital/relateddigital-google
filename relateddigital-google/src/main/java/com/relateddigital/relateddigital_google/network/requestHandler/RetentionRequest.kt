@@ -9,7 +9,6 @@ import com.relateddigital.relateddigital_google.network.RequestSender
 import com.relateddigital.relateddigital_google.model.Retention
 import com.relateddigital.relateddigital_google.push.RetentionType
 
-import com.relateddigital.relateddigital_google.util.GoogleUtils
 import com.relateddigital.relateddigital_google.util.RetryCounterManager
 
 object RetentionRequest {
@@ -47,11 +46,7 @@ object RetentionRequest {
 
             val retention = Retention()
 
-            if(GoogleUtils.checkPlayService(context)) {
-                retention.key = RelatedDigital.getRelatedDigitalModel(context).getGoogleAppAlias()
-            } else {
-                retention.key = RelatedDigital.getRelatedDigitalModel(context).getHuaweiAppAlias()
-            }
+            retention.key = RelatedDigital.getRelatedDigitalModel(context).getGoogleAppAlias()
 
             retention.pushId = pushId
 

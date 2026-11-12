@@ -2,7 +2,9 @@ package com.relateddigital.relateddigital_google.inapp.clawmachine
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -51,6 +53,12 @@ class ClawMachineActivity : FragmentActivity(), ClawMachineCompleteInterface,
         completeListener = this
         copyToClipboardListener = this
         showCodeListener = this
+
+        if (!isAndroidTV(this)) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
         val jsApi = JSApiClient.getClient(RelatedDigital.getRelatedDigitalModel(this).getRequestTimeoutInSecond())
             ?.create(ApiMethods::class.java)
         val headers = HashMap<String, String>()
@@ -137,16 +145,16 @@ class ClawMachineActivity : FragmentActivity(), ClawMachineCompleteInterface,
                 )
 
                 if (!extendedProps.promocodeBannerButtonLabel.isNullOrEmpty()) {
-                    if(ActivityUtils.parentActivity != null) {
+                    val parent = ActivityUtils.parentActivity as? FragmentActivity
+                    if (parent != null && !parent.isFinishing && !parent.isDestroyed) {
                         val clawmachineCodeBannerFragment =
                             ClawMachineCodeBannerFragment.newInstance(extendedProps, clawmachinePromotionCode)
 
-                        val transaction: FragmentTransaction =
-                            (ActivityUtils.parentActivity as FragmentActivity).supportFragmentManager.beginTransaction()
+                        val transaction: FragmentTransaction = parent.supportFragmentManager.beginTransaction()
                         transaction.replace(android.R.id.content, clawmachineCodeBannerFragment)
-                        transaction.commit()
-                        ActivityUtils.parentActivity = null
+                        transaction.commitAllowingStateLoss()
                     }
+                    ActivityUtils.parentActivity = null
                 }
             } catch (e: Exception) {
                 Log.e(LOG_TAG, "ClawMachineCodeBanner : " + e.message)
@@ -163,6 +171,10 @@ class ClawMachineActivity : FragmentActivity(), ClawMachineCompleteInterface,
                 Log.w(LOG_TAG, "Can't parse notification URI, will not take any action", e)
             }
         }
+    }
+
+    private fun isAndroidTV(context: Context): Boolean {
+        return context.packageManager.hasSystemFeature("android.software.leanback")
     }
 
     override fun onCompleted() {

@@ -107,6 +107,9 @@
             android:name=".push.carousel.CarouselEventReceiver"
             android:enabled="true"
             android:exported="false" />
+        <receiver
+            android:name=".push.NotificationActionBroadcastReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

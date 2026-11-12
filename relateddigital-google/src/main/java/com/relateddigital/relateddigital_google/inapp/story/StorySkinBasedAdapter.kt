@@ -3,6 +3,7 @@ package com.relateddigital.relateddigital_google.inapp.story
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.LayoutInflater
@@ -71,7 +72,7 @@ class StorySkinBasedAdapter(var mContext: Context) :
         }
 
         if (!extendedProps?.storyz_label_color.isNullOrEmpty()) {
-            storyHolder.tvStoryName.setTextColor(Color.parseColor(extendedProps?.storyz_label_color))
+            storyHolder.tvStoryName.setTextColor(SafeColor.parse(extendedProps?.storyz_label_color, Color.BLACK))
         }
 
         storyHolder.tvStoryName.typeface = getFontFamily(
@@ -209,7 +210,7 @@ class StorySkinBasedAdapter(var mContext: Context) :
                 borderColorString = "#161616"
             }
             val borderColor =
-                if (shown) Color.rgb(127, 127, 127) else Color.parseColor(borderColorString)
+                if (shown) Color.rgb(127, 127, 127) else SafeColor.parse(borderColorString, Color.BLACK)
             val shape = GradientDrawable()
             shape.shape = GradientDrawable.RECTANGLE
             shape.cornerRadii = borderRadius
@@ -224,7 +225,7 @@ class StorySkinBasedAdapter(var mContext: Context) :
                 borderColorString = "#161616"
             }
             val borderColor =
-                if (shown) Color.rgb(127, 127, 127) else Color.parseColor(borderColorString)
+                if (shown) Color.rgb(127, 127, 127) else SafeColor.parse(borderColorString, Color.BLACK)
             civStory.borderColor = borderColor
             civStory.borderWidth = 3
         }

@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -56,7 +57,7 @@ class InAppMiniFragment: Fragment() {
                     bindingTop!!.tvInAppTitleMini.typeface =
                         mInAppMessage!!.mActionData!!.getFontFamily(requireActivity())
                     if(!mInAppMessage!!.mActionData!!.mMsgTitleColor.isNullOrEmpty()) {
-                        bindingTop!!.tvInAppTitleMini!!.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgTitleColor))
+                        bindingTop!!.tvInAppTitleMini!!.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mMsgTitleColor, Color.BLACK))
                     }
                     setCloseButton()
                     if (!mInAppMessage!!.mActionData!!.mImg.equals("")) {
@@ -89,7 +90,7 @@ class InAppMiniFragment: Fragment() {
                         binding!!.tvInAppTitleMini.typeface =
                             mInAppMessage!!.mActionData!!.getFontFamily(requireActivity())
                         if(!mInAppMessage!!.mActionData!!.mMsgTitleColor.isNullOrEmpty()) {
-                            binding!!.tvInAppTitleMini!!.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgTitleColor))
+                            binding!!.tvInAppTitleMini!!.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mMsgTitleColor, Color.BLACK))
                         }
 
                 setCloseButton()
@@ -117,13 +118,13 @@ class InAppMiniFragment: Fragment() {
                 if (!mInAppMessage!!.mActionData!!.mCloseButtonColor.isNullOrEmpty()) {
                     if (mInAppMessage!!.mActionData!!.mPos == "top") {
                         bindingTop!!.ibClose.visibility = View.VISIBLE
-                        bindingTop!!.ibClose.setColorFilter(Color.parseColor(mInAppMessage!!.mActionData!!.mCloseButtonColor))
+                        bindingTop!!.ibClose.setColorFilter(SafeColor.parse(mInAppMessage!!.mActionData!!.mCloseButtonColor, Color.BLACK))
                         bindingTop!!.ibClose.setOnClickListener {
                             remove()
                         }
                     } else {
                         binding!!.ibClose.visibility = View.VISIBLE
-                        binding!!.ibClose.setColorFilter(Color.parseColor(mInAppMessage!!.mActionData!!.mCloseButtonColor))
+                        binding!!.ibClose.setColorFilter(SafeColor.parse(mInAppMessage!!.mActionData!!.mCloseButtonColor, Color.BLACK))
                         binding!!.ibClose.setOnClickListener {
                             remove()
                         }
@@ -145,7 +146,7 @@ class InAppMiniFragment: Fragment() {
     override fun onStart() {
         super.onStart()
         if (mCleanedUp) {
-            requireActivity().supportFragmentManager.beginTransaction().remove(this).commit()
+            requireActivity().supportFragmentManager.beginTransaction().remove(this).commitAllowingStateLoss()
         }
     }
 
@@ -180,7 +181,7 @@ class InAppMiniFragment: Fragment() {
         mDisplayMini = Runnable {
             requireView().visibility = View.VISIBLE
             if(!mInAppMessage!!.mActionData!!.mBackground.isNullOrEmpty()) {
-                requireView().setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
+                requireView().setBackgroundColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mBackground, Color.BLACK))
             }
             else {
                 requireView().setBackgroundColor(mInAppNotificationState!!.getHighlightColor())

@@ -19,6 +19,7 @@ import com.relateddigital.relateddigital_google.R
 import com.relateddigital.relateddigital_google.constants.Constants
 import com.relateddigital.relateddigital_google.model.Carousel
 import com.relateddigital.relateddigital_google.model.CarouselItem
+import com.relateddigital.relateddigital_google.model.Element
 import com.relateddigital.relateddigital_google.model.Message
 import com.relateddigital.relateddigital_google.push.PushNotificationManager
 import com.relateddigital.relateddigital_google.util.AppUtils
@@ -489,7 +490,12 @@ class CarouselBuilder private constructor(private val context: Context, notifica
         //ToDo :  delete all cache files
     }
 
-    fun handleClickEvent(clickEvent: Int, setUp: Carousel) {
+    fun handleClickEvent(clickEvent: Int, setUp: Carousel, message: Message?) {
+        if (message == null) {
+            Log.e(TAG, "Carousel message is missing, click event ignored")
+            return
+        }
+        this.message = message
         verifyAndSetUpVariables(setUp)
         when (clickEvent) {
             Constants.EVENT_LEFT_ARROW_CLICKED -> onLeftArrowClicked()
@@ -563,7 +569,7 @@ class CarouselBuilder private constructor(private val context: Context, notifica
         bundle.putParcelable(Constants.CAROUSAL_ITEM_CLICKED_KEY, cItem)
         bundle.putString(
             Constants.CAROUSEL_ITEM_CLICKED_URL,
-            message.getElements()!![cItem!!.id!!.toInt() - 1].url
+            getElementUrl(message.getElements(), cItem?.id)
         )
         val intentStr: String =
             SharedPref.readString(context.applicationContext, Constants.INTENT_NAME)
@@ -575,7 +581,10 @@ class CarouselBuilder private constructor(private val context: Context, notifica
 
                 Log.e("PushClick : ", "The class could not be found!")
                 val packageManager = context.packageManager
-                intent = packageManager.getLaunchIntentForPackage(context.packageName)!!
+                intent = packageManager.getLaunchIntentForPackage(context.packageName) ?: run {
+                    Log.e(TAG, "Launch intent could not be found!")
+                    return
+                }
                 val componentName = intent.component
                 val notificationIntent = Intent.makeRestartActivityTask(componentName)
                 notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -583,7 +592,10 @@ class CarouselBuilder private constructor(private val context: Context, notifica
             }
         } else {
             val packageManager = context.packageManager
-            intent = packageManager.getLaunchIntentForPackage(context.packageName)!!
+            intent = packageManager.getLaunchIntentForPackage(context.packageName) ?: run {
+                Log.e(TAG, "Launch intent could not be found!")
+                return
+            }
             val componentName = intent.component
             val notificationIntent = Intent.makeRestartActivityTask(componentName)
             notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -671,6 +683,12 @@ class CarouselBuilder private constructor(private val context: Context, notifica
         private var smallIconResourceId = -1 //check before setting it that it does exists
         private var largeIcon: Bitmap? = null
         private var caraousalPlaceholder: Bitmap? = null
+
+        internal fun getElementUrl(elements: List<Element>?, itemId: String?): String? {
+            val index = itemId?.toIntOrNull()?.minus(1) ?: return null
+            return elements?.getOrNull(index)?.url
+        }
+
         fun with(context: Context, notificationId: Int): CarouselBuilder? {
             if (carouselBuilder == null) {
                 synchronized(CarouselBuilder::class.java) {

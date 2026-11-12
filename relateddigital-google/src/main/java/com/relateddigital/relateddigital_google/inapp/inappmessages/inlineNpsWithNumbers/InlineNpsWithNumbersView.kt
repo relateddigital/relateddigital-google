@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.Log
@@ -147,7 +148,7 @@ class InlineNpsWithNumbersView : LinearLayout {
         val colors = IntArray(colorNumber!!.size)
 
         for (i in colorNumber.indices) {
-            colors[i] = Color.parseColor(colorNumber[i])
+            colors[i] = SafeColor.parse(colorNumber[i], Color.BLACK)
         }
         var isFromZero = false
         if (!numberRange.isNullOrEmpty()) {
@@ -163,7 +164,7 @@ class InlineNpsWithNumbersView : LinearLayout {
         if (backgroundColor != null && backgroundColor != "") {
             try {
                 llBack.visibility = VISIBLE
-                llBack.setBackgroundColor(Color.parseColor(backgroundColor))
+                llBack.setBackgroundColor(SafeColor.parse(backgroundColor, Color.BLACK))
             } catch (e: Exception) {
                 Log.w(
                     LOG_TAG,
@@ -190,14 +191,14 @@ class InlineNpsWithNumbersView : LinearLayout {
             if (backgroundColor != null &&
                 backgroundColor != ""
             ) {
-                tvTitle.setBackgroundColor(Color.parseColor(backgroundColor))
+                tvTitle.setBackgroundColor(SafeColor.parse(backgroundColor, Color.BLACK))
             }
             tvTitle.setText(title.replace("\\n", "\n"))
             tvTitle.setTypeface(fontFamily)
             tvTitle.visibility = VISIBLE
             if (titleColor != null && titleColor != "") {
                 try {
-                    tvTitle.setTextColor(Color.parseColor(titleColor))
+                    tvTitle.setTextColor(SafeColor.parse(titleColor, Color.BLACK))
                 } catch (e: Exception) {
                     Log.w(
                         LOG_TAG,
@@ -238,14 +239,14 @@ class InlineNpsWithNumbersView : LinearLayout {
             if (backgroundColor != null &&
                 backgroundColor != ""
             ) {
-                tvBody.setBackgroundColor(Color.parseColor(backgroundColor))
+                tvBody.setBackgroundColor(SafeColor.parse(backgroundColor, Color.BLACK))
             }
             tvBody.setText(body.replace("\\n", "\n"))
             tvBody.setTypeface(fontFamily)
             tvBody.visibility = VISIBLE
             if (bodyColor != null && bodyColor != "") {
                 try {
-                    tvBody.setTextColor(Color.parseColor(bodyColor))
+                    tvBody.setTextColor(SafeColor.parse(bodyColor, Color.BLACK))
                 } catch (e: Exception) {
                     Log.w(
                         LOG_TAG,
@@ -288,7 +289,7 @@ class InlineNpsWithNumbersView : LinearLayout {
             btnTemplate.visibility = VISIBLE
             if (buttonTextColor != null && buttonTextColor != "") {
                 try {
-                    btnTemplate.setTextColor(Color.parseColor(buttonTextColor))
+                    btnTemplate.setTextColor(SafeColor.parse(buttonTextColor, Color.BLACK))
                 } catch (e: Exception) {
                     Log.w(
                         LOG_TAG,
@@ -301,7 +302,7 @@ class InlineNpsWithNumbersView : LinearLayout {
             }
             if (buttonColor != null && buttonColor != "") {
                 try {
-                    btnTemplate.setBackgroundColor(Color.parseColor(buttonColor))
+                    btnTemplate.setBackgroundColor(SafeColor.parse(buttonColor, Color.BLACK))
                 } catch (e: Exception) {
                     Log.w(
                         LOG_TAG,

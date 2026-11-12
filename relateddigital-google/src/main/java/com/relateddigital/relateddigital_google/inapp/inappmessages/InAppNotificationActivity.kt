@@ -8,6 +8,7 @@ import android.content.ClipboardManager
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import com.relateddigital.relateddigital_google.inapp.SafeColor
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
@@ -180,7 +181,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         binding.btnTemplateSecond.visibility = View.GONE
         if (!mInAppMessage!!.mActionData!!.mBackground.isNullOrEmpty()) {
             try {
-                binding.llBack.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
+                binding.llBack.setBackgroundColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mBackground, Color.BLACK))
             } catch (e: Exception) {
                 Log.w(
                     LOG_TAG,
@@ -191,7 +192,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         }
         else {
             try {
-                binding.llBack.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonTextColor))
+                binding.llBack.setBackgroundColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mButtonTextColor, Color.BLACK))
             } catch (e: Exception) {
                 Log.w(
                     LOG_TAG,
@@ -320,14 +321,14 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             binding.tvTitle.visibility = View.GONE
         } else {
             if (!mInAppMessage!!.mActionData!!.mMsgTitleBackgroundColor.isNullOrEmpty()) {
-                binding.tvTitle.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgTitleBackgroundColor))
+                binding.tvTitle.setBackgroundColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mMsgTitleBackgroundColor, Color.BLACK))
             }
             binding.tvTitle.visibility = View.VISIBLE
             binding.tvTitle.typeface = mInAppMessage!!.mActionData!!.getFontFamily(this)
             binding.tvTitle.text = mInAppMessage!!.mActionData!!.mMsgTitle!!.replace("\\n", "\n")
             if (!mInAppMessage!!.mActionData!!.mMsgTitleColor.isNullOrEmpty()) {
                 try {
-                    binding.tvTitle.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgTitleColor))
+                    binding.tvTitle.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mMsgTitleColor, Color.BLACK))
                 } catch (e: Exception) {
                     Log.w(
                         LOG_TAG,
@@ -368,14 +369,14 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             binding.tvBody.visibility = View.GONE
         } else {
             if (!mInAppMessage!!.mActionData!!.mMsgBodyBackgroundColor.isNullOrEmpty()) {
-                binding.tvBody.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgBodyBackgroundColor))
+                binding.tvBody.setBackgroundColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mMsgBodyBackgroundColor, Color.BLACK))
             }
             binding.tvBody.text = mInAppMessage!!.mActionData!!.mMsgBody!!.replace("\\n", "\n")
             binding.tvBody.typeface = mInAppMessage!!.mActionData!!.getFontFamily(this)
             binding.tvBody.visibility = View.VISIBLE
             if (!mInAppMessage!!.mActionData!!.mMsgBodyColor.isNullOrEmpty()) {
                 try {
-                    binding.tvBody.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgBodyColor))
+                    binding.tvBody.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mMsgBodyColor, Color.BLACK))
                 } catch (e: Exception) {
                     Log.w(
                         LOG_TAG,
@@ -408,7 +409,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
 
             if (!mInAppMessage!!.mActionData!!.mBackground.isNullOrEmpty()) {
                 try {
-                    binding.llCouponContainer.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
+                    binding.llCouponContainer.setBackgroundColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mBackground, Color.BLACK))
                 } catch (e: Exception) {
                     Log.w(
                         LOG_TAG,
@@ -421,7 +422,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             if (!mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor.isNullOrEmpty()) {
                 try {
                     val gdButton = binding.tvCouponCodeWithButton.background as GradientDrawable
-                    gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor))
+                    gdButton.setColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor, Color.BLACK))
                 } catch (e: Exception) {
                     Log.w(
                         LOG_TAG,
@@ -442,7 +443,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         binding.copyButton.text = mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText
         if (!mInAppMessage!!.mActionData!!.mButtonTextColor.isNullOrEmpty()) {
             try {
-                binding.copyButton.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonTextColor))
+                binding.copyButton.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonTextColor, Color.BLACK))
             } catch (e: Exception) {
                 Log.w(
                     LOG_TAG,
@@ -467,7 +468,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         if (!mInAppMessage!!.mActionData!!.mPromocodeCopyButtonColor.isNullOrEmpty()) {
             try {
                 val gdButton = binding.copyButton.background as GradientDrawable
-                gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromocodeCopyButtonColor))
+                gdButton.setColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mPromocodeCopyButtonColor, Color.BLACK))
             } catch (e: Exception) {
                 Log.w(
                     LOG_TAG,
@@ -488,7 +489,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             binding.btnTemplate.text = mInAppMessage!!.mActionData!!.mBtnText
             if (!mInAppMessage!!.mActionData!!.mButtonTextColor.isNullOrEmpty()) {
                 try {
-                    binding.btnTemplate.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonTextColor))
+                    binding.btnTemplate.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mButtonTextColor, Color.BLACK))
                 } catch (e: Exception) {
                     Log.w(
                         LOG_TAG,
@@ -513,7 +514,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             if (!mInAppMessage!!.mActionData!!.mButtonColor.isNullOrEmpty()) {
                 try {
                     val gdButton = binding.btnTemplate.background as GradientDrawable
-                    gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonColor))
+                    gdButton.setColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mButtonColor, Color.BLACK))
                     if (!mInAppMessage!!.mActionData!!.mButtonBorderRadius.isNullOrEmpty()) {
                         gdButton.cornerRadius =
                             mInAppMessage!!.mActionData!!.mButtonBorderRadius!!.toFloat()
@@ -661,7 +662,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         val actionData = mInAppMessage!!.mActionData!!
 
         val backColor = if (!actionData.mBackground.isNullOrEmpty()) {
-            Color.parseColor(actionData.mBackground)
+            SafeColor.parse(actionData.mBackground, Color.BLACK)
         } else {
             Color.WHITE
         }
@@ -692,7 +693,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         bindingNpsWithMultiplePopup.tvTitle.typeface = fontFamily
         bindingNpsWithMultiplePopup.tvTitle.text = actionData.mMsgTitle?.replace("\\n", "\n") ?: ""
         val titleColor = if (!actionData.mMsgTitleColor.isNullOrEmpty()) {
-            Color.parseColor(actionData.mMsgTitleColor)
+            SafeColor.parse(actionData.mMsgTitleColor, Color.BLACK)
         } else {
             Color.BLACK
         }
@@ -710,7 +711,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         bindingNpsWithMultiplePopup.tvScaleLabel.text = actionData.mMsgBody?.replace("\\n", "\n") ?: ""
 
         val msgBodyColor = if (!actionData.mMsgBodyColor.isNullOrEmpty()) {
-            Color.parseColor(actionData.mMsgBodyColor)
+            SafeColor.parse(actionData.mMsgBodyColor, Color.BLACK)
         } else {
             Color.BLACK
         }
@@ -727,7 +728,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
 
         if (!actionData.mButtonTextColor.isNullOrEmpty()) {
             try {
-                bindingNpsWithMultiplePopup.btnSubmit1.setTextColor(Color.parseColor(actionData.mButtonTextColor))
+                bindingNpsWithMultiplePopup.btnSubmit1.setTextColor(SafeColor.parse(actionData.mButtonTextColor, Color.BLACK))
             } catch (e: Exception) {}
         } else {
             bindingNpsWithMultiplePopup.btnSubmit1.setTextColor(Color.WHITE)
@@ -735,7 +736,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
 
         if (!actionData.mButtonColor.isNullOrEmpty()) {
             try {
-                bindingNpsWithMultiplePopup.btnSubmit1.setBackgroundColor(Color.parseColor(actionData.mButtonColor))
+                bindingNpsWithMultiplePopup.btnSubmit1.setBackgroundColor(SafeColor.parse(actionData.mButtonColor, Color.BLACK))
             } catch (e: Exception) {}
         } else {
             bindingNpsWithMultiplePopup.btnSubmit1.setBackgroundColor(Color.BLACK)
@@ -783,10 +784,10 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         bindingNpsWithMultiplePopup.btnBack2.text = actionData.mMultiplePopupButtonText3?.replace("\\n", "\n") ?: "Geri"
         try {
             if (!actionData.mMultiplePopupButtonTextColor3.isNullOrEmpty()) {
-                bindingNpsWithMultiplePopup.btnBack2.setTextColor(Color.parseColor(actionData.mMultiplePopupButtonTextColor3))
+                bindingNpsWithMultiplePopup.btnBack2.setTextColor(SafeColor.parse(actionData.mMultiplePopupButtonTextColor3, Color.BLACK))
             }
             if (!actionData.mMultiplePopupButtonColor3.isNullOrEmpty()) {
-                bindingNpsWithMultiplePopup.btnBack2.setBackgroundColor(Color.parseColor(actionData.mMultiplePopupButtonColor3))
+                bindingNpsWithMultiplePopup.btnBack2.setBackgroundColor(SafeColor.parse(actionData.mMultiplePopupButtonColor3, Color.BLACK))
             }
         } catch (e: Exception) {
         }
@@ -800,10 +801,10 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         bindingNpsWithMultiplePopup.btnSave2.text = actionData.mMultiplePopupButtonText2?.replace("\\n", "\n") ?: "İleri"
         try {
             if (!actionData.mMultiplePopupButtonTextColor2.isNullOrEmpty()) {
-                bindingNpsWithMultiplePopup.btnSave2.setTextColor(Color.parseColor(actionData.mMultiplePopupButtonTextColor2))
+                bindingNpsWithMultiplePopup.btnSave2.setTextColor(SafeColor.parse(actionData.mMultiplePopupButtonTextColor2, Color.BLACK))
             }
             if (!actionData.mMultiplePopupButtonColor2.isNullOrEmpty()) {
-                bindingNpsWithMultiplePopup.btnSave2.setBackgroundColor(Color.parseColor(actionData.mMultiplePopupButtonColor2))
+                bindingNpsWithMultiplePopup.btnSave2.setBackgroundColor(SafeColor.parse(actionData.mMultiplePopupButtonColor2, Color.BLACK))
             }
         } catch (e: Exception) {
         }
@@ -849,7 +850,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         bindingNpsWithMultiplePopup.btnClose3.typeface = fontFamily
         bindingNpsWithMultiplePopup.btnClose3.text = actionData.mMultiplePopupButtonText4 ?: "Kapat"
         val close3BtnColor = if (!actionData.mMultiplePopupButtonColor4.isNullOrEmpty()) {
-            Color.parseColor(actionData.mMultiplePopupButtonColor4)
+            SafeColor.parse(actionData.mMultiplePopupButtonColor4, Color.BLACK)
         } else {
             Color.LTGRAY
         }
@@ -869,7 +870,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
 
         val webSettings: WebSettings = binding.webViewInapp.settings
         if(!mInAppMessage!!.mActionData!!.mBackground.isNullOrEmpty()) {
-            binding.webViewInapp.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
+            binding.webViewInapp.setBackgroundColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mBackground, Color.BLACK))
 
         }
         else {
@@ -959,7 +960,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         binding.btnTemplateSecond.text = mInAppMessage!!.mActionData!!.mSecondButtonText
         if (!mInAppMessage!!.mActionData!!.mSecondButtonTextColor.isNullOrEmpty()) {
             try {
-                binding.btnTemplateSecond.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mSecondButtonTextColor))
+                binding.btnTemplateSecond.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mSecondButtonTextColor, Color.BLACK))
             } catch (e: Exception) {
                 Log.w(
                     LOG_TAG,
@@ -984,7 +985,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         if (!mInAppMessage!!.mActionData!!.mSecondButtonColor.isNullOrEmpty()) {
             try {
                 val gdButton = binding.btnTemplateSecond.background as GradientDrawable
-                gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mSecondButtonColor))
+                gdButton.setColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mSecondButtonColor, Color.BLACK))
                 if (!mInAppMessage!!.mActionData!!.mButtonBorderRadius.isNullOrEmpty()) {
                     gdButton.cornerRadius =
                         mInAppMessage!!.mActionData!!.mButtonBorderRadius!!.toFloat()
@@ -1097,7 +1098,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         binding.btnTemplate.text = mInAppMessage!!.mActionData!!.mBtnText
         if (!mInAppMessage!!.mActionData!!.mButtonTextColor.isNullOrEmpty()) {
             try {
-                binding.btnTemplate.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonTextColor))
+                binding.btnTemplate.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mButtonTextColor, Color.BLACK))
             } catch (e: Exception) {
                 Log.w(
                     LOG_TAG,
@@ -1122,7 +1123,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         if (!mInAppMessage!!.mActionData!!.mButtonColor.isNullOrEmpty()) {
             try {
                 val gdButton = binding.btnTemplate.background as GradientDrawable
-                gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonColor))
+                gdButton.setColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mButtonColor, Color.BLACK))
                 if (!mInAppMessage!!.mActionData!!.mButtonBorderRadius.isNullOrEmpty()) {
                     gdButton.cornerRadius =
                         mInAppMessage!!.mActionData!!.mButtonBorderRadius!!.toFloat()
@@ -1172,7 +1173,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         setContentView(bindingSecondPopUp.root)
         if (!mInAppMessage!!.mActionData!!.mBackground.isNullOrEmpty()) {
             try {
-                bindingSecondPopUp.container.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mBackground))
+                bindingSecondPopUp.container.setBackgroundColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mBackground, Color.BLACK))
             } catch (e: Exception) {
                 Log.w(
                     LOG_TAG,
@@ -1188,16 +1189,16 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
                 bindingSecondPopUp.secondVideoView2.visibility = View.GONE
                 if (!mInAppMessage!!.mActionData!!.mPromotionCode.isNullOrEmpty()) {
                     bindingSecondPopUp.couponContainer.setBackgroundColor(
-                        Color.parseColor(
+                        SafeColor.parse(
                             mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor
-                        )
+                        , Color.BLACK)
                     )
                     bindingSecondPopUp.couponCode.text =
                         mInAppMessage!!.mActionData!!.mPromotionCode
                     bindingSecondPopUp.couponCode.setTextColor(
-                        Color.parseColor(
+                        SafeColor.parse(
                             mInAppMessage!!.mActionData!!.mPromoCodeTextColor
-                        )
+                        , Color.BLACK)
                     )
                     bindingSecondPopUp.couponContainer.setOnClickListener {
                         val clipboard =
@@ -1298,18 +1299,18 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         bindingSecondPopUp.titleView.typeface = mInAppMessage!!.mActionData!!.getFontFamily(this)
         bindingSecondPopUp.titleView.text =
             mInAppMessage!!.mActionData!!.mSecondPopupMsgTitle!!.replace("\\n", "\n")
-        bindingSecondPopUp.titleView.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgTitleColor))
+        bindingSecondPopUp.titleView.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mMsgTitleColor, Color.BLACK))
         bindingSecondPopUp.bodyTextView.typeface = mInAppMessage!!.mActionData!!.getFontFamily(this)
         bindingSecondPopUp.bodyTextView.text =
             mInAppMessage!!.mActionData!!.mSecondPopupMsgBody!!.replace("\\n", "\n")
-        bindingSecondPopUp.bodyTextView.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mMsgBodyColor))
+        bindingSecondPopUp.bodyTextView.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mMsgBodyColor, Color.BLACK))
         bindingSecondPopUp.bodyTextView.textSize =
             mInAppMessage!!.mActionData!!.mSecondPopupMsgBodyTextSize!!.toFloat() + 8
         bindingSecondPopUp.button.typeface = mInAppMessage!!.mActionData!!.getFontFamily(this)
         bindingSecondPopUp.button.text = mInAppMessage!!.mActionData!!.mSecondPopupBtnText
-        bindingSecondPopUp.button.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonTextColor))
+        bindingSecondPopUp.button.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mButtonTextColor, Color.BLACK))
         val gdButton = bindingSecondPopUp.button.background as GradientDrawable
-        gdButton.setColor(Color.parseColor(mInAppMessage!!.mActionData!!.mButtonColor))
+        gdButton.setColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mButtonColor, Color.BLACK))
         if (!mInAppMessage!!.mActionData!!.mButtonBorderRadius.isNullOrEmpty()) {
             gdButton.cornerRadius = mInAppMessage!!.mActionData!!.mButtonBorderRadius!!.toFloat()
         }
@@ -1354,11 +1355,11 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
             && !StringUtils.isNullOrWhiteSpace(mInAppMessage!!.mActionData!!.mPromoCodeTextColor)
         ) {
             binding.llCouponContainer.visibility = View.VISIBLE
-            binding.llCouponContainer.setBackgroundColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor))
+            binding.llCouponContainer.setBackgroundColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mPromoCodeBackgroundColor, Color.BLACK))
             binding.tvCouponCode.text = mInAppMessage!!.mActionData!!.mPromotionCode
-            binding.tvCouponCode.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeTextColor))
+            binding.tvCouponCode.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mPromoCodeTextColor, Color.BLACK))
             binding.tvCouponCodeWithButton.text = mInAppMessage!!.mActionData!!.mPromotionCode
-            binding.tvCouponCodeWithButton.setTextColor(Color.parseColor(mInAppMessage!!.mActionData!!.mPromoCodeTextColor))
+            binding.tvCouponCodeWithButton.setTextColor(SafeColor.parse(mInAppMessage!!.mActionData!!.mPromoCodeTextColor, Color.BLACK))
             binding.tvCouponCodeWithButton.setTextSize(17f)
             if (mInAppMessage!!.mActionData!!.mPromoCodeCopyButtonText?.isNotEmpty() == true) {
                 binding.copyButton.setOnClickListener {
@@ -1484,7 +1485,7 @@ class InAppNotificationActivity : Activity(), SmileRating.OnSmileySelectionListe
         binding.npsWithNumbersView.visibility = View.VISIBLE
         val colors = IntArray(mInAppMessage!!.mActionData!!.mNumberColors!!.size)
         for (i in mInAppMessage!!.mActionData!!.mNumberColors!!.indices) {
-            colors[i] = Color.parseColor(mInAppMessage!!.mActionData!!.mNumberColors!![i])
+            colors[i] = SafeColor.parse(mInAppMessage!!.mActionData!!.mNumberColors!![i], Color.BLACK)
         }
 
         var isFromZero = false

@@ -589,7 +589,8 @@ class RelatedDigitalModel(
 
     fun getExtra(): HashMap<String, Any> {
         synchronized(this) {
-            return extra
+            val currentExtra: HashMap<String, Any>? = extra
+            return if (currentExtra == null) HashMap() else HashMap(currentExtra)
         }
     }
 
@@ -936,11 +937,7 @@ class RelatedDigitalModel(
             } else {
                 fromModel.getCookie()
             }
-            extra = HashMap()
-            for (i in fromModel.getExtra().keys.toTypedArray().indices) {
-                val key = fromModel.getExtra().keys.toTypedArray()[i]
-                extra[key] = fromModel.getExtra()[key]!!
-            }
+            extra = fromModel.getExtra()
         }
     }
 }
